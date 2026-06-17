@@ -1,0 +1,272 @@
+[
+  {
+    "id": "acct_apex_roofing",
+    "name": "Apex Roofing Co",
+    "domain": "apexroofing.example",
+    "industry": "Roofing",
+    "segment": "local_business",
+    "bucket": "local_business",
+    "city": "Austin",
+    "state": "TX",
+    "geography": "Austin, TX",
+    "employeeCount": 22,
+    "description": "Residential & commercial roofing contractor competing on local search.",
+    "inputs": { "icpFit": 90, "abilityToPay": 68, "channel": 82 },
+    "leaks": [
+      { "type": "weak_map_pack", "evidence": "Ranks below 3 competitors in the local search and map pack for 'roofing Austin'.", "confidence": "high", "freshness": "this_week", "severity": 88 },
+      { "type": "stale_content", "evidence": "Blog and seasonal offers haven't been updated in ~8 months.", "confidence": "medium", "freshness": "this_month", "severity": 72 }
+    ]
+  },
+  {
+    "id": "acct_summit_hvac",
+    "name": "Summit HVAC",
+    "domain": "summithvac.example",
+    "industry": "HVAC",
+    "segment": "service_business",
+    "bucket": "local_business",
+    "city": "Denver",
+    "state": "CO",
+    "geography": "Denver, CO",
+    "employeeCount": 34,
+    "description": "Heating & cooling installer and repair service with heavy inbound call volume.",
+    "inputs": { "icpFit": 88, "abilityToPay": 70, "channel": 80 },
+    "leaks": [
+      { "type": "missed_calls", "evidence": "~30% of inbound calls go to voicemail during peak afternoon hours.", "confidence": "high", "freshness": "today", "severity": 90 },
+      { "type": "slow_speed_to_lead", "evidence": "Web-form leads average 6+ hours to first response.", "confidence": "high", "freshness": "this_week", "severity": 80 }
+    ]
+  },
+  {
+    "id": "acct_harbor_dental",
+    "name": "Harbor Dental Studio",
+    "domain": "harbordental.example",
+    "industry": "Dental practice",
+    "segment": "local_business",
+    "bucket": "local_business",
+    "city": "San Diego",
+    "state": "CA",
+    "geography": "San Diego, CA",
+    "employeeCount": 16,
+    "description": "Appointment-driven dental practice with capacity to fill mid-week.",
+    "inputs": { "icpFit": 91, "abilityToPay": 72, "channel": 78 },
+    "leaks": [
+      { "type": "appointment_driven", "evidence": "Calendar shows recurring unfilled mid-week slots.", "confidence": "high", "freshness": "this_week", "severity": 86 },
+      { "type": "review_gap", "evidence": "120 reviews but no response cadence; competitors reply daily.", "confidence": "medium", "freshness": "this_month", "severity": 70 }
+    ]
+  },
+  {
+    "id": "acct_verde_landscaping",
+    "name": "Verde Landscaping",
+    "domain": "verdescape.example",
+    "industry": "Landscaping",
+    "segment": "service_business",
+    "bucket": "local_business",
+    "city": "Phoenix",
+    "state": "AZ",
+    "geography": "Phoenix, AZ",
+    "employeeCount": 19,
+    "description": "Design-build landscaping with paid traffic but weak conversion.",
+    "inputs": { "icpFit": 82, "abilityToPay": 60, "channel": 80 },
+    "leaks": [
+      { "type": "basic_website", "evidence": "Single-page site with no clear path to request an estimate.", "confidence": "medium", "freshness": "older", "severity": 78 },
+      { "type": "lead_quality_gap", "evidence": "Paid clicks rarely become booked estimates.", "confidence": "medium", "freshness": "this_month", "severity": 74 }
+    ]
+  },
+  {
+    "id": "acct_coastal_fitness",
+    "name": "Coastal Fitness Collective",
+    "domain": "coastalfit.example",
+    "industry": "Fitness & wellness",
+    "segment": "local_business",
+    "bucket": "local_business",
+    "city": "Tampa",
+    "state": "FL",
+    "geography": "Tampa, FL",
+    "employeeCount": 12,
+    "description": "Boutique fitness studio losing trials before membership conversion.",
+    "inputs": { "icpFit": 84, "abilityToPay": 58, "channel": 79 },
+    "leaks": [
+      { "type": "lead_quality_gap", "evidence": "Trial sign-ups stall before converting to membership.", "confidence": "high", "freshness": "this_week", "severity": 80 },
+      { "type": "basic_website", "evidence": "Outdated site with no online booking flow.", "confidence": "medium", "freshness": "older", "severity": 68 }
+    ]
+  },
+  {
+    "id": "acct_lawson_legal",
+    "name": "Lawson & Pratt Legal",
+    "domain": "lawsonpratt.example",
+    "industry": "Legal",
+    "segment": "service_business",
+    "bucket": "local_business",
+    "city": "Chicago",
+    "state": "IL",
+    "geography": "Chicago, IL",
+    "employeeCount": 28,
+    "description": "Boutique law firm with high case value and manual intake.",
+    "inputs": { "icpFit": 86, "abilityToPay": 82, "channel": 70 },
+    "leaks": [
+      { "type": "high_ticket_service", "evidence": "Average case value is high; intake hinges on manual steps.", "confidence": "high", "freshness": "this_week", "severity": 84 },
+      { "type": "manual_follow_up", "evidence": "Consultations are followed up by hand, inconsistently.", "confidence": "high", "freshness": "this_week", "severity": 82 }
+    ]
+  },
+  {
+    "id": "acct_brightside_insurance",
+    "name": "Brightside Insurance",
+    "domain": "brightsideins.example",
+    "industry": "Insurance",
+    "segment": "service_business",
+    "bucket": "local_business",
+    "city": "Columbus",
+    "state": "OH",
+    "geography": "Columbus, OH",
+    "employeeCount": 24,
+    "description": "Independent insurance agency losing quotes to slow response.",
+    "inputs": { "icpFit": 83, "abilityToPay": 75, "channel": 76 },
+    "leaks": [
+      { "type": "slow_speed_to_lead", "evidence": "Quote requests sit unanswered past the first-hour window.", "confidence": "high", "freshness": "today", "severity": 85 },
+      { "type": "lead_quality_gap", "evidence": "Aggregator leads convert poorly without fast qualification.", "confidence": "medium", "freshness": "this_month", "severity": 66 }
+    ]
+  },
+  {
+    "id": "acct_meridian_humancap",
+    "name": "Meridian Human Capital",
+    "domain": "meridianhc.example",
+    "industry": "Human-capital services",
+    "segment": "enterprise",
+    "bucket": "applied_ai",
+    "city": "New York",
+    "state": "NY",
+    "geography": "New York, NY",
+    "employeeCount": 140,
+    "description": "Staffing & HR services firm with a repeated manual intake chokepoint.",
+    "inputs": { "icpFit": 84, "abilityToPay": 88, "channel": 64 },
+    "leaks": [
+      { "type": "ops_bottleneck", "evidence": "Candidate intake and reference checks are a repeated manual chokepoint.", "confidence": "high", "freshness": "this_week", "severity": 88 },
+      { "type": "crm_copy_paste", "evidence": "Recruiters rekey data across the ATS and CRM daily.", "confidence": "medium", "freshness": "this_month", "severity": 74 }
+    ]
+  },
+  {
+    "id": "acct_northwind_multi",
+    "name": "Northwind Multi-Location Services",
+    "domain": "northwindsvc.example",
+    "industry": "Multi-location home services",
+    "segment": "multi_location",
+    "bucket": "applied_ai",
+    "city": "Seattle",
+    "state": "WA",
+    "geography": "Seattle, WA (11 locations)",
+    "employeeCount": 180,
+    "description": "Home-services group running 11 branches on fragmented processes.",
+    "inputs": { "icpFit": 85, "abilityToPay": 84, "channel": 66 },
+    "leaks": [
+      { "type": "multi_location_complexity", "evidence": "Each of 11 branches runs its own process and tooling.", "confidence": "high", "freshness": "this_week", "severity": 90 },
+      { "type": "reporting_gap", "evidence": "No unified view of performance across locations.", "confidence": "high", "freshness": "this_month", "severity": 80 }
+    ]
+  },
+  {
+    "id": "acct_sterling_financial",
+    "name": "Sterling Financial Group",
+    "domain": "sterlingfg.example",
+    "industry": "Financial services",
+    "segment": "enterprise",
+    "bucket": "applied_ai",
+    "city": "Boston",
+    "state": "MA",
+    "geography": "Boston, MA",
+    "employeeCount": 220,
+    "description": "Wealth & advisory firm with AI demand but no internal execution team.",
+    "inputs": { "icpFit": 82, "abilityToPay": 93, "channel": 60 },
+    "leaks": [
+      { "type": "ai_capability_gap", "evidence": "Clear AI roadmap demand but no internal execution team.", "confidence": "high", "freshness": "this_week", "severity": 88 },
+      { "type": "ops_bottleneck", "evidence": "Manual reporting and client onboarding workflows.", "confidence": "medium", "freshness": "this_month", "severity": 76 }
+    ]
+  },
+  {
+    "id": "acct_ironclad_construction",
+    "name": "Ironclad Construction",
+    "domain": "ironcladbuild.example",
+    "industry": "Construction",
+    "segment": "service_business",
+    "bucket": "applied_ai",
+    "city": "Dallas",
+    "state": "TX",
+    "geography": "Dallas, TX",
+    "employeeCount": 90,
+    "description": "General contractor compiling job-cost reporting by hand.",
+    "inputs": { "icpFit": 80, "abilityToPay": 85, "channel": 64 },
+    "leaks": [
+      { "type": "reporting_gap", "evidence": "Job-cost and progress reporting compiled by hand weekly.", "confidence": "high", "freshness": "this_week", "severity": 86 },
+      { "type": "multi_location_complexity", "evidence": "Multiple active job sites with fragmented status updates.", "confidence": "medium", "freshness": "this_month", "severity": 72 }
+    ]
+  },
+  {
+    "id": "acct_harborops_platform",
+    "name": "HarborOps Platform",
+    "domain": "harborops.example",
+    "industry": "Hospitality SaaS platform",
+    "segment": "platform",
+    "bucket": "partner",
+    "city": "Miami",
+    "state": "FL",
+    "geography": "Miami, FL",
+    "employeeCount": 60,
+    "description": "Hospitality SaaS serving 1,800+ venues with no AI capability of its own.",
+    "inputs": { "icpFit": 96, "abilityToPay": 92, "channel": 72 },
+    "leaks": [
+      { "type": "platform_distribution", "evidence": "Serves 1,800+ hospitality venues but offers no AI capability.", "confidence": "high", "freshness": "today", "severity": 95 },
+      { "type": "ai_capability_gap", "evidence": "Clients are asking for AI features the platform can't ship.", "confidence": "high", "freshness": "this_week", "severity": 88 }
+    ]
+  },
+  {
+    "id": "acct_localserve_crm",
+    "name": "LocalServe CRM",
+    "domain": "localservecrm.example",
+    "industry": "Vertical CRM for local services",
+    "segment": "platform",
+    "bucket": "partner",
+    "city": "Remote",
+    "state": "US",
+    "geography": "Remote (US)",
+    "employeeCount": 45,
+    "description": "CRM for thousands of local-service businesses, no AI add-on yet.",
+    "inputs": { "icpFit": 93, "abilityToPay": 86, "channel": 70 },
+    "leaks": [
+      { "type": "platform_distribution", "evidence": "Thousands of local-service businesses on the platform, no AI add-on.", "confidence": "high", "freshness": "this_week", "severity": 90 },
+      { "type": "ai_capability_gap", "evidence": "Roadmap pressure for AI without a delivery team.", "confidence": "medium", "freshness": "this_month", "severity": 80 }
+    ]
+  },
+  {
+    "id": "acct_mainline_media",
+    "name": "Mainline Media Co",
+    "domain": "mainlinemedia.example",
+    "industry": "Local media company",
+    "segment": "agency",
+    "bucket": "partner",
+    "city": "Kansas City",
+    "state": "MO",
+    "geography": "Kansas City, MO",
+    "employeeCount": 70,
+    "description": "Local media seller with hundreds of advertisers and no AI product to resell.",
+    "inputs": { "icpFit": 88, "abilityToPay": 80, "channel": 75 },
+    "leaks": [
+      { "type": "platform_distribution", "evidence": "Sells marketing to hundreds of local advertisers but resells no AI.", "confidence": "high", "freshness": "this_week", "severity": 84 },
+      { "type": "ai_capability_gap", "evidence": "Advertisers want AI marketing the team can't deliver.", "confidence": "medium", "freshness": "this_month", "severity": 76 }
+    ]
+  },
+  {
+    "id": "acct_catalyst_agency",
+    "name": "Catalyst Home Services Agency",
+    "domain": "catalysths.example",
+    "industry": "Marketing agency (home services)",
+    "segment": "agency",
+    "bucket": "partner",
+    "city": "Atlanta",
+    "state": "GA",
+    "geography": "Atlanta, GA",
+    "employeeCount": 38,
+    "description": "Agency managing campaigns for 60+ home-service clients, no AI execution.",
+    "inputs": { "icpFit": 90, "abilityToPay": 78, "channel": 80 },
+    "leaks": [
+      { "type": "ai_capability_gap", "evidence": "Manages campaigns for 60+ home-service clients but has no AI execution.", "confidence": "high", "freshness": "this_week", "severity": 86 },
+      { "type": "platform_distribution", "evidence": "Owns the client relationships; lacks an AI product to upsell.", "confidence": "medium", "freshness": "this_month", "severity": 78 }
+    ]
+  }
+]

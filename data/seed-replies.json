@@ -1,0 +1,10 @@
+[
+  { "id": "reply_positive", "label": "Positive — wants to talk", "expectedIntent": "positive_call", "text": "Sure, happy to chat. What times do you have this week?" },
+  { "id": "reply_info", "label": "Asks for info", "expectedIntent": "asks_for_info", "text": "Can you send more info and some pricing first?" },
+  { "id": "reply_objection", "label": "Objection / no time", "expectedIntent": "objection_no_time", "text": "We are way too busy right now, maybe later." },
+  { "id": "reply_wrong_person", "label": "Wrong person", "expectedIntent": "wrong_person", "text": "I do not handle marketing. You should talk to our office manager." },
+  { "id": "reply_not_interested", "label": "Not interested", "expectedIntent": "not_interested", "text": "Not interested, we're all set thanks." },
+  { "id": "reply_ooo", "label": "Out of office", "expectedIntent": "out_of_office", "text": "I'm out of office on vacation until next Monday." },
+  { "id": "reply_unsubscribe", "label": "Unsubscribe", "expectedIntent": "unsubscribe", "text": "Please remove me from your list and do not contact me again." },
+  { "id": "reply_ambiguous", "label": "Ambiguous", "expectedIntent": "ambiguous", "text": "Hmm. Interesting timing." }
+]
