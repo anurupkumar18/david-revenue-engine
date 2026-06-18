@@ -13,6 +13,7 @@ export function FittingStrategyPanel() {
   const loading = useEngine((s) => s.strategyLoading);
   const setStrategy = useEngine((s) => s.setStrategy);
   const setLoading = useEngine((s) => s.setStrategyLoading);
+  const productDescription = useEngine((s) => s.productDescription);
 
   async function run(input: FittingStrategyInput) {
     setLoading(true);
@@ -32,7 +33,11 @@ export function FittingStrategyPanel() {
 
   return (
     <div className="grid gap-5 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">
-      <CampaignInput loading={loading} onSubmit={run} />
+      <CampaignInput
+        loading={loading}
+        defaultDescription={productDescription || undefined}
+        onSubmit={run}
+      />
 
       <div className="panel p-5">
         {!strategy ? (

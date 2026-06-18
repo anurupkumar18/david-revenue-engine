@@ -1,5 +1,5 @@
-import { Workspace } from "@/components/workspace";
+import { LandingView } from "@/components/icp/landing-view";
 
 export default function Page() {
-  return <Workspace />;
+  return <LandingView />;
 }

@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "David Revenue Engine",
   description:
-    "Find businesses leaking time, leads, or margin — diagnose the right David offer path, write the outreach, and route every reply into recurring revenue.",
+    "Build your ICP, store a business profile, then run the full GTM fitting engine — strategy, outreach, reply routing, and recurring revenue pipeline.",
 };
 
 export default function RootLayout({

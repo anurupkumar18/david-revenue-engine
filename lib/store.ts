@@ -1,19 +1,17 @@
 "use client";
 
-// Client-side demo state. Seeded entirely from the deterministic engine (lib/seed),
-// so the whole app works with no network and no API keys.
-
 import { create } from "zustand";
-import { getSeedAccounts } from "./seed";
+import type { RevenuePersistedState } from "@/lib/icp-bridge";
+import { getSeedAccounts } from "@/lib/seed";
 import type {
   FittingStrategy,
   OutreachSequence,
   PipelineStage,
   RevenueAccount,
   RoutedReply,
-} from "./types";
+} from "@/lib/types";
 
-export type DemoScenarioKey = "all" | "local" | "applied_ai" | "partner";
+export type DemoScenarioKey = "all" | "local" | "applied_ai" | "partner" | "icp";
 
 export const DEMO_SCENARIOS: {
   key: DemoScenarioKey;
@@ -42,43 +40,64 @@ export type LastRouted = {
 };
 
 type EngineState = {
+  profileId: number | null;
+  businessName: string;
+  productDescription: string;
   accounts: RevenueAccount[];
   loadedScenario: DemoScenarioKey | null;
   selectedAccountId: string | null;
   drawerOpen: boolean;
-
   strategy: FittingStrategy | null;
   strategyLoading: boolean;
-
   outreachByAccount: Record<string, OutreachSequence>;
   lastRouted: LastRouted | null;
 
+  initBusinessProfile: (
+    profileId: number,
+    businessName: string,
+    state: RevenuePersistedState,
+    productDescription?: string,
+  ) => void;
   loadScenario: (key: DemoScenarioKey) => void;
   reset: () => void;
   selectAccount: (id: string | null) => void;
   closeDrawer: () => void;
-  setStage: (accountId: string, stage: PipelineStage, note?: string) => void;
-
+  setStage: (accountId: string, stage: PipelineStage) => void;
   setStrategy: (s: FittingStrategy | null) => void;
   setStrategyLoading: (b: boolean) => void;
-
   setOutreach: (accountId: string, seq: OutreachSequence) => void;
   setLastRouted: (r: LastRouted | null) => void;
   applyRoutedStage: () => void;
+  getPersistedState: () => RevenuePersistedState;
 };
 
 export const useEngine = create<EngineState>((set, get) => ({
-  // Start populated so the demo is never blank.
+  profileId: null,
+  businessName: "",
+  productDescription: "",
   accounts: accountsFor("all"),
   loadedScenario: "all",
   selectedAccountId: null,
   drawerOpen: false,
-
   strategy: null,
   strategyLoading: false,
-
   outreachByAccount: {},
   lastRouted: null,
+
+  initBusinessProfile: (profileId, businessName, state, productDescription = "") =>
+    set({
+      profileId,
+      businessName,
+      productDescription,
+      accounts: state.accounts.map((a) => structuredClone(a as RevenueAccount)),
+      loadedScenario: (state.loadedScenario as DemoScenarioKey) || "icp",
+      selectedAccountId: null,
+      drawerOpen: false,
+      strategy: (state.strategy as FittingStrategy) || null,
+      strategyLoading: false,
+      outreachByAccount: (state.outreachByAccount as Record<string, OutreachSequence>) || {},
+      lastRouted: (state.lastRouted as LastRouted) || null,
+    }),
 
   loadScenario: (key) =>
     set({
@@ -91,6 +110,9 @@ export const useEngine = create<EngineState>((set, get) => ({
 
   reset: () =>
     set({
+      profileId: null,
+      businessName: "",
+      productDescription: "",
       accounts: [],
       loadedScenario: null,
       selectedAccountId: null,
@@ -104,15 +126,15 @@ export const useEngine = create<EngineState>((set, get) => ({
   closeDrawer: () => set({ drawerOpen: false }),
 
   setStage: (accountId, stage) =>
-    set((state) => ({
-      accounts: state.accounts.map((a) => (a.id === accountId ? { ...a, stage } : a)),
+    set((s) => ({
+      accounts: s.accounts.map((a) => (a.id === accountId ? { ...a, stage } : a)),
     })),
 
   setStrategy: (s) => set({ strategy: s }),
   setStrategyLoading: (b) => set({ strategyLoading: b }),
 
   setOutreach: (accountId, seq) =>
-    set((state) => ({ outreachByAccount: { ...state.outreachByAccount, [accountId]: seq } })),
+    set((s) => ({ outreachByAccount: { ...s.outreachByAccount, [accountId]: seq } })),
 
   setLastRouted: (r) => set({ lastRouted: r }),
 
@@ -122,13 +144,21 @@ export const useEngine = create<EngineState>((set, get) => ({
     get().setStage(lastRouted.accountId, lastRouted.routed.updatePipelineStage);
     set({ lastRouted: { ...lastRouted, applied: true } });
   },
-}));
 
-// ---- derived selectors -----------------------------------------------------
+  getPersistedState: () => {
+    const s = get();
+    return {
+      accounts: s.accounts,
+      loadedScenario: s.loadedScenario,
+      strategy: s.strategy,
+      outreachByAccount: s.outreachByAccount,
+      lastRouted: s.lastRouted,
+    };
+  },
+}));
 
 const mid = (r: [number, number]) => (r[0] + r[1]) / 2;
 
-/** Sum of expected recurring monthly revenue across live (non-lost/suppressed) accounts. */
 export function pipelineRecurringMonthly(accounts: RevenueAccount[]): number {
   return accounts
     .filter((a) => a.stage !== "closed_lost" && a.stage !== "suppressed")

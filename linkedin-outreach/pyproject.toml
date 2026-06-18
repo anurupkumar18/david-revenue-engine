@@ -1,0 +1,19 @@
+[project]
+name = "linkedin-outreach"
+version = "1.0.0"
+requires-python = ">=3.11"
+dependencies = [
+    "click>=8.1.7",
+    "rich>=13.9.0",
+    "sqlalchemy>=2.0.36",
+]
+
+[project.scripts]
+linkedin-outreach = "linkedin_outreach.cli:main"
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

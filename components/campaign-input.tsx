@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Sparkles } from "lucide-react";
 import { SEGMENT_LABELS } from "@/lib/constants";
 import { Button, Eyebrow } from "@/components/ui";
@@ -30,14 +30,20 @@ const selectCls =
 
 export function CampaignInput({
   loading,
+  defaultDescription,
   onSubmit,
 }: {
   loading: boolean;
+  defaultDescription?: string;
   onSubmit: (input: FittingStrategyInput) => void;
 }) {
-  const [productDescription, setProductDescription] = useState(DEFAULT_DESCRIPTION);
+  const [productDescription, setProductDescription] = useState(defaultDescription || DEFAULT_DESCRIPTION);
   const [segmentFocus, setSegmentFocus] = useState<SegmentFocus>("auto");
-  const [fittingGoal, setFittingGoal] = useState<FittingGoal>("land_recurring_retainers");
+  const [fittingGoal, setFittingGoal] = useState<FittingGoal>("book_fittings");
+
+  useEffect(() => {
+    if (defaultDescription) setProductDescription(defaultDescription);
+  }, [defaultDescription]);
 
   return (
     <div className="panel p-5">

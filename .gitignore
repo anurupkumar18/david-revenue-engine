@@ -40,3 +40,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# python (ICP backend + LinkedIn CLI)
+backend/.venv/
+linkedin-outreach/.venv/
+**/__pycache__/
+*.pyc
+*.egg-info/
+
