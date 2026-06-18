@@ -43,5 +43,26 @@ def ensure_migrations() -> None:
         if "user_id" not in cols:
             conn.execute("ALTER TABLE icp_profiles ADD COLUMN user_id INTEGER")
             conn.commit()
+
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS email_connections (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL UNIQUE,
+                provider VARCHAR(32) NOT NULL,
+                email_address VARCHAR(255) NOT NULL,
+                access_token_enc TEXT DEFAULT '',
+                refresh_token_enc TEXT NOT NULL DEFAULT '',
+                token_expires_at DATETIME,
+                scopes TEXT DEFAULT '[]',
+                status VARCHAR(32) DEFAULT 'active',
+                last_error TEXT,
+                connected_at DATETIME,
+                updated_at DATETIME,
+                FOREIGN KEY(user_id) REFERENCES users(id)
+            )
+            """
+        )
+        conn.commit()
     finally:
         conn.close()

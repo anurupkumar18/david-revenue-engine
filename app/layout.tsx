@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Hanken_Grotesk, IBM_Plex_Mono } from "next/font/google";
+import { AuthProvider } from "@/components/auth/auth-provider";
 import "./globals.css";
 
 const displayFont = Cormorant_Garamond({
@@ -40,8 +41,11 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`h-full antialiased ${displayFont.variable} ${bodyFont.variable} ${monoFont.variable}`}
       data-scroll-behavior="smooth"
+      suppressHydrationWarning
     >
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full" suppressHydrationWarning>
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

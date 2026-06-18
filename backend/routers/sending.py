@@ -5,21 +5,17 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import ICPProfile, Message, SendJob
+from models import ICPProfile, Message, SendJob, User
 from schemas import StartSequenceRequest
+from services.auth import get_current_user
+from services.email_connections import get_connection
+from services.profile_access import get_owned_profile
+from services.security import auth_enabled
 from services.sends import cap_remaining, daily_send_cap, decide_outbound, drain_send_queue
 
 router = APIRouter(prefix="/api", tags=["sending"])
 
-# Mirrors lib/sending.ts STEP_TWO_DELAY_DAYS.
 STEP_TWO_DELAY_DAYS = 3
-
-
-def _require_profile(db: Session, profile_id: int) -> ICPProfile:
-    profile = db.query(ICPProfile).filter(ICPProfile.id == profile_id).first()
-    if not profile:
-        raise HTTPException(404, "Profile not found")
-    return profile
 
 
 def _create_step(db: Session, *, thread_id: str, profile_id: int, send, step_label: str,
@@ -36,7 +32,7 @@ def _create_step(db: Session, *, thread_id: str, profile_id: int, send, step_lab
         status="queued",
     )
     db.add(message)
-    db.flush()  # assign message.id
+    db.flush()
     job = SendJob(
         thread_id=thread_id,
         profile_id=profile_id,
@@ -53,8 +49,18 @@ def _create_step(db: Session, *, thread_id: str, profile_id: int, send, step_lab
 
 
 @router.post("/sequences/{profile_id}/start")
-def start_sequence(profile_id: int, data: StartSequenceRequest, db: Session = Depends(get_db)):
-    _require_profile(db, profile_id)
+def start_sequence(
+    profile_id: int,
+    data: StartSequenceRequest,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    get_owned_profile(db, profile_id, user)
+    if auth_enabled() and not get_connection(db, user.id):
+        raise HTTPException(
+            400,
+            "Connect your Gmail or Microsoft 365 mailbox before starting a send sequence.",
+        )
     now = datetime.utcnow()
     summary = {"threads": 0, "jobs_created": 0, "auto": 0, "needs_review": 0}
 
@@ -99,7 +105,12 @@ def _job_payload(db: Session, job: SendJob) -> dict:
 
 
 @router.get("/send-jobs/{profile_id}")
-def list_send_jobs(profile_id: int, db: Session = Depends(get_db)):
+def list_send_jobs(
+    profile_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    get_owned_profile(db, profile_id, user)
     jobs = (
         db.query(SendJob)
         .filter(SendJob.profile_id == profile_id)
@@ -114,10 +125,11 @@ def list_send_jobs(profile_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/send-jobs/{job_id}/approve")
-def approve_job(job_id: int, db: Session = Depends(get_db)):
+def approve_job(job_id: int, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     job = db.query(SendJob).filter(SendJob.id == job_id).first()
     if not job:
         raise HTTPException(404, "Send job not found")
+    get_owned_profile(db, job.profile_id, user)
     if job.status in ("needs_review", "pending"):
         job.status = "approved"
         db.commit()
@@ -125,16 +137,21 @@ def approve_job(job_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/send-jobs/{job_id}/skip")
-def skip_job(job_id: int, db: Session = Depends(get_db)):
+def skip_job(job_id: int, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     job = db.query(SendJob).filter(SendJob.id == job_id).first()
     if not job:
         raise HTTPException(404, "Send job not found")
+    get_owned_profile(db, job.profile_id, user)
     job.status = "skipped"
     db.commit()
     return {"ok": True, "status": job.status}
 
 
 @router.post("/send-jobs/{profile_id}/run")
-def run_send_queue(profile_id: int, db: Session = Depends(get_db)):
-    """Manually drain due sends now (keyless demo + tests; mirrors the scheduler tick)."""
+def run_send_queue(
+    profile_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    get_owned_profile(db, profile_id, user)
     return drain_send_queue(db=db)

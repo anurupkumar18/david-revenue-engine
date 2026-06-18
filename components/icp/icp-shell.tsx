@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { AuthHeader } from "@/components/auth/auth-header";
 import { cn } from "@/lib/utils";
 
 const inputCls =
@@ -34,6 +35,7 @@ export function IcpShell({
             >
               Campaigns
             </Link>
+            <AuthHeader />
             <Link
               href="/briefs"
               className="rounded-[12px] px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-dim transition-colors hover:bg-white/5 hover:text-ink"

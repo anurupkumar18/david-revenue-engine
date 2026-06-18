@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "smoke": "tsx scripts/smoke.ts",
     "verify:campaign": "tsx scripts/verify-campaign-flow.ts",
+    "verify:email": "tsx scripts/verify-email-connection.ts",
     "verify:email-loop": "tsx scripts/email-roundtrip.ts",
     "test:backend": "cd backend && .venv/bin/python -m pytest -q"
   },

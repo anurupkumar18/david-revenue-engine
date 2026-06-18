@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { exportOutreach, getOutreachQueue, listProfiles } from "@/lib/icp-api";
+import { EmailConnectionPanel } from "@/components/email-connection-panel";
 import type { ICPProfile } from "@/lib/types/icp";
 import { Button } from "@/components/ui";
 import { ContactTable } from "@/components/icp/contact-table";
@@ -54,6 +55,10 @@ export function DashboardView({ profileId }: { profileId?: number }) {
         <Link href="/">
           <Button variant="solid">New campaign</Button>
         </Link>
+      </div>
+
+      <div className="mb-8">
+        <EmailConnectionPanel />
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[260px_1fr]">

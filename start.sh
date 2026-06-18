@@ -8,6 +8,7 @@ if [ ! -d .venv ]; then
   python3 -m venv .venv
   .venv/bin/pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -r requirements.txt -q
 fi
+export SCHEDULER_ENABLED="${SCHEDULER_ENABLED:-1}"
 .venv/bin/uvicorn main:app --reload --port 8000 &
 BACKEND_PID=$!
 

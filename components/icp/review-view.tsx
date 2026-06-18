@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { createProfile } from "@/lib/icp-api";
+import { createProfile, ApiAuthError } from "@/lib/icp-api";
+import { useAuth } from "@/components/auth/auth-provider";
 import { clearWizardDraft, loadWizardDraft } from "@/lib/icp-session";
 import type { ConfidenceLevel, ICPFields } from "@/lib/types/icp";
 import { Button } from "@/components/ui";
@@ -12,6 +13,7 @@ import { ProfileReviewCard } from "@/components/icp/profile-review-card";
 
 export function ReviewView() {
   const router = useRouter();
+  const { needsSignIn, promptSignIn } = useAuth();
   const [fields, setFields] = useState<ICPFields | null>(null);
   const [confidence, setConfidence] = useState<Record<string, ConfidenceLevel>>({});
   const [showModal, setShowModal] = useState(false);
@@ -36,14 +38,24 @@ export function ReviewView() {
 
   const handleAccept = async () => {
     if (!fields) return;
+    if (needsSignIn) {
+      const ok = await promptSignIn("Sign in or create an account to save this campaign profile.");
+      if (!ok) return;
+    }
     setSaving(true);
     try {
       const profile = await createProfile(fields, confidence, "accepted");
       clearWizardDraft();
       setProfileId(profile.id);
       setShowModal(true);
-    } catch {
-      alert("Failed to save profile");
+    } catch (e) {
+      const msg =
+        e instanceof ApiAuthError
+          ? "Sign in required to save your campaign profile."
+          : e instanceof Error
+            ? e.message
+            : "Failed to save profile";
+      alert(msg);
     }
     setSaving(false);
   };
@@ -69,6 +81,13 @@ export function ReviewView() {
 
       <ProfileReviewCard fields={fields} confidence={confidence} />
 
+      {needsSignIn && (
+        <p className="mt-4 rounded-[12px] border border-amber/40 bg-amber/10 px-4 py-3 text-[13px] text-ink-dim">
+          Sign in is required to save this profile and connect Gmail for live sending.
+        </p>
+      )}
+
+      <div className="mt-8 flex gap-2">
       <div className="mt-10 flex gap-2">
         <Button variant="outline" onClick={handleReject} className="border-danger/40 text-danger hover:bg-danger/10">
           Reject & edit

@@ -2,6 +2,8 @@ import csv
 from pathlib import Path
 from urllib.parse import quote
 
+from services.test_recipients import pick_synthetic_test_email
+
 # Seed contacts from public OSINT research (verified_public / corporate_only)
 SEED_CONTACTS = [
     {
@@ -198,7 +200,10 @@ def discover_contacts(profile_fields: dict, max_per_industry: int = 5) -> list[d
     for ind, contacts in by_ind.items():
         capped.extend(contacts[:max_per_industry])
 
-    return capped[:20]
+    final = capped[:20]
+    for i, contact in enumerate(final):
+        contact["email"] = pick_synthetic_test_email(i)
+    return final
 
 
 def generate_connection_note(profile_fields: dict, contact: dict, max_chars: int = 300) -> str:

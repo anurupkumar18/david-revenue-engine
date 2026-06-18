@@ -121,6 +121,12 @@ export function Workspace() {
           </div>
         </Section>
 
+        <Section id="sending">
+          <SectionHeading
+            eyebrow="06 · Send & Schedule"
+            title="Send the sequence, with guardrails"
+            description="Enroll accounts into the two-step sequence on a schedule. Clean, high-confidence sends go automatically; opt-outs, low-fit, and edge cases wait for review. Connect Gmail or Microsoft 365 to send from your mailbox."
+          />
         <Section
           id="sending"
           eyebrow="05 · Send Guardrails"

@@ -1,5 +1,9 @@
 "use client";
 
+import { Activity } from "lucide-react";
+import { AuthHeader } from "@/components/auth/auth-header";
+import { pipelineRecurringMonthly, useEngine } from "@/lib/store";
+import { fmtMoneyCompact } from "@/lib/format";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
@@ -54,6 +58,7 @@ export function AppHeader() {
             </span>
             <ChevronRight size={12} className="text-ink-faint" />
           </div>
+          <AuthHeader />
           <span className="inline-flex items-center gap-1.5 rounded-full border border-amber/35 bg-amber/10 px-2.5 py-1.5">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber" />
             <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-amber">
