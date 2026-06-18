@@ -157,8 +157,24 @@ Every live feature is behind a key; unset = the demo-safe fallback.
 | `DAILY_SEND_CAP` | Per-customer daily cap | 50 |
 | `AUTO_SEND_CONFIDENCE` | Auto-send threshold | 0.90 (conservative) |
 | `COMPANY_POSTAL_ADDRESS` | CAN-SPAM footer | placeholder address |
+| `TOKEN_ENCRYPTION_KEY` | Fernet key for OAuth tokens at rest | Derived from `AUTH_SECRET` in dev |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Gmail OAuth (send via Gmail API) | Connect Gmail disabled |
+| `MICROSOFT_CLIENT_ID` / `MICROSOFT_CLIENT_SECRET` | Microsoft 365 OAuth (Graph `sendMail`) | Connect Microsoft disabled |
+| `PUBLIC_BASE_URL` | OAuth redirect base (e.g. `http://localhost:3000`) | `http://localhost:3000` |
 
-Backend tests: `cd backend && python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt`, then `npm run test:backend`.
+### OAuth mailbox sending (production)
+
+1. Set `AUTH_SECRET` so sessions are real (signup/login in the UI).
+2. Register OAuth apps:
+   - **Google Cloud Console:** enable Gmail API, OAuth consent screen, redirect URI `{PUBLIC_BASE_URL}/api/email/callback/google`, scopes include `gmail.send`. Add test users while app is in Testing.
+   - **Azure Portal:** app registration, redirect `{PUBLIC_BASE_URL}/api/email/callback/microsoft`, API permission `Mail.Send`.
+3. Set `GOOGLE_CLIENT_ID/SECRET` and/or `MICROSOFT_CLIENT_ID/SECRET`, plus `TOKEN_ENCRYPTION_KEY` (optional; defaults to a hash of `AUTH_SECRET`).
+4. Run `./start.sh` (sets `SCHEDULER_ENABLED=1` by default) or export it manually for automatic queue draining.
+5. Sign in → **Dashboard** or **Send & Schedule** → Connect Gmail or Microsoft 365 → **Send test email** → start a sequence on a business profile.
+
+Verify APIs: `npm run verify:email` (backend must be running on port 8000).
+
+Manual E2E: connect mailbox as `sanjay.bhatia@quantiedge.com`, test send to that address, enroll a sequence using real `ICPContact.email` values from discovered contacts. `cd backend && python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt`, then `npm run test:backend`.
 
 ## David-Specific Language
 

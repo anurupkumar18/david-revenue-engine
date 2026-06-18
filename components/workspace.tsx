@@ -107,7 +107,7 @@ export function Workspace() {
           <SectionHeading
             eyebrow="06 · Send & Schedule"
             title="Send the sequence, with guardrails"
-            description="Enroll accounts into the two-step sequence on a schedule. Clean, high-confidence sends go automatically; opt-outs, low-fit, and edge cases wait for review. Simulated in the keyless demo, real when an ESP key is set."
+            description="Enroll accounts into the two-step sequence on a schedule. Clean, high-confidence sends go automatically; opt-outs, low-fit, and edge cases wait for review. Connect Gmail or Microsoft 365 to send from your mailbox."
           />
           <SendingPanel />
         </Section>

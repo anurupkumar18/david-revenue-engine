@@ -1,6 +1,7 @@
 "use client";
 
 import { Activity } from "lucide-react";
+import { AuthHeader } from "@/components/auth/auth-header";
 import { pipelineRecurringMonthly, useEngine } from "@/lib/store";
 import { fmtMoneyCompact } from "@/lib/format";
 
@@ -59,11 +60,7 @@ export function AppHeader() {
               <span className="text-ink-faint">/mo</span>
             </span>
           </div>
-          {/* demo pill */}
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-amber/40 bg-amber/10 px-2.5 py-1">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber" />
-            <span className="font-mono text-[10px] uppercase tracking-wider text-amber">No sending</span>
-          </span>
+          <AuthHeader />
         </div>
       </div>
     </header>

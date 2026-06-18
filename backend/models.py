@@ -214,3 +214,22 @@ class Brief(Base):
     @recommendations.setter
     def recommendations(self, value: list):
         self.recommendations_json = json.dumps(value)
+
+
+class EmailConnection(Base):
+    """OAuth-connected mailbox used to send outbound email for a workspace owner."""
+
+    __tablename__ = "email_connections"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, unique=True, index=True)
+    provider = Column(String(32), nullable=False)  # google | microsoft
+    email_address = Column(String(255), nullable=False)
+    access_token_enc = Column(Text, default="")
+    refresh_token_enc = Column(Text, nullable=False, default="")
+    token_expires_at = Column(DateTime)
+    scopes = Column(Text, default="[]")
+    status = Column(String(32), default="active")  # active | revoked | error
+    last_error = Column(Text)
+    connected_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

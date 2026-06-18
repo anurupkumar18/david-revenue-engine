@@ -1,9 +1,7 @@
 """Email service provider adapter.
 
-Resend is the first concrete provider, behind a swappable function interface. With no
-RESEND_API_KEY the adapter performs a *simulated send* — it returns a synthetic message
-id and never touches the network — so the demo and tests run keyless and offline. With a
-key present it really sends via the Resend HTTP API.
+Routes outbound sends through the user's OAuth-connected mailbox (Gmail or Microsoft
+Graph) when available. Falls back to Resend when configured, otherwise simulates.
 """
 
 import os
@@ -11,17 +9,55 @@ import uuid
 
 import httpx
 
+from models import EmailConnection
+from services import gmail_send, graph_send
+from services.email_connections import ensure_fresh_token
+from services.security import auth_enabled
+
 RESEND_API_URL = "https://api.resend.com/emails"
 DEFAULT_FROM = "GTM Campaign Builder <onboarding@resend.dev>"
 
 
 def is_live() -> bool:
-    """True when a real ESP key is configured (real sends), False = simulated."""
     return bool(os.environ.get("RESEND_API_KEY"))
 
 
 def default_from() -> str:
     return os.environ.get("EMAIL_FROM") or DEFAULT_FROM
+
+
+def _simulate() -> dict:
+    return {
+        "id": f"sim_{uuid.uuid4().hex[:24]}",
+        "status": "sent",
+        "simulated": True,
+    }
+
+
+def _send_via_resend(*, to: str, subject: str, body: str, from_addr: str, reply_to: str | None, headers: dict | None) -> dict:
+    payload = {
+        "from": from_addr,
+        "to": [to],
+        "subject": subject,
+        "html": body if "<" in body else f"<p>{body}</p>",
+        "text": body,
+    }
+    if reply_to:
+        payload["reply_to"] = reply_to
+    if headers:
+        payload["headers"] = headers
+    try:
+        resp = httpx.post(
+            RESEND_API_URL,
+            json=payload,
+            headers={"Authorization": f"Bearer {os.environ['RESEND_API_KEY']}"},
+            timeout=15.0,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        return {"id": data.get("id", ""), "status": "sent", "simulated": False, "provider": "resend"}
+    except Exception as exc:
+        return {"id": "", "status": "failed", "simulated": False, "provider": "resend", "error": str(exc)}
 
 
 def send_email(
@@ -32,42 +68,59 @@ def send_email(
     from_addr: str | None = None,
     reply_to: str | None = None,
     headers: dict | None = None,
+    connection: EmailConnection | None = None,
+    db=None,
 ) -> dict:
-    """Send (or simulate) one email.
+    """Send (or simulate) one email via OAuth mailbox, Resend, or simulation."""
+    sender = from_addr or (connection.email_address if connection else default_from())
+    reply = reply_to or (connection.email_address if connection else None)
 
-    Returns {id, status, simulated, error?}. status is "sent" on success (real or
-    simulated) and "failed" when a live send errors. Callers persist this result.
-    """
-    sender = from_addr or default_from()
+    if connection and db is not None:
+        try:
+            access = ensure_fresh_token(db, connection)
+            if connection.provider == "google":
+                result = gmail_send.send_via_gmail(
+                    access_token=access,
+                    to=to,
+                    subject=subject,
+                    body=body,
+                    from_addr=sender,
+                    reply_to=reply,
+                    headers=headers,
+                )
+            elif connection.provider == "microsoft":
+                result = graph_send.send_via_graph(
+                    access_token=access,
+                    to=to,
+                    subject=subject,
+                    body=body,
+                    from_addr=sender,
+                    reply_to=reply,
+                    headers=headers,
+                )
+            else:
+                result = {"id": "", "status": "failed", "error": "Unknown mailbox provider."}
+            if result["status"] == "failed" and result.get("error", "").startswith("401"):
+                connection.status = "error"
+                connection.last_error = result.get("error")
+                db.commit()
+            return result
+        except Exception as exc:
+            if connection and db is not None:
+                connection.status = "error"
+                connection.last_error = str(exc)
+                db.commit()
+            return {"id": "", "status": "failed", "simulated": False, "error": str(exc)}
 
-    if not is_live():
+    if auth_enabled():
         return {
-            "id": f"sim_{uuid.uuid4().hex[:24]}",
-            "status": "sent",
-            "simulated": True,
+            "id": "",
+            "status": "failed",
+            "simulated": False,
+            "error": "No mailbox connected. Connect Gmail or Microsoft 365 in Email settings.",
         }
 
-    payload = {
-        "from": sender,
-        "to": [to],
-        "subject": subject,
-        "html": body if "<" in body else f"<p>{body}</p>",
-        "text": body,
-    }
-    if reply_to:
-        payload["reply_to"] = reply_to
-    if headers:
-        payload["headers"] = headers
+    if is_live():
+        return _send_via_resend(to=to, subject=subject, body=body, from_addr=sender, reply_to=reply, headers=headers)
 
-    try:
-        resp = httpx.post(
-            RESEND_API_URL,
-            json=payload,
-            headers={"Authorization": f"Bearer {os.environ['RESEND_API_KEY']}"},
-            timeout=15.0,
-        )
-        resp.raise_for_status()
-        data = resp.json()
-        return {"id": data.get("id", ""), "status": "sent", "simulated": False}
-    except Exception as exc:  # network/HTTP error: report, never crash the scheduler
-        return {"id": "", "status": "failed", "simulated": False, "error": str(exc)}
+    return _simulate()

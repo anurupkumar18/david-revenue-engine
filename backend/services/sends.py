@@ -1,10 +1,4 @@
-"""Send-time enforcement: daily caps, conservative auto-decision, and the queue drainer.
-
-The auto-vs-review policy is canonically specified in `lib/sending.ts` (shouldAutoSend);
-this module mirrors the outbound slice of it because suppression + cap enforcement are
-inherently DB/Python-side. Keep the two in sync. Sends are simulated unless RESEND_API_KEY
-is set (see esp_adapter).
-"""
+"""Send-time enforcement: daily caps, conservative auto-decision, and the queue drainer."""
 
 import os
 from datetime import datetime
@@ -12,9 +6,10 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 
 from database import SessionLocal
-from models import DailySendCount, Message, SendJob
+from models import DailySendCount, ICPProfile, Message, SendJob
 from services import esp_adapter
 from services.compliance import compliance_footer, is_suppressed, unsubscribe_url
+from services.email_connections import get_connection_for_profile
 
 
 def daily_send_cap() -> int:
@@ -58,11 +53,6 @@ def record_send(db: Session, profile_id: int, now: datetime | None = None) -> No
 
 
 def decide_outbound(db: Session, profile_id: int, email: str, validated: bool, grade: str | None) -> tuple[bool, str]:
-    """Conservative auto-eligibility for an outbound sequence send (mirrors lib/sending.ts).
-
-    Cap is enforced at drain time (an auto job held by the cap stays pending), so it is not
-    part of this auto-vs-review classification.
-    """
     if is_suppressed(db, email, profile_id):
         return False, "Recipient is suppressed — do not send."
     if not validated:
@@ -72,13 +62,20 @@ def decide_outbound(db: Session, profile_id: int, email: str, validated: bool, g
     return True, "Clean, high-confidence send."
 
 
+def _resolve_connection(db: Session, profile_id: int):
+    profile = db.query(ICPProfile).filter(ICPProfile.id == profile_id).first()
+    if not profile:
+        return None
+    return get_connection_for_profile(db, profile.user_id)
+
+
 def _send_message(db: Session, job: SendJob, message: Message, now: datetime) -> str:
-    """Send one queued message. Returns the resulting status: sent|skipped|failed."""
     if is_suppressed(db, message.contact_email, job.profile_id):
         job.status = "skipped"
         message.status = "skipped"
         return "skipped"
 
+    connection = _resolve_connection(db, job.profile_id)
     link = unsubscribe_url(public_base_url(), message.contact_email, job.profile_id)
     body = f"{message.body}{compliance_footer(link)}"
     result = esp_adapter.send_email(
@@ -86,6 +83,8 @@ def _send_message(db: Session, job: SendJob, message: Message, now: datetime) ->
         subject=message.subject,
         body=body,
         headers={"List-Unsubscribe": f"<{link}>"},
+        connection=connection,
+        db=db,
     )
     if result["status"] == "sent":
         message.status = "sent"
@@ -104,8 +103,6 @@ def _send_message(db: Session, job: SendJob, message: Message, now: datetime) ->
 
 
 def drain_send_queue(now: datetime | None = None, db: Session | None = None) -> dict:
-    """Send all due, auto/approved jobs under the daily cap. Skips suppressed recipients
-    and leaves cap-blocked jobs pending for the next window."""
     now = now or datetime.utcnow()
     own_session = db is None
     db = db or SessionLocal()

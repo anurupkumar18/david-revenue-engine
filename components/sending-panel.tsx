@@ -3,25 +3,42 @@
 import { useCallback, useEffect, useState } from "react";
 import { CalendarClock, Check, Mail, Play, Send, ShieldAlert, X } from "lucide-react";
 import { useEngine } from "@/lib/store";
+import type { ICPContact } from "@/lib/types/icp";
+import { syntheticTestEmailForKey } from "@/lib/test-recipients";
 import {
   approveSendJob,
+  getEmailConnection,
+  getProfile,
   getSendJobs,
   runSendQueue,
   skipSendJob,
   startSequence,
+  type EmailConnectionInfo,
   type SendJobView,
   type SequenceSend,
 } from "@/lib/icp-api";
+import { EmailConnectionPanel } from "@/components/email-connection-panel";
 import { Button, Eyebrow } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
 const INACTIVE_STAGES = new Set(["closed_won", "closed_lost", "suppressed"]);
 
-function demoEmail(account: { domain?: string; name: string }): string {
-  const host = account.domain?.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
-  if (host) return `owner@${host}`;
-  const slug = account.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-  return `owner@${slug || "account"}.example.com`;
+function demoEmail(account: { id?: string; domain?: string; name: string }): string {
+  return syntheticTestEmailForKey(account.id || account.name);
+}
+
+function resolveContactEmail(
+  account: { id: string; name: string; domain?: string },
+  contacts: ICPContact[],
+  allowDemo: boolean,
+): string {
+  const normalized = account.name.toLowerCase().trim();
+  const match = contacts.find((c) => {
+    const cn = c.company_name.toLowerCase().trim();
+    return cn === normalized || cn.includes(normalized) || normalized.includes(cn);
+  });
+  if (match?.email) return match.email;
+  return allowDemo ? demoEmail(account) : "";
 }
 
 const STATUS_TONE: Record<string, string> = {
@@ -91,6 +108,8 @@ export function SendingPanel() {
 
   const [jobs, setJobs] = useState<SendJobView[]>([]);
   const [cap, setCap] = useState<{ cap: number; remaining: number } | null>(null);
+  const [contacts, setContacts] = useState<ICPContact[]>([]);
+  const [connection, setConnection] = useState<EmailConnectionInfo | null>(null);
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<string>("");
 
@@ -105,10 +124,16 @@ export function SendingPanel() {
     if (!profileId) return;
     let active = true;
     (async () => {
-      const res = await getSendJobs(profileId);
+      const [res, profile, conn] = await Promise.all([
+        getSendJobs(profileId),
+        getProfile(profileId),
+        getEmailConnection().catch(() => null),
+      ]);
       if (!active) return;
       setJobs(res.jobs ?? []);
       setCap({ cap: res.cap, remaining: res.cap_remaining });
+      setContacts(profile.contacts || []);
+      setConnection(conn);
     })();
     return () => {
       active = false;
@@ -116,6 +141,13 @@ export function SendingPanel() {
   }, [profileId]);
 
   const enrollable = accounts.filter((a) => !INACTIVE_STAGES.has(a.stage));
+  const demoMode = !connection?.auth_enabled;
+  const mailboxReady = demoMode || Boolean(connection?.connected);
+  const liveLabel = connection?.connected
+    ? `Connected as ${connection.email_address}`
+    : demoMode
+      ? "Simulated sends (demo mode — connect mailbox for live delivery)"
+      : "Connect your mailbox to send live emails";
 
   async function start() {
     if (!profileId || !campaign) return;
@@ -123,18 +155,26 @@ export function SendingPanel() {
     setNote("");
     try {
       const [s1, s2] = campaign.sequence.steps;
-      const sends: SequenceSend[] = enrollable.map((a) => ({
-        account_id: a.id,
-        contact_email: demoEmail(a),
-        grade: a.fitting.grade,
-        step1: { subject: s1.subject, body: s1.body, validated: s1.validation.passed },
-        step2: { subject: s2.subject, body: s2.body, validated: s2.validation.passed },
-      }));
+      const sends: SequenceSend[] = enrollable
+        .map((a) => ({
+          account_id: a.id,
+          contact_email: resolveContactEmail(a, contacts, demoMode),
+          grade: a.fitting.grade,
+          step1: { subject: s1.subject, body: s1.body, validated: s1.validation.passed },
+          step2: { subject: s2.subject, body: s2.body, validated: s2.validation.passed },
+        }))
+        .filter((s) => s.contact_email);
+      if (!sends.length) {
+        setNote("No recipient emails found. Discover contacts on the dashboard or use demo mode.");
+        return;
+      }
       const summary = await startSequence(profileId, sends);
       setNote(
         `Enrolled ${summary.threads} accounts · ${summary.auto} auto-send, ${summary.needs_review} need review.`,
       );
       await refresh();
+    } catch (e) {
+      setNote(e instanceof Error ? e.message : "Failed to start sequence");
     } finally {
       setBusy(false);
     }
@@ -147,6 +187,8 @@ export function SendingPanel() {
       const summary = await runSendQueue(profileId);
       setNote(`Processed queue: ${summary.sent} sent, ${summary.skipped} skipped, ${summary.held} held, ${summary.failed} failed.`);
       await refresh();
+    } catch (e) {
+      setNote(e instanceof Error ? e.message : "Queue processing failed");
     } finally {
       setBusy(false);
     }
@@ -170,48 +212,52 @@ export function SendingPanel() {
   }
 
   return (
-    <div className="panel p-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2 text-[13px] text-ink-dim">
-          <Mail size={14} className="text-ink-faint" />
-          Sends are <span className="text-ink">simulated</span> in the keyless demo · go live by setting <span className="font-mono text-[11px] text-cyan">RESEND_API_KEY</span>
-        </div>
-        {cap && (
-          <span className="font-mono text-[11px] text-ink-faint">
-            daily cap {cap.cap - cap.remaining}/{cap.cap}
-          </span>
-        )}
-      </div>
+    <div className="space-y-4">
+      <EmailConnectionPanel compact />
 
-      <div className="mt-4 flex flex-wrap gap-2">
-        <Button variant="solid" disabled={busy || !campaign || enrollable.length === 0} onClick={start}>
-          <Send size={15} />
-          {busy ? "Working…" : `Start sequence (${enrollable.length})`}
-        </Button>
-        <Button variant="ghost" disabled={busy || jobs.length === 0} onClick={processQueue}>
-          <Play size={15} />
-          Process queue now
-        </Button>
-      </div>
-
-      {note && <p className="mt-3 text-[12px] text-ink-dim">{note}</p>}
-
-      <div className="mt-4">
-        <div className="mb-1 flex items-center gap-2">
-          <CalendarClock size={13} className="text-ink-faint" />
-          <Eyebrow>Send queue</Eyebrow>
-        </div>
-        {jobs.length === 0 ? (
-          <div className="grid place-items-center rounded-[12px] border border-dashed border-line py-8 text-center">
-            <p className="text-sm text-ink-dim">No sends scheduled yet. Start the sequence to enroll accounts.</p>
+      <div className="panel p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-[13px] text-ink-dim">
+            <Mail size={14} className="text-ink-faint" />
+            {liveLabel}
           </div>
-        ) : (
-          <div className="panel-2 px-4 py-1">
-            {jobs.map((j) => (
-              <JobRow key={j.id} job={j} onApprove={handleApprove} onSkip={handleSkip} />
-            ))}
+          {cap && (
+            <span className="font-mono text-[11px] text-ink-faint">
+              daily cap {cap.cap - cap.remaining}/{cap.cap}
+            </span>
+          )}
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Button variant="solid" disabled={busy || !campaign || enrollable.length === 0 || !mailboxReady} onClick={start}>
+            <Send size={15} />
+            {busy ? "Working…" : `Start sequence (${enrollable.length})`}
+          </Button>
+          <Button variant="ghost" disabled={busy || jobs.length === 0} onClick={processQueue}>
+            <Play size={15} />
+            Process queue now
+          </Button>
+        </div>
+
+        {note && <p className="mt-3 text-[12px] text-ink-dim">{note}</p>}
+
+        <div className="mt-4">
+          <div className="mb-1 flex items-center gap-2">
+            <CalendarClock size={13} className="text-ink-faint" />
+            <Eyebrow>Send queue</Eyebrow>
           </div>
-        )}
+          {jobs.length === 0 ? (
+            <div className="grid place-items-center rounded-[12px] border border-dashed border-line py-8 text-center">
+              <p className="text-sm text-ink-dim">No sends scheduled yet. Start the sequence to enroll accounts.</p>
+            </div>
+          ) : (
+            <div className="panel-2 px-4 py-1">
+              {jobs.map((j) => (
+                <JobRow key={j.id} job={j} onApprove={handleApprove} onSkip={handleSkip} />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
