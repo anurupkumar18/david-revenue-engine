@@ -1,13 +1,25 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from database import Base, engine, ensure_migrations
-from routers import outreach, profiles, scrape
+from routers import auth, outreach, profiles, scrape
+from services.scheduler import shutdown_scheduler, start_scheduler
 
 Base.metadata.create_all(bind=engine)
 ensure_migrations()
 
-app = FastAPI(title="AI GTM Campaign Builder API", version="1.0.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Scheduler runs only when SCHEDULER_ENABLED is set; no-op otherwise.
+    start_scheduler()
+    yield
+    shutdown_scheduler()
+
+
+app = FastAPI(title="AI GTM Campaign Builder API", version="1.0.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -25,6 +37,7 @@ app.add_middleware(
 app.include_router(scrape.router)
 app.include_router(profiles.router)
 app.include_router(outreach.router)
+app.include_router(auth.router)
 
 
 @app.get("/api/health")

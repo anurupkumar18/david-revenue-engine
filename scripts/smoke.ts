@@ -18,6 +18,7 @@ import { INTENT_LABELS, OFFER_PATHS, RECURRING_POTENTIAL_LABELS } from "../lib/c
 import { buildAccountsForProfile, icpFieldsToStrategyInput } from "../lib/icp-bridge";
 import { buildOutreachSequence } from "../lib/outreach";
 import { routeReply } from "../lib/reply-router";
+import { scheduleStepTwo, shouldAutoSend } from "../lib/sending";
 import { getSeedAccounts } from "../lib/seed";
 import { buildFittingStrategy } from "../lib/strategy";
 import type { ReplyIntent } from "../lib/types";
@@ -173,6 +174,40 @@ check(recomputed.metrics.commonObjection === "Locked into an annual contract", "
 check(recomputed.metrics.repliesRouted === 2, "recompute must recount replies routed");
 check(recomputed.strategy.audienceSummary === campaign.strategy.audienceSummary, "recompute must preserve targeting (strategy) unchanged");
 check(recomputed.sequence === campaign.sequence, "recompute must preserve the approved sequence");
+
+// ---- Phase 2 send guardrails (conservative auto-send) ---------------------
+// The send/reply spine asks shouldAutoSend() whether a send may go automatically.
+// It must be conservative: opt-outs, failed validation, exhausted caps, sensitive
+// intents, low confidence, and low-fit accounts all fall to human review.
+console.log(`\n${line}\nSend guardrails:\n`);
+const cleanSend = shouldAutoSend({ validationPassed: true, suppressed: false, capRemaining: 10, confidence: 0.95, grade: "A" });
+const suppressedSend = shouldAutoSend({ validationPassed: true, suppressed: true, capRemaining: 10, confidence: 0.95, grade: "A" });
+const lowConfidence = shouldAutoSend({ validationPassed: true, suppressed: false, capRemaining: 10, confidence: 0.6, grade: "A" });
+const failedValidation = shouldAutoSend({ validationPassed: false, suppressed: false, capRemaining: 10, confidence: 0.95, grade: "A" });
+const capReached = shouldAutoSend({ validationPassed: true, suppressed: false, capRemaining: 0, confidence: 0.95, grade: "A" });
+const sensitiveIntent = shouldAutoSend({ validationPassed: true, suppressed: false, capRemaining: 10, confidence: 0.99, intent: "not_interested", grade: "A" });
+const lowFit = shouldAutoSend({ validationPassed: true, suppressed: false, capRemaining: 10, confidence: 0.95, grade: "D" });
+console.log(`  clean A-grade ≥0.9   : autoSend=${cleanSend.autoSend}`);
+console.log(`  suppressed           : autoSend=${suppressedSend.autoSend} (${suppressedSend.reason})`);
+console.log(`  low confidence       : autoSend=${lowConfidence.autoSend}`);
+console.log(`  failed validation    : autoSend=${failedValidation.autoSend}`);
+console.log(`  cap reached          : autoSend=${capReached.autoSend}`);
+console.log(`  sensitive intent     : autoSend=${sensitiveIntent.autoSend}`);
+console.log(`  grade D              : autoSend=${lowFit.autoSend}`);
+
+check(cleanSend.autoSend === true, "clean high-confidence A-grade send must auto-send");
+check(suppressedSend.autoSend === false, "suppressed recipient must never auto-send");
+check(lowConfidence.autoSend === false, "below-threshold confidence must route to review");
+check(failedValidation.autoSend === false, "copy that fails validation must route to review");
+check(capReached.autoSend === false, "exhausted daily cap must route to review");
+check(sensitiveIntent.autoSend === false, "sensitive reply intent must route to review even at high confidence");
+check(lowFit.autoSend === false, "grade-D account must route to review");
+
+// scheduleStepTwo is deterministic: step 2 lands exactly 3 days after step 1.
+const step1At = "2026-06-18T12:00:00.000Z";
+const step2At = scheduleStepTwo(step1At);
+console.log(`  step 2 scheduled     : ${step2At} (from ${step1At})`);
+check(step2At === "2026-06-21T12:00:00.000Z", "scheduleStepTwo must add exactly 3 days deterministically");
 
 // ---- Result ---------------------------------------------------------------
 console.log(`\n${line}`);
