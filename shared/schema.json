@@ -1,0 +1,122 @@
+{
+  "version": "1.0",
+  "industry_presets": [
+    "Dental",
+    "Orthodontics",
+    "Real Estate",
+    "Healthcare",
+    "Legal",
+    "Insurance",
+    "Construction",
+    "HVAC",
+    "Solar",
+    "Home Improvement",
+    "Restaurants",
+    "Fitness",
+    "Financial Services",
+    "E-Commerce",
+    "Property Management",
+    "Vertical SaaS"
+  ],
+  "company_size_options": [
+    "1-10",
+    "11-25",
+    "25-50",
+    "50-100",
+    "100-200",
+    "200-500",
+    "500+"
+  ],
+  "steps": [
+    {
+      "id": "identity",
+      "title": "Company Identity",
+      "subtitle": "Who you are and what you sell",
+      "fields": ["company_name", "website_url", "core_offering"]
+    },
+    {
+      "id": "target",
+      "title": "The Target",
+      "subtitle": "Who buys this?",
+      "fields": ["best_fit_industries", "company_size", "geography", "decision_makers"]
+    },
+    {
+      "id": "hook",
+      "title": "The Hook",
+      "subtitle": "Pains, wins, and triggers",
+      "fields": ["pain_points", "value_proposition", "buying_signals", "disqualifiers"]
+    }
+  ],
+  "fields": {
+    "company_name": {
+      "label": "Company Name",
+      "type": "text",
+      "placeholder": "e.g., David AI",
+      "required": true
+    },
+    "website_url": {
+      "label": "Website URL",
+      "type": "url",
+      "placeholder": "e.g., https://getdavid.ai/",
+      "required": false
+    },
+    "core_offering": {
+      "label": "What does your product/service actually do?",
+      "type": "textarea",
+      "placeholder": "We build and deploy production AI systems for sales, ops, and back-office work...",
+      "microcopy": "Explain your main mechanism or what category you own.",
+      "required": true
+    },
+    "best_fit_industries": {
+      "label": "What specific industries or verticals do you target?",
+      "type": "tags",
+      "placeholder": "e.g., Solar installers, dental, real estate",
+      "required": true
+    },
+    "company_size": {
+      "label": "Ideal Company Size",
+      "type": "select",
+      "placeholder": "e.g., 20–500 employees",
+      "required": true
+    },
+    "geography": {
+      "label": "Geography",
+      "type": "text",
+      "placeholder": "e.g., United States / North America",
+      "required": true
+    },
+    "decision_makers": {
+      "label": "Who holds the budget, and who uses it daily?",
+      "type": "textarea",
+      "placeholder": "Buyers: CRO, VP of Sales, VP of Operations\nEnd-Users: field sales reps, office managers",
+      "required": true
+    },
+    "pain_points": {
+      "label": "What costly problems are your prospects facing before they find you?",
+      "type": "textarea",
+      "placeholder": "Wasting money on missed calls; messy spreadsheet tracking...",
+      "microcopy": "This is what we will use to write the hooks for your cold emails.",
+      "required": true
+    },
+    "value_proposition": {
+      "label": "What measurable outcomes or wins do customers get?",
+      "type": "textarea",
+      "placeholder": "100+ hours saved per month; live in 4-6 weeks; flat fee...",
+      "required": true
+    },
+    "buying_signals": {
+      "label": "What triggers indicate a company needs your solution right now?",
+      "type": "textarea",
+      "placeholder": "Aggressively hiring field sales reps; broken spreadsheet workflows...",
+      "microcopy": "Events or indicators that make them a perfect timing-based lead.",
+      "required": true
+    },
+    "disqualifiers": {
+      "label": "What makes a company a fundamentally poor fit?",
+      "type": "textarea",
+      "placeholder": "Pre-revenue teams; no inbound phone motion; micro-volume with no scale intent...",
+      "microcopy": "Tell our AI who to exclude from your list so you don't waste data credits.",
+      "required": true
+    }
+  }
+}

@@ -1,4 +1,49 @@
-# David Revenue Engine
+# David Revenue Engine + ICP Studio
+
+> **One unified app.** Build your ICP targeting profile, store it as a business profile, then run the full GTM fitting engine — strategy, outreach, reply routing, and recurring revenue pipeline.
+
+This branch (`feature/icp-studio-integration`) merges ICP Studio into David Revenue Engine with a **single Next.js UI** — same dark terminal aesthetic, panels, typography, and components throughout.
+
+## Unified flow
+
+```
+Landing (ICP) → Wizard → Review & accept → Business profile saved
+    → optional contact discovery → Revenue Engine workspace
+```
+
+| Route | Purpose |
+|-------|---------|
+| `/` | ICP landing — scrape URL or build manually |
+| `/wizard` | 3-step ICP questionnaire |
+| `/review` | Accept/reject profile |
+| `/discover/:id` | Public contact discovery |
+| `/business/:id` | **Revenue engine** (original workspace) |
+| `/dashboard` | Recover saved business profiles |
+
+## Quickstart (full stack)
+
+```bash
+chmod +x start.sh
+./start.sh
+```
+
+Open **http://localhost:3000** (Next.js) — API proxied to FastAPI on port 8000.
+
+Or run separately:
+
+```bash
+# Terminal 1 — ICP API (profiles, contacts, revenue state)
+cd backend && python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
+
+# Terminal 2 — Next.js UI
+npm install && npm run dev
+```
+
+Data: `~/.icp-studio/data.db` (profiles, contacts, outreach queue, revenue state)
+
+---
 
 > **The sales brain for David AI.** It finds businesses leaking time, leads, or margin, diagnoses the right David offer path, writes the outreach, and routes every reply into the fastest path to recurring revenue.
 
@@ -48,7 +93,13 @@ When a key is present, the three API routes (Fitting Strategy, Conversion Outrea
 
 ## Architecture
 
-- **`lib/` — the deterministic revenue brain (no UI, no LLM).** This is the source of truth.
+- **`backend/`** — FastAPI + SQLite for ICP profiles, contact discovery, outreach queue, revenue state persistence
+- **`components/icp/`** — ICP wizard, review, dashboard (styled with the same revenue engine theme)
+- **`components/business-profile-workspace.tsx`** — Loads business profile → hydrates Zustand store → renders `<Workspace />`
+- **`lib/icp-bridge.ts`** — Maps accepted ICP fields to revenue accounts + fitting strategy
+- **`linkedin-outreach/`** — Semi-auto LinkedIn CLI (reads same SQLite DB)
+
+### Revenue engine (unchanged UI)
   - `types.ts` — domain types (`RevenueAccount`, `DavidLeakType`, `DavidOfferPath`, `LandAndExpandPlan`, scores…)
   - `constants.ts` — offer-path metadata, leak metadata, leak→offer routing, CTAs, $ ranges
   - `scoring.ts` — Fitting Score + Revenue Opportunity Score (weighted formulas, grades)

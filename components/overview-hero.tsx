@@ -19,6 +19,8 @@ function Kpi({ value, label, tone }: { value: string; label: string; tone: strin
 
 export function OverviewHero() {
   const accounts = useEngine((s) => s.accounts);
+  const businessName = useEngine((s) => s.businessName);
+  const profileId = useEngine((s) => s.profileId);
 
   const monthly = pipelineRecurringMonthly(accounts);
   const aGrade = accounts.filter((a) => a.revenueOpportunity.grade === "A").length;
@@ -31,15 +33,27 @@ export function OverviewHero() {
   return (
     <section id="top" className="mx-auto max-w-[1400px] px-5 pt-10 pb-2 sm:px-8">
       <div className="reveal max-w-3xl">
-        <div className="eyebrow mb-3">David Revenue Engine · GTM Fitting Engine</div>
+        <div className="eyebrow mb-3">
+          {profileId ? `${businessName} · Revenue Engine` : "David Revenue Engine · GTM Fitting Engine"}
+        </div>
         <h1 className="text-balance font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-ink sm:text-5xl">
-          The sales brain for David.
+          {profileId ? `Grow ${businessName}.` : "The sales brain for David."}
         </h1>
         <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-ink-dim">
-          It finds businesses leaking time, leads, or margin, diagnoses the right David offer,
-          writes the outreach, and routes every reply into{" "}
-          <span className="text-ink">Fittings, growth plans, custom agents, or white-label deals</span>
-          {" "}— the fastest path to recurring revenue.
+          {profileId ? (
+            <>
+              Your accepted ICP powers this workspace — fitting strategy, account scoring, outreach,
+              reply routing, and pipeline tracking for{" "}
+              <span className="text-ink">{businessName}</span>.
+            </>
+          ) : (
+            <>
+              It finds businesses leaking time, leads, or margin, diagnoses the right David offer,
+              writes the outreach, and routes every reply into{" "}
+              <span className="text-ink">Fittings, growth plans, custom agents, or white-label deals</span>
+              {" "}— the fastest path to recurring revenue.
+            </>
+          )}
         </p>
       </div>
 
@@ -54,7 +68,7 @@ export function OverviewHero() {
       </div>
 
       <div className="reveal mt-6" style={{ animationDelay: "200ms" }}>
-        <DemoConsole />
+        {!profileId && <DemoConsole />}
       </div>
     </section>
   );
