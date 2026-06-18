@@ -17,9 +17,10 @@ def scheduler_enabled() -> bool:
 
 
 def send_queue_tick() -> None:
-    """Drain due, approved send jobs under the daily cap. Filled in Phase 2b."""
-    # Placeholder: Phase 2b imports the send-queue drainer here.
-    return None
+    """Drain due, approved send jobs under the daily cap."""
+    from services.sends import drain_send_queue
+
+    drain_send_queue()
 
 
 def daily_brief_tick() -> None:

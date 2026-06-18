@@ -33,6 +33,24 @@ class LoginRequest(BaseModel):
     password: str
 
 
+class SequenceStepPayload(BaseModel):
+    subject: str
+    body: str
+    validated: bool = True
+
+
+class SequenceSendPayload(BaseModel):
+    account_id: str = ""
+    contact_email: str
+    grade: str | None = None
+    step1: SequenceStepPayload
+    step2: SequenceStepPayload | None = None
+
+
+class StartSequenceRequest(BaseModel):
+    sends: list[SequenceSendPayload]
+
+
 class ContactResponse(BaseModel):
     id: int
     profile_id: int
