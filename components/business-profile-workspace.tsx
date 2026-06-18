@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { getProfile, getRevenueState, saveRevenueState } from "@/lib/icp-api";
-import { buildCampaignIntelligence, campaignInputFromICPFields, DEFAULT_CAMPAIGN_EVENTS } from "@/lib/campaign";
+import { buildCampaignIntelligence, campaignInputFromICPFields } from "@/lib/campaign";
+import type { CampaignEvent } from "@/lib/campaign";
 import {
   buildAccountsForProfile,
   emptyRevenueState,
@@ -38,6 +39,10 @@ export function BusinessProfileWorkspace({ profileId }: { profileId: number }) {
         let revenueState = await getRevenueState(profileId);
         const strategyInput = icpFieldsToStrategyInput(p.fields);
 
+        // New campaigns start clean: one real campaign_created event. The tracker then
+        // fills from actual actions (copy/approve/route) or the "load demo history" button.
+        const initialEvents: CampaignEvent[] = [{ type: "campaign_created" }];
+
         if (!revenueState.accounts?.length) {
           const accounts = buildAccountsForProfile(p.fields, p.contacts || []);
           const strategy = { ...buildFittingStrategy(strategyInput), source: "deterministic" as const };
@@ -46,9 +51,9 @@ export function BusinessProfileWorkspace({ profileId }: { profileId: number }) {
             fields: p.fields,
             accounts,
             strategy,
-            events: DEFAULT_CAMPAIGN_EVENTS,
+            events: initialEvents,
           });
-          revenueState = { ...emptyRevenueState(accounts), strategy, campaign };
+          revenueState = { ...emptyRevenueState(accounts), strategy, campaign, campaignEvents: initialEvents };
           await saveRevenueState(profileId, revenueState);
         } else if (!revenueState.campaign) {
           const strategy = (revenueState.strategy || {
@@ -62,8 +67,9 @@ export function BusinessProfileWorkspace({ profileId }: { profileId: number }) {
               fields: p.fields,
               accounts: revenueState.accounts,
               strategy,
-              events: DEFAULT_CAMPAIGN_EVENTS,
+              events: initialEvents,
             }),
+            campaignEvents: revenueState.campaignEvents ?? initialEvents,
           };
           await saveRevenueState(profileId, revenueState);
         }

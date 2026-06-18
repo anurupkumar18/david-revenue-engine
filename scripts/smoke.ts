@@ -11,7 +11,9 @@ import {
   campaignAngleLabel,
   campaignCopy,
   campaignInputFromICPFields,
+  recomputeCampaign,
 } from "../lib/campaign";
+import type { CampaignEvent } from "../lib/campaign";
 import { INTENT_LABELS, OFFER_PATHS, RECURRING_POTENTIAL_LABELS } from "../lib/constants";
 import { buildAccountsForProfile, icpFieldsToStrategyInput } from "../lib/icp-bridge";
 import { buildOutreachSequence } from "../lib/outreach";
@@ -146,6 +148,31 @@ check(campaign.metrics.commonObjection.length > 0, "Campaign metrics must includ
 check(campaign.learningInsights.nextCampaignRecommendation.length > 0, "Learning insights must include next-campaign recommendation");
 check(campaign.nextCampaign.improvements.length >= 3, "Improved next campaign needs recommendations");
 check(CAMPAIGN_PRICING_TIERS.length === 7, "Pricing mock must include seven tiers");
+
+// ---- Self-improving loop: recompute from real events ----------------------
+// The tracker/learning must reflect *actual* logged events, not a static seed.
+const newEvents: CampaignEvent[] = [
+  { type: "campaign_created" },
+  { type: "filters_copied" },
+  { type: "sequence_copied" },
+  { type: "reply_routed", signal: "after-hours leads" },
+  { type: "reply_routed", signal: "after-hours leads" },
+  { type: "positive_reply", signal: "after-hours leads" },
+  { type: "positive_reply", signal: "after-hours leads" },
+  { type: "meeting_booked", signal: "after-hours leads" },
+  { type: "bad_fit", objection: "Locked into an annual contract" },
+];
+const recomputed = recomputeCampaign(campaign, newEvents);
+console.log(`  Recompute winner    : ${recomputed.metrics.winningSignal} (was ${campaign.metrics.winningSignal})`);
+
+check(recomputed.metrics.winningSignal === "after-hours leads", "recompute must derive winning signal from new events");
+check(recomputed.metrics.winningSignal !== campaign.metrics.winningSignal, "recompute must change winning signal when events change");
+check(recomputed.learningInsights.winningSignal === "after-hours leads", "recompute must propagate winning signal to learning insights");
+check(recomputed.nextCampaign.revisedHypothesis.includes("after-hours leads"), "recompute must reflect winning signal in next-campaign hypothesis");
+check(recomputed.metrics.commonObjection === "Locked into an annual contract", "recompute must derive common objection from new events");
+check(recomputed.metrics.repliesRouted === 2, "recompute must recount replies routed");
+check(recomputed.strategy.audienceSummary === campaign.strategy.audienceSummary, "recompute must preserve targeting (strategy) unchanged");
+check(recomputed.sequence === campaign.sequence, "recompute must preserve the approved sequence");
 
 // ---- Result ---------------------------------------------------------------
 console.log(`\n${line}`);
