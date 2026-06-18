@@ -133,17 +133,32 @@ The deterministic campaign state tracks:
 
 ## Boundaries
 
-Do not build these in this MVP:
+Phase 2 added real sending, accounts/auth, inbound email, a scheduler, suppression/caps,
+and per-customer briefs — **all gated behind keys with a deterministic fallback so the
+keyless demo never depends on them.** Still out of scope: CRM integration, billing, a
+massive lead database, and any live-scraping dependency for tests.
 
-- Real email sending
-- Auth
-- CRM integration
-- Billing
-- Multi-tenant permissions
-- Massive lead database
-- Live scraping dependency for tests
+LLM and live APIs are optional enhancements layered on top of the deterministic demo loop,
+which must stay green at all times.
 
-LLM and live APIs are optional enhancements after the deterministic demo loop is green.
+## Environment / secrets matrix
+
+Every live feature is behind a key; unset = the demo-safe fallback.
+
+| Var | Purpose | Unset behavior |
+| --- | --- | --- |
+| `RESEND_API_KEY` | Real send + inbound (Resend) | Simulated send (DB + pipeline only) |
+| `RESEND_WEBHOOK_SECRET` | Verify inbound webhook (Svix) | `POST /api/email/simulate-inbound` only |
+| `EMAIL_FROM` | Sender identity | `onboarding@resend.dev` (sandbox) |
+| `AUTH_SECRET` | Session cookie signing | Demo Workspace auto-login (ungated) |
+| `ANTHROPIC_API_KEY` | LLM copy/replies/briefs | Deterministic `lib/` output |
+| `NEXT_INTERNAL_URL` | FastAPI → Next brain calls | `http://127.0.0.1:3000` |
+| `SCHEDULER_ENABLED` | Run APScheduler jobs | Off (no background jobs) |
+| `DAILY_SEND_CAP` | Per-customer daily cap | 50 |
+| `AUTO_SEND_CONFIDENCE` | Auto-send threshold | 0.90 (conservative) |
+| `COMPANY_POSTAL_ADDRESS` | CAN-SPAM footer | placeholder address |
+
+Backend tests: `cd backend && python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt`, then `npm run test:backend`.
 
 ## David-Specific Language
 
