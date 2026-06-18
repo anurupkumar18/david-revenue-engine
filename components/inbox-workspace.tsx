@@ -399,7 +399,7 @@ export function InboxWorkspace({ profileId }: { profileId: number }) {
                     <div className="rounded-[14px] border border-line bg-surface-2/70 p-4">
                       <div className="font-mono text-[11px] text-ink-faint">Messages</div>
                       <div className="mt-2 space-y-2">
-                        {selectedThread.messages.map((message) => (
+                        {(selectedThread.messages || []).map((message) => (
                           <div key={message.id} className="rounded-[12px] border border-line bg-base p-3">
                             <div className="flex items-center justify-between gap-2">
                               <span className="font-mono text-[10px] text-ink-faint">{message.direction}</span>
