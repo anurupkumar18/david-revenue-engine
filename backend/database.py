@@ -38,5 +38,10 @@ def ensure_migrations() -> None:
                 "ALTER TABLE icp_profiles ADD COLUMN revenue_state_json TEXT NOT NULL DEFAULT '{}'"
             )
             conn.commit()
+        # Phase 2: associate profiles with a workspace owner. Nullable so existing
+        # rows and the keyless demo keep working.
+        if "user_id" not in cols:
+            conn.execute("ALTER TABLE icp_profiles ADD COLUMN user_id INTEGER")
+            conn.commit()
     finally:
         conn.close()
