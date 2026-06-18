@@ -22,6 +22,17 @@ class OutreachExportRequest(BaseModel):
     profile_id: int
 
 
+class SignupRequest(BaseModel):
+    email: str
+    password: str
+    name: str = ""
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
 class ContactResponse(BaseModel):
     id: int
     profile_id: int
