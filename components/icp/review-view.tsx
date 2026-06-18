@@ -87,7 +87,6 @@ export function ReviewView() {
         </p>
       )}
 
-      <div className="mt-8 flex gap-2">
       <div className="mt-10 flex gap-2">
         <Button variant="outline" onClick={handleReject} className="border-danger/40 text-danger hover:bg-danger/10">
           Reject & edit

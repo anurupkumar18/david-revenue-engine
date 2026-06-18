@@ -1,4 +1,5 @@
 #!/usr/bin/env tsx
+export {};
 /**
  * Smoke-check email connection API (demo mode: unauthenticated session auto-resolves).
  * Run with backend on :8000 — e.g. ./start.sh or uvicorn in backend/.

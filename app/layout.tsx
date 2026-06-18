@@ -41,7 +41,6 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`h-full antialiased ${displayFont.variable} ${bodyFont.variable} ${monoFont.variable}`}
       data-scroll-behavior="smooth"
-      suppressHydrationWarning
     >
       <body className="min-h-full" suppressHydrationWarning>
         <AuthProvider>{children}</AuthProvider>
