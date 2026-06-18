@@ -3,11 +3,23 @@
 // Prints every account's full revenue narrative and asserts invariants.
 
 import seedRepliesJson from "../data/seed-replies.json";
+import campaignFixture from "../data/campaign-fixtures/david-ai-profile.json";
+import {
+  CAMPAIGN_PRICING_TIERS,
+  DEFAULT_CAMPAIGN_EVENTS,
+  buildCampaignIntelligence,
+  campaignAngleLabel,
+  campaignCopy,
+  campaignInputFromICPFields,
+} from "../lib/campaign";
 import { INTENT_LABELS, OFFER_PATHS, RECURRING_POTENTIAL_LABELS } from "../lib/constants";
+import { buildAccountsForProfile, icpFieldsToStrategyInput } from "../lib/icp-bridge";
 import { buildOutreachSequence } from "../lib/outreach";
 import { routeReply } from "../lib/reply-router";
 import { getSeedAccounts } from "../lib/seed";
+import { buildFittingStrategy } from "../lib/strategy";
 import type { ReplyIntent } from "../lib/types";
+import type { ICPFields } from "../lib/types/icp";
 
 const failures: string[] = [];
 function check(cond: boolean, msg: string) {
@@ -17,24 +29,23 @@ function check(cond: boolean, msg: string) {
 const line = "─".repeat(78);
 const accounts = getSeedAccounts();
 
-console.log(`\n${line}\nDAVID REVENUE ENGINE — deterministic smoke test\n${line}`);
+console.log(`\n${line}\nAI GTM CAMPAIGN BUILDER - deterministic smoke test\n${line}`);
 console.log(`Loaded ${accounts.length} accounts (sorted by Revenue Opportunity).\n`);
 
 // ---- Per-account narrative + invariants ----------------------------------
 for (const a of accounts) {
-  const path = OFFER_PATHS[a.recommendedDavidOfferPath];
   const plan = a.landAndExpandPlan;
   console.log(`${a.name}  [${a.segment}]`);
   console.log(`  Detected leaks      : ${a.detectedLeakTypes.join(", ")}`);
-  console.log(`  Fitting Score       : ${a.fittingScore} (${a.fitting.grade})`);
+  console.log(`  Fit Score           : ${a.fittingScore} (${a.fitting.grade})`);
   console.log(`  Revenue Opportunity : ${a.revenueOpportunityScore} (${a.revenueOpportunity.grade})`);
   console.log(`  Recurring potential : ${RECURRING_POTENTIAL_LABELS[a.recurringRevenuePotential]}`);
-  console.log(`  Recommended path    : ${path.label}  — ${a.revenueModel.narrative}`);
+  console.log(`  Recommended angle   : ${campaignAngleLabel(a.recommendedDavidOfferPath, null)}  - ${campaignCopy(a.revenueModel.narrative, null)}`);
   console.log(
-    `  Land → Expand       : ${OFFER_PATHS[plan.landOffer].label} → ${OFFER_PATHS[plan.expansionOffer].label}` +
-      (plan.longTermOffer ? ` → ${OFFER_PATHS[plan.longTermOffer].label}` : ""),
+    `  Land -> Expand      : ${campaignAngleLabel(plan.landOffer, null)} -> ${campaignAngleLabel(plan.expansionOffer, null)}` +
+      (plan.longTermOffer ? ` -> ${campaignAngleLabel(plan.longTermOffer, null)}` : ""),
   );
-  console.log(`  Next action         : ${a.nextBestConversionAction}\n`);
+  console.log(`  Next action         : ${campaignCopy(a.nextBestConversionAction, null)}\n`);
 
   check(a.detectedLeakTypes.length >= 1, `${a.name}: no detected leaks`);
   check(a.fittingScore >= 0 && a.fittingScore <= 100, `${a.name}: fittingScore out of range`);
@@ -57,8 +68,8 @@ for (const a of accounts) {
 
 // ---- Offer-path coverage --------------------------------------------------
 const pathsHit = new Set(accounts.map((a) => a.recommendedDavidOfferPath));
-console.log(`${line}\nOffer paths represented: ${[...pathsHit].length}/8`);
-console.log(`  ${[...pathsHit].join(", ")}\n`);
+console.log(`${line}\nCampaign angles represented: ${[...pathsHit].length}/8`);
+console.log(`  ${[...pathsHit].map((path) => campaignAngleLabel(path, null)).join(", ")}\n`);
 check(pathsHit.size >= 6, `Expected >=6 distinct offer paths, got ${pathsHit.size}`);
 
 // ---- Reply routing --------------------------------------------------------
@@ -69,8 +80,8 @@ for (const r of replies) {
   const routed = routeReply(r.text, {
     companyName: hero.name,
     primaryLeakLabel: hero.leaks[0].label,
-    offerPathLabel: OFFER_PATHS[hero.recommendedDavidOfferPath].label,
-    firstConversionAction: hero.nextBestConversionAction,
+    offerPathLabel: campaignAngleLabel(hero.recommendedDavidOfferPath, null),
+    firstConversionAction: campaignCopy(hero.nextBestConversionAction, null),
   });
   const ok = routed.intent === r.expectedIntent;
   console.log(
@@ -97,14 +108,53 @@ for (const a of accounts.slice(0, 3)) {
   }
 }
 
+// ---- Campaign intelligence ------------------------------------------------
+console.log(`\n${line}\nCampaign intelligence:\n`);
+const fixtureFields = campaignFixture.fields as ICPFields;
+const fixtureAccounts = buildAccountsForProfile(fixtureFields, []);
+const fixtureStrategy = {
+  ...buildFittingStrategy(icpFieldsToStrategyInput(fixtureFields)),
+  source: "deterministic" as const,
+};
+const campaign = buildCampaignIntelligence({
+  input: campaignInputFromICPFields(fixtureFields),
+  fields: fixtureFields,
+  accounts: fixtureAccounts,
+  strategy: fixtureStrategy,
+  events: DEFAULT_CAMPAIGN_EVENTS,
+});
+
+console.log(`  Promise             : ${campaign.positioning.promise}`);
+console.log(`  ICP filters         : ${campaign.strategy.icpFilters.length}`);
+console.log(`  Buying signals      : ${campaign.strategy.buyingSignals.length}`);
+console.log(`  Sequence steps      : ${campaign.sequence.steps.length}`);
+console.log(`  Replies routed      : ${campaign.metrics.repliesRouted}`);
+console.log(`  Winning signal      : ${campaign.metrics.winningSignal}`);
+console.log(`  Next campaign       : ${campaign.nextCampaign.title}`);
+
+check(campaign.positioning.promise === "Campaign intelligence, not campaign sending.", "Campaign promise missing");
+check(campaign.strategy.icpFilters.length >= 5, "Campaign needs >=5 ICP filters");
+check(campaign.strategy.buyingSignals.length >= 4, "Campaign needs >=4 buying signals");
+check(campaign.sequence.steps.length === 2, "Campaign sequence must have exactly two steps");
+check(campaign.sequence.steps.every((step) => step.validation.passed), "Campaign sequence must pass validators");
+check(campaign.metrics.campaignsCreated >= 1, "Campaign metrics must include campaigns created");
+check(campaign.metrics.filtersCopied >= 1, "Campaign metrics must include filters copied");
+check(campaign.metrics.sequencesCopied >= 1, "Campaign metrics must include sequences copied");
+check(campaign.metrics.repliesRouted >= 1, "Campaign metrics must include replies routed");
+check(campaign.metrics.winningSignal.length > 0, "Campaign metrics must include winning signal");
+check(campaign.metrics.commonObjection.length > 0, "Campaign metrics must include common objection");
+check(campaign.learningInsights.nextCampaignRecommendation.length > 0, "Learning insights must include next-campaign recommendation");
+check(campaign.nextCampaign.improvements.length >= 3, "Improved next campaign needs recommendations");
+check(CAMPAIGN_PRICING_TIERS.length === 7, "Pricing mock must include seven tiers");
+
 // ---- Result ---------------------------------------------------------------
 console.log(`\n${line}`);
 if (failures.length === 0) {
-  console.log("✅ SMOKE PASSED — deterministic revenue brain is healthy.\n");
+  console.log("SMOKE PASSED - deterministic campaign brain is healthy.\n");
   process.exit(0);
 } else {
-  console.log(`❌ SMOKE FAILED — ${failures.length} issue(s):`);
-  for (const f of failures) console.log(`   • ${f}`);
+  console.log(`SMOKE FAILED - ${failures.length} issue(s):`);
+  for (const f of failures) console.log(`   - ${f}`);
   console.log("");
   process.exit(1);
 }

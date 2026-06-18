@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { getProfile, getRevenueState, saveRevenueState } from "@/lib/icp-api";
+import { buildCampaignIntelligence, campaignInputFromICPFields, DEFAULT_CAMPAIGN_EVENTS } from "@/lib/campaign";
 import {
   buildAccountsForProfile,
   emptyRevenueState,
@@ -28,7 +29,7 @@ export function BusinessProfileWorkspace({ profileId }: { profileId: number }) {
       try {
         const p = await getProfile(profileId);
         if (p.status !== "accepted") {
-          setError("This profile has not been accepted yet. Complete the ICP wizard first.");
+          setError("This campaign profile has not been accepted yet. Complete the campaign builder first.");
           setLoading(false);
           return;
         }
@@ -40,13 +41,36 @@ export function BusinessProfileWorkspace({ profileId }: { profileId: number }) {
         if (!revenueState.accounts?.length) {
           const accounts = buildAccountsForProfile(p.fields, p.contacts || []);
           const strategy = { ...buildFittingStrategy(strategyInput), source: "deterministic" as const };
-          revenueState = { ...emptyRevenueState(accounts), strategy };
+          const campaign = buildCampaignIntelligence({
+            input: campaignInputFromICPFields(p.fields),
+            fields: p.fields,
+            accounts,
+            strategy,
+            events: DEFAULT_CAMPAIGN_EVENTS,
+          });
+          revenueState = { ...emptyRevenueState(accounts), strategy, campaign };
+          await saveRevenueState(profileId, revenueState);
+        } else if (!revenueState.campaign) {
+          const strategy = (revenueState.strategy || {
+            ...buildFittingStrategy(strategyInput),
+            source: "deterministic" as const,
+          }) as ReturnType<typeof buildFittingStrategy> & { source: "deterministic" };
+          revenueState = {
+            ...revenueState,
+            campaign: buildCampaignIntelligence({
+              input: campaignInputFromICPFields(p.fields),
+              fields: p.fields,
+              accounts: revenueState.accounts,
+              strategy,
+              events: DEFAULT_CAMPAIGN_EVENTS,
+            }),
+          };
           await saveRevenueState(profileId, revenueState);
         }
 
         initBusinessProfile(profileId, p.company_name, revenueState, strategyInput.productDescription);
       } catch {
-        setError("Failed to load business profile. Is the API server running?");
+        setError("Failed to load campaign profile. Is the API server running?");
       }
       setLoading(false);
     }
@@ -74,7 +98,7 @@ export function BusinessProfileWorkspace({ profileId }: { profileId: number }) {
       <div className="relative z-10 grid min-h-screen place-items-center">
         <div className="text-center">
           <Loader2 size={32} className="mx-auto mb-4 animate-spin text-accent" />
-          <p className="text-sm text-ink-dim">Loading revenue engine…</p>
+          <p className="text-sm text-ink-dim">Loading campaign workspace...</p>
         </div>
       </div>
     );
@@ -96,7 +120,7 @@ export function BusinessProfileWorkspace({ profileId }: { profileId: number }) {
       <div className="sticky top-0 z-50 border-b border-line bg-base/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-[1400px] items-center justify-between px-5 py-2.5 sm:px-8">
           <div>
-            <div className="eyebrow">Business profile</div>
+            <div className="eyebrow">Campaign profile</div>
             <div className="font-display text-sm font-bold text-ink">{companyName}</div>
           </div>
           <div className="flex items-center gap-2">
@@ -107,7 +131,7 @@ export function BusinessProfileWorkspace({ profileId }: { profileId: number }) {
             </Link>
             <Link href="/">
               <span className="rounded-[10px] border border-line px-3 py-1.5 font-mono text-[11px] text-ink-dim transition-colors hover:bg-surface-2 hover:text-ink">
-                New ICP
+                New campaign
               </span>
             </Link>
           </div>

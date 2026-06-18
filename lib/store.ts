@@ -1,6 +1,7 @@
 "use client";
 
 import { create } from "zustand";
+import type { CampaignIntelligence } from "@/lib/campaign";
 import type { RevenuePersistedState } from "@/lib/icp-bridge";
 import { getSeedAccounts } from "@/lib/seed";
 import type {
@@ -20,8 +21,8 @@ export const DEMO_SCENARIOS: {
   bucket: RevenueAccount["bucket"] | null;
 }[] = [
   { key: "all", label: "Full book", blurb: "All 15 prospects", bucket: null },
-  { key: "local", label: "Local business", blurb: "David Marketing & Growth", bucket: "local_business" },
-  { key: "applied_ai", label: "Applied AI", blurb: "Fittings, Agents & AI OS", bucket: "applied_ai" },
+  { key: "local", label: "Local business", blurb: "Local demand capture", bucket: "local_business" },
+  { key: "applied_ai", label: "Applied AI", blurb: "Diagnostics, automation, and AI workflows", bucket: "applied_ai" },
   { key: "partner", label: "Partner / white-label", blurb: "Channel & platform revenue", bucket: "partner" },
 ];
 
@@ -48,6 +49,7 @@ type EngineState = {
   selectedAccountId: string | null;
   drawerOpen: boolean;
   strategy: FittingStrategy | null;
+  campaign: CampaignIntelligence | null;
   strategyLoading: boolean;
   outreachByAccount: Record<string, OutreachSequence>;
   lastRouted: LastRouted | null;
@@ -64,6 +66,7 @@ type EngineState = {
   closeDrawer: () => void;
   setStage: (accountId: string, stage: PipelineStage) => void;
   setStrategy: (s: FittingStrategy | null) => void;
+  setCampaign: (c: CampaignIntelligence | null) => void;
   setStrategyLoading: (b: boolean) => void;
   setOutreach: (accountId: string, seq: OutreachSequence) => void;
   setLastRouted: (r: LastRouted | null) => void;
@@ -80,6 +83,7 @@ export const useEngine = create<EngineState>((set, get) => ({
   selectedAccountId: null,
   drawerOpen: false,
   strategy: null,
+  campaign: null,
   strategyLoading: false,
   outreachByAccount: {},
   lastRouted: null,
@@ -94,6 +98,7 @@ export const useEngine = create<EngineState>((set, get) => ({
       selectedAccountId: null,
       drawerOpen: false,
       strategy: (state.strategy as FittingStrategy) || null,
+      campaign: state.campaign || null,
       strategyLoading: false,
       outreachByAccount: (state.outreachByAccount as Record<string, OutreachSequence>) || {},
       lastRouted: (state.lastRouted as LastRouted) || null,
@@ -118,6 +123,7 @@ export const useEngine = create<EngineState>((set, get) => ({
       selectedAccountId: null,
       drawerOpen: false,
       strategy: null,
+      campaign: null,
       outreachByAccount: {},
       lastRouted: null,
     }),
@@ -131,6 +137,7 @@ export const useEngine = create<EngineState>((set, get) => ({
     })),
 
   setStrategy: (s) => set({ strategy: s }),
+  setCampaign: (c) => set({ campaign: c }),
   setStrategyLoading: (b) => set({ strategyLoading: b }),
 
   setOutreach: (accountId, seq) =>
@@ -151,6 +158,7 @@ export const useEngine = create<EngineState>((set, get) => ({
       accounts: s.accounts,
       loadedScenario: s.loadedScenario,
       strategy: s.strategy,
+      campaign: s.campaign,
       outreachByAccount: s.outreachByAccount,
       lastRouted: s.lastRouted,
     };

@@ -1,6 +1,7 @@
 "use client";
 
 import { Lightbulb, Target, TriangleAlert } from "lucide-react";
+import { campaignAngleLabel } from "@/lib/campaign";
 import { useEngine } from "@/lib/store";
 import { SEGMENT_LABELS } from "@/lib/constants";
 import { CampaignInput } from "@/components/campaign-input";
@@ -14,6 +15,7 @@ export function FittingStrategyPanel() {
   const setStrategy = useEngine((s) => s.setStrategy);
   const setLoading = useEngine((s) => s.setStrategyLoading);
   const productDescription = useEngine((s) => s.productDescription);
+  const campaign = useEngine((s) => s.campaign);
 
   async function run(input: FittingStrategyInput) {
     setLoading(true);
@@ -45,8 +47,8 @@ export function FittingStrategyPanel() {
             <div>
               <p className="font-display text-base text-ink">No strategy yet.</p>
               <p className="mt-1 max-w-xs text-sm text-ink-dim">
-                Build a Fitting Strategy to see the segments, leaks, and David offer paths to
-                target — the deterministic engine runs even without an API key.
+                Build a campaign strategy to see target segments, buying signals, and campaign
+                angles. The deterministic engine runs even without an API key.
               </p>
             </div>
           </div>
@@ -54,7 +56,7 @@ export function FittingStrategyPanel() {
           <div className="space-y-4">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <Eyebrow>Fitting Strategy</Eyebrow>
+                <Eyebrow>Generated Campaign Strategy</Eyebrow>
                 <p className="mt-1.5 max-w-xl text-balance font-display text-[17px] font-semibold leading-snug text-ink">
                   {strategy.oneLiner}
                 </p>
@@ -77,17 +79,17 @@ export function FittingStrategyPanel() {
                 </div>
               </div>
               <div>
-                <Eyebrow className="mb-1.5">Recommended David paths</Eyebrow>
+                <Eyebrow className="mb-1.5">Recommended campaign angles</Eyebrow>
                 <div className="flex flex-wrap gap-1.5">
                   {strategy.recommendedOfferPaths.map((p) => (
-                    <OfferPathChip key={p} path={p} />
+                    <OfferPathChip key={p} path={p} label={campaignAngleLabel(p, campaign)} />
                   ))}
                 </div>
               </div>
             </div>
 
             <div>
-              <Eyebrow className="mb-1.5">Leak hypotheses</Eyebrow>
+              <Eyebrow className="mb-1.5">Buying signal hypotheses</Eyebrow>
               <ul className="space-y-1.5">
                 {strategy.leakHypotheses.map((h) => (
                   <li key={h.leak} className="flex items-start gap-2 text-[13px] text-ink-dim">

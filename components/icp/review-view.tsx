@@ -19,13 +19,17 @@ export function ReviewView() {
   const [profileId, setProfileId] = useState<number | null>(null);
 
   useEffect(() => {
-    const draft = loadWizardDraft();
-    if (!draft?.fields) {
-      router.replace("/wizard");
-      return;
-    }
-    setFields(draft.fields);
-    setConfidence(draft.confidence || {});
+    const timer = window.setTimeout(() => {
+      const draft = loadWizardDraft();
+      if (!draft?.fields) {
+        router.replace("/wizard");
+        return;
+      }
+      setFields(draft.fields);
+      setConfidence(draft.confidence || {});
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, [router]);
 
   const handleReject = () => router.push("/wizard");
@@ -59,8 +63,8 @@ export function ReviewView() {
     <IcpShell maxWidth="max-w-2xl">
       <IcpPageHeader
         eyebrow="Review"
-        title="Review your ICP"
-        subtitle="Confirm your targeting profile before finding contacts."
+        title="Review your campaign profile"
+        subtitle="Confirm the product input, ICP filters, and buying signals before opening the campaign workspace."
       />
 
       <ProfileReviewCard fields={fields} confidence={confidence} />
@@ -78,13 +82,13 @@ export function ReviewView() {
       {showModal && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-base/80 p-5 backdrop-blur-sm">
           <div className="panel glow-accent max-w-md p-6">
-            <h2 className="font-display text-xl font-bold text-ink">Business profile saved</h2>
+            <h2 className="font-display text-xl font-bold text-ink">Campaign profile saved</h2>
             <p className="mt-2 text-[14px] leading-relaxed text-ink-dim">
-              Your ICP is now stored as a business profile. Find matching contacts from public sources, or go straight to the revenue engine.
+              Your campaign profile is stored locally. Find matching contacts from deterministic sources, or go straight to the campaign workspace.
             </p>
             <div className="mt-5 flex flex-wrap gap-2">
               <Button variant="solid" onClick={() => handleDiscover(true)}>Yes, find contacts</Button>
-              <Button variant="outline" onClick={() => handleDiscover(false)}>Open revenue engine</Button>
+              <Button variant="outline" onClick={() => handleDiscover(false)}>Open campaign workspace</Button>
             </div>
           </div>
         </div>

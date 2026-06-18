@@ -4,8 +4,8 @@ import type { FittingScore } from "@/lib/types";
 export function FittingScoreBadge({ fitting }: { fitting: FittingScore }) {
   return (
     <ScoreCard
-      eyebrow="Fitting Score"
-      subtitle="How well this account fits a David engagement."
+      eyebrow="Fit Score"
+      subtitle="How well this account fits the campaign hypothesis."
       total={fitting.total}
       grade={fitting.grade}
       accentBar="bg-accent"

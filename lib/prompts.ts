@@ -1,6 +1,7 @@
 // System prompts, user-message builders, and JSON output schemas for the optional
 // Claude layer. Outputs are validated downstream and fall back to deterministic logic.
 
+import { campaignAngleLabel, campaignCopy } from "./campaign";
 import { LEAKS, OFFER_PATHS } from "./constants";
 import type {
   FittingStrategyInput,
@@ -47,20 +48,20 @@ const STAGES = [
 // Fitting Strategy
 // ---------------------------------------------------------------------------
 
-export const STRATEGY_SYSTEM = `You are David AI's GTM strategist. David sells: David Marketing retainers, Growth Plans, The Fitting (paid diagnostic), Custom Agents, Custom AI OS builds, Embedded AI Teams, White-label Deployments, and a Partner Program. Position every recommendation as a path to recurring revenue for David. Do not invent facts. Mark inferences as assumptions. Return only valid JSON.`;
+export const STRATEGY_SYSTEM = `You are an AI GTM Campaign Builder strategist. Position the product as campaign intelligence, not campaign sending. Generate target audience, ICP filters, buying signals, sequence strategy, reply routing, tracking, learning, and the improved next campaign. Do not invent facts. Mark inferences as assumptions. Return only valid JSON.`;
 
 export function buildStrategyUser(input: FittingStrategyInput): string {
-  return `Build a David GTM "Fitting Strategy" for this input.
+  return `Build a GTM campaign strategy for this input.
 
 Product / context:
-${input.productDescription || "(David AI itself — find businesses leaking time, leads, or margin.)"}
+${input.productDescription || "(Product not supplied - infer a conservative campaign around visible workflow leaks.)"}
 
 Segment focus: ${input.segmentFocus}
 Goal: ${input.fittingGoal}
 
 Allowed segments: ${SEGMENTS.join(", ")}
 Allowed leak types: ${LEAK_TYPES.join(", ")}
-Allowed David offer paths: ${OFFER_PATH_TYPES.join(", ")}
+Allowed internal campaign angle keys: ${OFFER_PATH_TYPES.join(", ")}
 
 Return JSON with: oneLiner, targetSegments, leakHypotheses (leak + one-line rationale), recommendedOfferPaths, idealCustomerProfile (bullets), assumptions (bullets).`;
 }
@@ -101,18 +102,19 @@ export const STRATEGY_SCHEMA: Record<string, unknown> = {
 // Conversion Outreach
 // ---------------------------------------------------------------------------
 
-export const OUTREACH_SYSTEM = `You write concise B2B outbound for David AI. Rules, strictly enforced: subject lowercase and 2-4 words; body under 100 words; reference the detected leak; one low-friction CTA phrased as a short question; never invent facts or imply research that didn't happen. Return only valid JSON.`;
+export const OUTREACH_SYSTEM = `You write concise B2B outbound for an AI GTM Campaign Builder. Rules, strictly enforced: subject lowercase and 2-4 words; body under 100 words; reference the detected leak; one low-friction CTA phrased as a short question; never invent facts or imply research that did not happen. Return only valid JSON.`;
 
 export function buildOutreachUser(account: RevenueAccount, tone: OutreachTone): string {
   const leak = LEAKS[account.primaryLeak];
   const path = OFFER_PATHS[account.recommendedDavidOfferPath];
+  const campaignAngle = campaignAngleLabel(account.recommendedDavidOfferPath, null);
   return `Write a 2-step outbound sequence.
 
 Company: ${account.name}
 Industry: ${account.industry}${account.city ? ` (${account.city})` : ""}
 Segment: ${account.segment}
 Primary leak: ${leak.label} — ${leak.meaning}
-David should pitch: ${path.label} (${path.revenueType})
+Campaign angle: ${campaignAngle} (${path.revenueType})
 Suggested CTA for step 1: "${path.primaryCta}"
 Tone: ${tone}
 
@@ -145,7 +147,7 @@ export const OUTREACH_SCHEMA: Record<string, unknown> = {
 // Fast Conversion Router
 // ---------------------------------------------------------------------------
 
-export const REPLY_SYSTEM = `You classify B2B prospect replies for David AI and return the fastest compliant next action, framed around the recommended David offer path. If the reply asks to stop/unsubscribe, set shouldSuppress true and do not write persuasive copy. Return only valid JSON.`;
+export const REPLY_SYSTEM = `You classify B2B prospect replies for an AI GTM Campaign Builder and return the fastest compliant next action, framed around the recommended campaign angle. If the reply asks to stop/unsubscribe, set shouldSuppress true and do not write persuasive copy. Return only valid JSON.`;
 
 export function buildReplyUser(
   replyText: string,
@@ -159,8 +161,8 @@ Reply:
 Context:
 Company: ${ctx.companyName}
 Primary leak: ${ctx.primaryLeakLabel}
-Recommended David path: ${ctx.offerPathLabel}
-First conversion action: ${ctx.firstConversionAction}
+Recommended campaign angle: ${ctx.offerPathLabel}
+First conversion action: ${campaignCopy(ctx.firstConversionAction, null)}
 
 Allowed intents: ${INTENTS.join(", ")}
 Allowed pipeline stages: ${STAGES.join(", ")}

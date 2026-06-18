@@ -1,6 +1,7 @@
 import type { ICPContact, ICPFields } from "@/lib/types/icp";
 import { getSeedAccounts } from "@/lib/seed";
 import type { FittingStrategyInput, RevenueAccount } from "@/lib/types";
+import type { CampaignIntelligence } from "@/lib/campaign";
 
 export function icpFieldsToStrategyInput(fields: ICPFields): FittingStrategyInput {
   const parts = [
@@ -28,12 +29,13 @@ function industryMatches(accountIndustry: string, targetIndustries: string[]): b
 
 export function buildAccountsForProfile(
   fields: ICPFields,
-  _contacts: ICPContact[] = [],
+  contacts: ICPContact[] = [],
 ): RevenueAccount[] {
+  void contacts;
   const targets = fields.best_fit_industries || [];
   const allSeed = getSeedAccounts();
 
-  let accounts = targets.length
+  const accounts = targets.length
     ? allSeed.filter((a) => industryMatches(a.industry, targets))
     : [...allSeed];
 
@@ -56,6 +58,7 @@ export type RevenuePersistedState = {
   accounts: RevenueAccount[];
   loadedScenario: string | null;
   strategy: unknown | null;
+  campaign?: CampaignIntelligence | null;
   outreachByAccount: Record<string, unknown>;
   lastRouted: unknown | null;
 };
@@ -65,6 +68,7 @@ export function emptyRevenueState(accounts: RevenueAccount[]): RevenuePersistedS
     accounts,
     loadedScenario: "icp",
     strategy: null,
+    campaign: null,
     outreachByAccount: {},
     lastRouted: null,
   };

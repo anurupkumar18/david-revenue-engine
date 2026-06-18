@@ -1,6 +1,6 @@
 // Deterministic Fast Conversion Router.
 // Classifies a prospect reply by keyword rules and returns the fastest compliant
-// next action + a response template framed around the recommended David offer path.
+// next action + a response template framed around the recommended campaign angle.
 // Used directly in demo/offline mode and as the fallback for the LLM route.
 
 import type { PipelineStage, ReplyIntent, RoutedReply } from "./types";
@@ -59,11 +59,11 @@ const RULES: Rule[] = [
     confidence: 0.9,
     stage: "info_sent",
     suppress: false,
-    action: "Send the most relevant David asset or a short explanation.",
+    action: "Send the most relevant campaign brief or a short explanation.",
     template: (ctx) =>
-      `Of course — the short version is that David helps teams fix ${ctx.primaryLeakLabel} through ${ctx.offerPathLabel}.
+      `Of course - the short version is that this campaign targets ${ctx.primaryLeakLabel} through ${ctx.offerPathLabel}.
 
-The most relevant next step would be: ${ctx.firstConversionAction} I can send a short breakdown of what we'd look at first.`,
+The most relevant next step would be: ${ctx.firstConversionAction} I can send a short breakdown of what we would look at first.`,
   },
   {
     intent: "objection_no_time",
@@ -93,7 +93,7 @@ Worth sending that over async?`,
     confidence: 0.92,
     stage: "meeting_ready",
     suppress: false,
-    action: "Send a calendar link framed around the recommended David path.",
+    action: "Send a calendar link framed around the recommended campaign angle.",
     template: (ctx) =>
       `Sounds good — here's my calendar: {{calendar_link}}
 
@@ -105,7 +105,7 @@ function fill(ctx: ReplyContext): Required<ReplyContext> {
   return {
     companyName: ctx.companyName ?? "your team",
     primaryLeakLabel: ctx.primaryLeakLabel ?? "the leak we flagged",
-    offerPathLabel: ctx.offerPathLabel ?? "the right David path",
+    offerPathLabel: ctx.offerPathLabel ?? "the right campaign angle",
     firstConversionAction: ctx.firstConversionAction ?? "a short teardown.",
   };
 }

@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Check, Copy, Mail, Sparkles } from "lucide-react";
+import { campaignAngleLabel, type CampaignSequenceStep } from "@/lib/campaign";
 import { useEngine } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { OfferPathChip, SourceBadge } from "@/components/chips";
@@ -53,26 +54,43 @@ function StepCard({ step }: { step: EmailStep }) {
   );
 }
 
+function CampaignStepCard({ step }: { step: CampaignSequenceStep }) {
+  return (
+    <div className="panel-2 p-4">
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <span className="font-mono text-[11px] text-ink-faint">
+          Step {step.stepNumber} · {step.bodyWordCount} words · {step.approvalStatus}
+          {step.editedByHuman ? " · human edited" : ""}
+        </span>
+        <CopyButton text={`subject: ${step.subject}\n\n${step.body}`} />
+      </div>
+      <div className="font-mono text-[12px] text-ink-dim">
+        subject: <span className="text-ink">{step.subject}</span>
+      </div>
+      <p className="mt-2 whitespace-pre-line text-[13px] leading-relaxed text-ink">{step.body}</p>
+      <div className="mt-3 border-t border-line pt-2.5">
+        <ValidationBadges validation={step.validation} />
+      </div>
+    </div>
+  );
+}
+
 export function ConversionOutreachPanel() {
   const accounts = useEngine((s) => s.accounts);
   const selectedId = useEngine((s) => s.selectedAccountId);
   const outreachByAccount = useEngine((s) => s.outreachByAccount);
   const setOutreach = useEngine((s) => s.setOutreach);
+  const selectAccount = useEngine((s) => s.selectAccount);
+  const campaign = useEngine((s) => s.campaign);
 
-  const [accountId, setAccountId] = useState<string>("");
   const [tone, setTone] = useState<OutreachTone>("casual");
   const [loading, setLoading] = useState(false);
 
-  // Focus the account chosen from the drawer / table when it changes.
-  useEffect(() => {
-    if (selectedId) setAccountId(selectedId);
-  }, [selectedId]);
-  useEffect(() => {
-    if (!accountId && accounts.length) setAccountId(accounts[0].id);
-  }, [accounts, accountId]);
+  const accountId = selectedId || accounts[0]?.id || "";
 
   const account = accounts.find((a) => a.id === accountId);
   const sequence = accountId ? outreachByAccount[accountId] : undefined;
+  const campaignSequence = !sequence && campaign ? campaign.sequence : null;
 
   async function generate() {
     if (!accountId) return;
@@ -96,7 +114,7 @@ export function ConversionOutreachPanel() {
           <span className="eyebrow">Account</span>
           <select
             value={accountId}
-            onChange={(e) => setAccountId(e.target.value)}
+            onChange={(e) => selectAccount(e.target.value)}
             className="mt-1.5 w-full rounded-[10px] border border-line bg-surface-2 px-3 py-2 text-sm text-ink outline-none focus:border-accent/50"
           >
             {accounts.map((a) => (
@@ -129,16 +147,19 @@ export function ConversionOutreachPanel() {
 
         <Button variant="solid" disabled={loading || !accountId} onClick={generate}>
           <Sparkles size={15} />
-          {loading ? "Writing…" : "Generate outreach"}
+          {loading ? "Writing…" : "Regenerate sequence"}
         </Button>
       </div>
 
       {account && (
         <div className="mt-3 flex flex-wrap items-center gap-2 text-[12px] text-ink-dim">
           <Mail size={13} className="text-ink-faint" />
-          Pitching
-          <OfferPathChip path={account.recommendedDavidOfferPath} />
-          on leak <span className="text-amber/90">{account.primaryLeak.replace(/_/g, " ")}</span>
+          Campaign angle
+          <OfferPathChip
+            path={account.recommendedDavidOfferPath}
+            label={campaignAngleLabel(account.recommendedDavidOfferPath, campaign)}
+          />
+          on signal <span className="text-amber/90">{account.primaryLeak.replace(/_/g, " ")}</span>
         </div>
       )}
 
@@ -151,6 +172,18 @@ export function ConversionOutreachPanel() {
           <div className="grid gap-3 md:grid-cols-2">
             {sequence.steps.map((s) => (
               <StepCard key={s.stepNumber} step={s} />
+            ))}
+          </div>
+        </div>
+      ) : campaignSequence ? (
+        <div className="mt-4">
+          <div className="mb-2 flex items-center justify-between">
+            <Eyebrow>Approved two-step sequence</Eyebrow>
+            <SourceBadge source={campaignSequence.source} />
+          </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            {campaignSequence.steps.map((s) => (
+              <CampaignStepCard key={s.stepNumber} step={s} />
             ))}
           </div>
         </div>

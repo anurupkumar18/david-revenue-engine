@@ -7,7 +7,7 @@ from routers import outreach, profiles, scrape
 Base.metadata.create_all(bind=engine)
 ensure_migrations()
 
-app = FastAPI(title="ICP Studio API", version="1.0.0")
+app = FastAPI(title="AI GTM Campaign Builder API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -29,4 +29,4 @@ app.include_router(outreach.router)
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "service": "icp-studio"}
+    return {"status": "ok", "service": "campaign-builder"}

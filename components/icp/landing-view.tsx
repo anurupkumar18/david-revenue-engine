@@ -8,7 +8,7 @@ import { scrapeWebsite } from "@/lib/icp-api";
 import { EMPTY_FIELDS } from "@/lib/types/icp";
 import { saveWizardDraft } from "@/lib/icp-session";
 import { Button } from "@/components/ui";
-import { IcpFieldGroup, IcpInput, IcpPageHeader, IcpShell } from "@/components/icp/icp-shell";
+import { IcpInput, IcpPageHeader, IcpShell } from "@/components/icp/icp-shell";
 
 export function LandingView() {
   const router = useRouter();
@@ -46,24 +46,24 @@ export function LandingView() {
   return (
     <IcpShell maxWidth="max-w-2xl">
       <IcpPageHeader
-        eyebrow="01 · ICP Builder"
-        title="Build your ideal customer profile"
-        subtitle="Answer 10 questions about your business — or paste your website URL and we'll draft your targeting profile automatically."
+        eyebrow="01 · Campaign Builder"
+        title="Build a GTM campaign from any website"
+        subtitle="Paste a website URL or product description. The local strategist drafts a campaign profile, ICP filters, buying signals, sequence copy, and routing logic."
       />
 
-      <div className="panel p-5 reveal" style={{ animationDelay: "80ms" }}>
+      <div className="panel bracket-frame p-6 reveal" style={{ animationDelay: "80ms" }}>
         <div className="eyebrow mb-2">Website URL</div>
         <div className="flex flex-col gap-3 sm:flex-row">
           <IcpInput
             type="url"
-            placeholder="https://getdavid.ai/"
+            placeholder="https://example.com/"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleScrape()}
           />
           <Button variant="solid" onClick={handleScrape} disabled={loading} className="shrink-0">
             {loading ? <Loader2 size={15} className="animate-spin" /> : null}
-            {loading ? "Analyzing…" : "Analyze"}
+            {loading ? "Analyzing..." : "Build campaign"}
           </Button>
         </div>
         {error && <p className="mt-3 text-[13px] text-danger">{error}</p>}
@@ -74,7 +74,7 @@ export function LandingView() {
           Build manually instead
         </Button>
         <Link href="/dashboard">
-          <Button variant="ghost">View saved profiles</Button>
+          <Button variant="ghost">View saved campaigns</Button>
         </Link>
       </div>
     </IcpShell>

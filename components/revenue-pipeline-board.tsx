@@ -1,6 +1,7 @@
 "use client";
 
 import { useEngine } from "@/lib/store";
+import { campaignAngleLabel, campaignCopy } from "@/lib/campaign";
 import { cn } from "@/lib/utils";
 import { PIPELINE_COLUMNS, STAGE_LABELS } from "@/lib/constants";
 import { fmtMoneyCompact } from "@/lib/format";
@@ -14,6 +15,7 @@ const mid = (r: [number, number]) => (r[0] + r[1]) / 2;
 export function RevenuePipelineBoard() {
   const accounts = useEngine((s) => s.accounts);
   const selectAccount = useEngine((s) => s.selectAccount);
+  const campaign = useEngine((s) => s.campaign);
 
   const byStage = new Map<string, RevenueAccount[]>();
   for (const a of accounts) {
@@ -32,9 +34,10 @@ export function RevenuePipelineBoard() {
       <div className="flex gap-3" style={{ minWidth: columns.length * 230 }}>
         {columns.map((stage) => {
           const list = byStage.get(stage) ?? [];
-          const monthly = list
-            .filter((a) => stage !== "suppressed")
-            .reduce((sum, a) => sum + mid(a.revenueModel.estimatedRecurringMonthlyUsd), 0);
+          const monthly =
+            stage === "suppressed"
+              ? 0
+              : list.reduce((sum, a) => sum + mid(a.revenueModel.estimatedRecurringMonthlyUsd), 0);
           return (
             <div key={stage} className="w-[220px] shrink-0">
               <div className="mb-2 flex items-center justify-between px-1">
@@ -74,10 +77,13 @@ export function RevenuePipelineBoard() {
                         <GradePill grade={a.revenueOpportunity.grade} />
                       </div>
                       <div className="mt-1.5">
-                        <OfferPathChip path={a.recommendedDavidOfferPath} />
+                        <OfferPathChip
+                          path={a.recommendedDavidOfferPath}
+                          label={campaignAngleLabel(a.recommendedDavidOfferPath, campaign)}
+                        />
                       </div>
                       <p className="mt-1.5 line-clamp-2 text-[11px] leading-snug text-ink-faint">
-                        {a.nextBestConversionAction}
+                        {campaignCopy(a.nextBestConversionAction, campaign)}
                       </p>
                     </button>
                   ))

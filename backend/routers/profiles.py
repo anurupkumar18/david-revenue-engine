@@ -12,6 +12,7 @@ EMPTY_REVENUE_STATE = {
     "accounts": [],
     "loadedScenario": None,
     "strategy": None,
+    "campaign": None,
     "outreachByAccount": {},
     "lastRouted": None,
 }

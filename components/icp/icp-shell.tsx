@@ -20,14 +20,14 @@ export function IcpShell({
       <header className="sticky top-0 z-40 border-b border-line bg-base/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-[1400px] items-center justify-between px-5 py-3 sm:px-8">
           <Link href="/" className="font-display text-sm font-bold tracking-tight text-ink">
-            David Revenue Engine
+            AI GTM Campaign Builder
           </Link>
           <nav className="flex items-center gap-2">
             <Link
               href="/dashboard"
               className="rounded-[10px] px-3 py-1.5 font-mono text-[11px] text-ink-dim transition-colors hover:bg-surface-2 hover:text-ink"
             >
-              Profiles
+              Campaigns
             </Link>
           </nav>
         </div>

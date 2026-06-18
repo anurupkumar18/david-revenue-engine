@@ -30,7 +30,7 @@ export function DiscoveryView({ profileId }: { profileId: number }) {
             <IcpPageHeader
               eyebrow="Contact discovery"
               title="Discovering contacts"
-              subtitle="Searching public sources for decision-makers matching your ICP…"
+              subtitle="Searching deterministic demo sources for decision-makers matching your campaign filters..."
             />
           </>
         )}
@@ -38,7 +38,7 @@ export function DiscoveryView({ profileId }: { profileId: number }) {
           <IcpPageHeader
             eyebrow="Contact discovery"
             title={`Found ${count} contacts`}
-            subtitle="Redirecting to revenue engine…"
+            subtitle="Redirecting to campaign workspace..."
           />
         )}
         {status === "error" && (

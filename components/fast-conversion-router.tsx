@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ArrowRight, Ban, Check, Copy, Route as RouteIcon } from "lucide-react";
 import seedReplies from "@/data/seed-replies.json";
 import { useEngine } from "@/lib/store";
@@ -18,18 +18,13 @@ export function FastConversionRouter() {
   const lastRouted = useEngine((s) => s.lastRouted);
   const setLastRouted = useEngine((s) => s.setLastRouted);
   const applyRoutedStage = useEngine((s) => s.applyRoutedStage);
+  const selectAccount = useEngine((s) => s.selectAccount);
 
-  const [accountId, setAccountId] = useState("");
   const [replyText, setReplyText] = useState("");
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    if (selectedId) setAccountId(selectedId);
-  }, [selectedId]);
-  useEffect(() => {
-    if (!accountId && accounts.length) setAccountId(accounts[0].id);
-  }, [accounts, accountId]);
+  const accountId = selectedId || accounts[0]?.id || "";
 
   async function route() {
     if (!replyText.trim() || !accountId) return;
@@ -58,7 +53,7 @@ export function FastConversionRouter() {
           <span className="eyebrow">Account</span>
           <select
             value={accountId}
-            onChange={(e) => setAccountId(e.target.value)}
+            onChange={(e) => selectAccount(e.target.value)}
             className="mt-1.5 w-full rounded-[10px] border border-line bg-surface-2 px-3 py-2 text-sm text-ink outline-none focus:border-accent/50"
           >
             {accounts.map((a) => (

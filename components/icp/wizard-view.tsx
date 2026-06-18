@@ -31,12 +31,16 @@ export function WizardView() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const draft = loadWizardDraft();
-    if (draft) {
-      setFields({ ...EMPTY_FIELDS, ...draft.fields });
-      setConfidence(draft.confidence || {});
-    }
-    setReady(true);
+    const timer = window.setTimeout(() => {
+      const draft = loadWizardDraft();
+      if (draft) {
+        setFields({ ...EMPTY_FIELDS, ...draft.fields });
+        setConfidence(draft.confidence || {});
+      }
+      setReady(true);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, []);
 
   const update = (key: keyof ICPFields, value: string | string[]) => {
@@ -68,27 +72,27 @@ export function WizardView() {
         <>
           <IcpPageHeader
             eyebrow="Step 1 of 3"
-            title="Company Identity"
-            subtitle="Tell us who you are and what you sell."
+            title="Product Input"
+            subtitle="Tell us what the product does and where the campaign should start."
           />
           <IcpFieldGroup>
-            <FieldLabel label="Company Name" confidence={confidence.company_name} />
-            <IcpInput value={fields.company_name} onChange={(e) => update("company_name", e.target.value)} placeholder="e.g., David AI" />
+            <FieldLabel label="Company or product name" confidence={confidence.company_name} />
+            <IcpInput value={fields.company_name} onChange={(e) => update("company_name", e.target.value)} placeholder="e.g., Acme Workflow OS" />
           </IcpFieldGroup>
           <IcpFieldGroup>
             <FieldLabel label="Website URL" confidence={confidence.website_url} />
-            <IcpInput type="url" value={fields.website_url} onChange={(e) => update("website_url", e.target.value)} placeholder="https://getdavid.ai/" />
+            <IcpInput type="url" value={fields.website_url} onChange={(e) => update("website_url", e.target.value)} placeholder="https://example.com/" />
           </IcpFieldGroup>
           <IcpFieldGroup>
             <FieldLabel label="What does your product/service actually do?" confidence={confidence.core_offering} microcopy="Explain your main mechanism or what category you own." />
-            <IcpTextarea value={fields.core_offering} onChange={(e) => update("core_offering", e.target.value)} rows={4} placeholder="We build and deploy production AI systems…" />
+            <IcpTextarea value={fields.core_offering} onChange={(e) => update("core_offering", e.target.value)} rows={4} placeholder="We help revenue teams turn workflow signals into campaign strategy..." />
           </IcpFieldGroup>
         </>
       )}
 
       {step === 1 && (
         <>
-          <IcpPageHeader eyebrow="Step 2 of 3" title="The Target" subtitle="Who buys this, and what do they look like?" />
+          <IcpPageHeader eyebrow="Step 2 of 3" title="ICP Filters" subtitle="Who buys this, and what attributes should the campaign target or exclude?" />
           <IcpFieldGroup>
             <FieldLabel label="Best-Fit Industries" confidence={confidence.best_fit_industries} />
             <TagInput tags={fields.best_fit_industries} onChange={(t) => update("best_fit_industries", t)} />
@@ -116,9 +120,9 @@ export function WizardView() {
 
       {step === 2 && (
         <>
-          <IcpPageHeader eyebrow="Step 3 of 3" title="The Hook" subtitle="Pains, wins, and triggers for your outreach." />
+          <IcpPageHeader eyebrow="Step 3 of 3" title="Buying Signals" subtitle="Pains, wins, and timing triggers that shape outreach and reply routing." />
           <IcpFieldGroup>
-            <FieldLabel label="Core Pain Points" confidence={confidence.pain_points} microcopy="This is what we will use to write the hooks for your cold emails." />
+            <FieldLabel label="Core Pain Points" confidence={confidence.pain_points} microcopy="This shapes the hooks for the campaign sequence." />
             <IcpTextarea value={fields.pain_points} onChange={(e) => update("pain_points", e.target.value)} rows={4} />
           </IcpFieldGroup>
           <IcpFieldGroup>
@@ -130,7 +134,7 @@ export function WizardView() {
             <IcpTextarea value={fields.buying_signals} onChange={(e) => update("buying_signals", e.target.value)} rows={3} />
           </IcpFieldGroup>
           <IcpFieldGroup>
-            <FieldLabel label="Disqualifiers" confidence={confidence.disqualifiers} microcopy="Tell our AI who to exclude from your list." />
+            <FieldLabel label="Disqualifiers" confidence={confidence.disqualifiers} microcopy="Tell the campaign strategist who to exclude." />
             <IcpTextarea value={fields.disqualifiers} onChange={(e) => update("disqualifiers", e.target.value)} rows={3} />
           </IcpFieldGroup>
         </>
@@ -139,7 +143,7 @@ export function WizardView() {
       <div className="mt-8 flex gap-2">
         <Button variant="outline" onClick={back}>Back</Button>
         <Button variant="solid" onClick={next}>
-          {step < 2 ? "Continue" : "Review profile"}
+          {step < 2 ? "Continue" : "Review campaign"}
         </Button>
       </div>
     </IcpShell>

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { OFFER_PATHS, LEAKS } from "@/lib/constants";
+import { campaignAngleLabel, campaignCopy } from "@/lib/campaign";
+import { LEAKS } from "@/lib/constants";
 import { generateStructured } from "@/lib/llm";
 import { REPLY_SCHEMA, REPLY_SYSTEM, buildReplyUser } from "@/lib/prompts";
 import { routeReply, type ReplyContext } from "@/lib/reply-router";
@@ -28,8 +29,8 @@ export async function POST(req: Request) {
     ? {
         companyName: account.name,
         primaryLeakLabel: LEAKS[account.primaryLeak].label,
-        offerPathLabel: OFFER_PATHS[account.recommendedDavidOfferPath].label,
-        firstConversionAction: account.nextBestConversionAction,
+        offerPathLabel: campaignAngleLabel(account.recommendedDavidOfferPath, null),
+        firstConversionAction: campaignCopy(account.nextBestConversionAction, null),
       }
     : {};
 
@@ -41,7 +42,7 @@ export async function POST(req: Request) {
     user: buildReplyUser(replyText, {
       companyName: ctx.companyName ?? "your team",
       primaryLeakLabel: ctx.primaryLeakLabel ?? "the leak we flagged",
-      offerPathLabel: ctx.offerPathLabel ?? "the right David path",
+      offerPathLabel: ctx.offerPathLabel ?? "the right campaign angle",
       firstConversionAction: ctx.firstConversionAction ?? "a short teardown.",
     }),
     schema: REPLY_SCHEMA,

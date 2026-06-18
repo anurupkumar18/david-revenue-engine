@@ -10,6 +10,7 @@ import {
   Users,
   X,
 } from "lucide-react";
+import { campaignAngleLabel, campaignCopy } from "@/lib/campaign";
 import { useEngine } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { OFFER_PATHS, PIPELINE_COLUMNS, STAGE_LABELS } from "@/lib/constants";
@@ -31,6 +32,7 @@ export function RevenueOpportunityDrawer() {
   const account = useEngine((s) => s.accounts.find((a) => a.id === id) ?? null);
   const closeDrawer = useEngine((s) => s.closeDrawer);
   const setStage = useEngine((s) => s.setStage);
+  const campaign = useEngine((s) => s.campaign);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && closeDrawer();
@@ -69,7 +71,7 @@ export function RevenueOpportunityDrawer() {
             {/* header */}
             <div className="flex items-start justify-between gap-4 border-b border-line px-6 py-5">
               <div className="min-w-0">
-                <Eyebrow>Revenue Opportunity</Eyebrow>
+                <Eyebrow>Campaign Opportunity</Eyebrow>
                 <h2 className="mt-1.5 font-display text-2xl font-bold leading-tight text-ink">
                   {account.name}
                 </h2>
@@ -100,19 +102,24 @@ export function RevenueOpportunityDrawer() {
                 <p className="text-[13px] leading-relaxed text-ink-dim">{account.description}</p>
               )}
 
-              {/* verdict: recommended David path + money */}
+              {/* verdict: recommended campaign angle + money */}
               <div className="glow-accent rounded-[14px] border border-accent/25 bg-accent/[0.05] p-4">
                 <div className="flex items-center justify-between gap-3">
-                  <Eyebrow>Recommended David path</Eyebrow>
+                  <Eyebrow>Recommended campaign angle</Eyebrow>
                   <RecurringDots level={account.recurringRevenuePotential} />
                 </div>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <OfferPathChip path={account.recommendedDavidOfferPath} />
+                  <OfferPathChip
+                    path={account.recommendedDavidOfferPath}
+                    label={campaignAngleLabel(account.recommendedDavidOfferPath, campaign)}
+                  />
                   <span className="font-mono text-[11px] text-ink-faint">{path.revenueType}</span>
                 </div>
                 <div className="mt-3 flex items-start gap-2">
                   <Banknote size={15} className="mt-0.5 shrink-0 text-accent" />
-                  <p className="text-[13px] font-medium text-ink">{account.revenueModel.narrative}</p>
+                  <p className="text-[13px] font-medium text-ink">
+                    {campaignCopy(account.revenueModel.narrative, campaign)}
+                  </p>
                 </div>
                 <div className="mt-1 grid grid-cols-2 gap-2 pl-[23px] font-mono text-[10.5px] text-ink-faint">
                   <span>first deal · {fmtUsdRange(account.revenueModel.estimatedFirstDealUsd)}</span>
@@ -126,9 +133,9 @@ export function RevenueOpportunityDrawer() {
               <div className="flex items-start gap-2.5 rounded-[14px] border border-line bg-surface-2 p-3.5">
                 <Target size={15} className="mt-0.5 shrink-0 text-cyan" />
                 <div>
-                  <Eyebrow>Next best conversion action</Eyebrow>
+                  <Eyebrow>Next best campaign action</Eyebrow>
                   <p className="mt-1 text-[13.5px] font-medium text-ink">
-                    {account.nextBestConversionAction}
+                    {campaignCopy(account.nextBestConversionAction, campaign)}
                   </p>
                 </div>
               </div>
@@ -144,7 +151,7 @@ export function RevenueOpportunityDrawer() {
                 <Eyebrow className="mb-2">Leaks &amp; Levers · {account.leaks.length}</Eyebrow>
                 <div className="space-y-2.5">
                   {account.leaks.map((leak) => (
-                    <LeaksLeversCard key={leak.type} leak={leak} />
+                    <LeaksLeversCard key={leak.type} leak={leak} campaign={campaign} />
                   ))}
                 </div>
               </div>
@@ -152,7 +159,7 @@ export function RevenueOpportunityDrawer() {
               {/* land & expand */}
               <div>
                 <Eyebrow className="mb-2">Land &amp; expand</Eyebrow>
-                <LandAndExpandPlanView plan={account.landAndExpandPlan} />
+                <LandAndExpandPlanView plan={account.landAndExpandPlan} campaign={campaign} />
               </div>
 
               {/* rationale */}
@@ -164,7 +171,7 @@ export function RevenueOpportunityDrawer() {
                   {account.rationale.map((r, i) => (
                     <li key={i} className="flex gap-2 text-[12.5px] leading-snug text-ink-dim">
                       <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-accent" />
-                      {r}
+                      {campaignCopy(r, campaign)}
                     </li>
                   ))}
                 </ul>
@@ -202,7 +209,7 @@ export function RevenueOpportunityDrawer() {
                   scrollToSection("outreach");
                 }}
               >
-                Draft conversion outreach
+                Draft sequence
                 <ArrowRight size={15} />
               </Button>
               <Button
