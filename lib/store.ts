@@ -1,7 +1,8 @@
 "use client";
 
 import { create } from "zustand";
-import type { CampaignIntelligence } from "@/lib/campaign";
+import type { CampaignEvent, CampaignIntelligence } from "@/lib/campaign";
+import { DEFAULT_CAMPAIGN_EVENTS, recomputeCampaign } from "@/lib/campaign";
 import type { RevenuePersistedState } from "@/lib/icp-bridge";
 import { getSeedAccounts } from "@/lib/seed";
 import type {
@@ -50,6 +51,8 @@ type EngineState = {
   drawerOpen: boolean;
   strategy: FittingStrategy | null;
   campaign: CampaignIntelligence | null;
+  campaignEvents: CampaignEvent[];
+  agencyName: string;
   strategyLoading: boolean;
   outreachByAccount: Record<string, OutreachSequence>;
   lastRouted: LastRouted | null;
@@ -67,6 +70,9 @@ type EngineState = {
   setStage: (accountId: string, stage: PipelineStage) => void;
   setStrategy: (s: FittingStrategy | null) => void;
   setCampaign: (c: CampaignIntelligence | null) => void;
+  logCampaignEvent: (e: CampaignEvent) => void;
+  loadDemoHistory: () => void;
+  setAgencyName: (name: string) => void;
   setStrategyLoading: (b: boolean) => void;
   setOutreach: (accountId: string, seq: OutreachSequence) => void;
   setLastRouted: (r: LastRouted | null) => void;
@@ -84,11 +90,21 @@ export const useEngine = create<EngineState>((set, get) => ({
   drawerOpen: false,
   strategy: null,
   campaign: null,
+  campaignEvents: [],
+  agencyName: "",
   strategyLoading: false,
   outreachByAccount: {},
   lastRouted: null,
 
-  initBusinessProfile: (profileId, businessName, state, productDescription = "") =>
+  initBusinessProfile: (profileId, businessName, state, productDescription = "") => {
+    // Events are the source of truth for the self-improving loop. Use any persisted
+    // events; otherwise start clean with a single campaign_created event (legacy/new
+    // profiles) and recompute the campaign so the tracker reflects real actions only.
+    const campaign = state.campaign || null;
+    const events =
+      state.campaignEvents && state.campaignEvents.length
+        ? state.campaignEvents
+        : ([{ type: "campaign_created" }] as CampaignEvent[]);
     set({
       profileId,
       businessName,
@@ -98,11 +114,14 @@ export const useEngine = create<EngineState>((set, get) => ({
       selectedAccountId: null,
       drawerOpen: false,
       strategy: (state.strategy as FittingStrategy) || null,
-      campaign: state.campaign || null,
+      campaign: campaign ? recomputeCampaign(campaign, events) : null,
+      campaignEvents: events,
+      agencyName: state.agencyName || "",
       strategyLoading: false,
       outreachByAccount: (state.outreachByAccount as Record<string, OutreachSequence>) || {},
       lastRouted: (state.lastRouted as LastRouted) || null,
-    }),
+    });
+  },
 
   loadScenario: (key) =>
     set({
@@ -124,6 +143,8 @@ export const useEngine = create<EngineState>((set, get) => ({
       drawerOpen: false,
       strategy: null,
       campaign: null,
+      campaignEvents: [],
+      agencyName: "",
       outreachByAccount: {},
       lastRouted: null,
     }),
@@ -138,6 +159,27 @@ export const useEngine = create<EngineState>((set, get) => ({
 
   setStrategy: (s) => set({ strategy: s }),
   setCampaign: (c) => set({ campaign: c }),
+
+  // Append a real campaign event and recompute the metrics-driven parts of the campaign.
+  // This is the heart of the self-improving loop: copying filters, approving copy, or
+  // routing a reply moves the tracker, winning signal, and next-campaign recommendation.
+  logCampaignEvent: (e) =>
+    set((s) => {
+      if (!s.campaign) return {};
+      const campaignEvents = [...s.campaignEvents, e];
+      return { campaignEvents, campaign: recomputeCampaign(s.campaign, campaignEvents) };
+    }),
+
+  // Pitch helper: replay a representative event history so the tracker fills instantly.
+  loadDemoHistory: () =>
+    set((s) => {
+      if (!s.campaign) return {};
+      const campaignEvents = [...DEFAULT_CAMPAIGN_EVENTS];
+      return { campaignEvents, campaign: recomputeCampaign(s.campaign, campaignEvents) };
+    }),
+
+  setAgencyName: (name) => set({ agencyName: name }),
+
   setStrategyLoading: (b) => set({ strategyLoading: b }),
 
   setOutreach: (accountId, seq) =>
@@ -159,6 +201,8 @@ export const useEngine = create<EngineState>((set, get) => ({
       loadedScenario: s.loadedScenario,
       strategy: s.strategy,
       campaign: s.campaign,
+      campaignEvents: s.campaignEvents,
+      agencyName: s.agencyName,
       outreachByAccount: s.outreachByAccount,
       lastRouted: s.lastRouted,
     };

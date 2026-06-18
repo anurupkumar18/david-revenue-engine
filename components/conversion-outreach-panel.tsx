@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy, Mail, Sparkles } from "lucide-react";
+import { Check, Copy, Mail, Pencil, Sparkles } from "lucide-react";
 import { campaignAngleLabel, type CampaignSequenceStep } from "@/lib/campaign";
 import { useEngine } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -17,13 +17,14 @@ const TONE_LABEL: Record<OutreachTone, string> = {
   founder_led: "founder-led",
 };
 
-function CopyButton({ text }: { text: string }) {
+function CopyButton({ text, onCopy }: { text: string; onCopy?: () => void }) {
   const [copied, setCopied] = useState(false);
   return (
     <button
       onClick={() => {
         navigator.clipboard?.writeText(text);
         setCopied(true);
+        onCopy?.();
         setTimeout(() => setCopied(false), 1200);
       }}
       className="inline-flex items-center gap-1 rounded-md border border-line px-2 py-1 font-mono text-[10px] text-ink-dim transition-colors hover:bg-surface-2 hover:text-ink"
@@ -34,14 +35,14 @@ function CopyButton({ text }: { text: string }) {
   );
 }
 
-function StepCard({ step }: { step: EmailStep }) {
+function StepCard({ step, onCopy }: { step: EmailStep; onCopy?: () => void }) {
   return (
     <div className="panel-2 p-4">
       <div className="mb-2 flex items-center justify-between gap-2">
         <span className="font-mono text-[11px] text-ink-faint">
           Step {step.stepNumber} · {step.wordCount} words
         </span>
-        <CopyButton text={`subject: ${step.subject}\n\n${step.body}`} />
+        <CopyButton text={`subject: ${step.subject}\n\n${step.body}`} onCopy={onCopy} />
       </div>
       <div className="font-mono text-[12px] text-ink-dim">
         subject: <span className="text-ink">{step.subject}</span>
@@ -54,7 +55,7 @@ function StepCard({ step }: { step: EmailStep }) {
   );
 }
 
-function CampaignStepCard({ step }: { step: CampaignSequenceStep }) {
+function CampaignStepCard({ step, onCopy }: { step: CampaignSequenceStep; onCopy?: () => void }) {
   return (
     <div className="panel-2 p-4">
       <div className="mb-2 flex items-center justify-between gap-2">
@@ -62,7 +63,7 @@ function CampaignStepCard({ step }: { step: CampaignSequenceStep }) {
           Step {step.stepNumber} · {step.bodyWordCount} words · {step.approvalStatus}
           {step.editedByHuman ? " · human edited" : ""}
         </span>
-        <CopyButton text={`subject: ${step.subject}\n\n${step.body}`} />
+        <CopyButton text={`subject: ${step.subject}\n\n${step.body}`} onCopy={onCopy} />
       </div>
       <div className="font-mono text-[12px] text-ink-dim">
         subject: <span className="text-ink">{step.subject}</span>
@@ -82,6 +83,7 @@ export function ConversionOutreachPanel() {
   const setOutreach = useEngine((s) => s.setOutreach);
   const selectAccount = useEngine((s) => s.selectAccount);
   const campaign = useEngine((s) => s.campaign);
+  const logCampaignEvent = useEngine((s) => s.logCampaignEvent);
 
   const [tone, setTone] = useState<OutreachTone>("casual");
   const [loading, setLoading] = useState(false);
@@ -171,19 +173,41 @@ export function ConversionOutreachPanel() {
           </div>
           <div className="grid gap-3 md:grid-cols-2">
             {sequence.steps.map((s) => (
-              <StepCard key={s.stepNumber} step={s} />
+              <StepCard
+                key={s.stepNumber}
+                step={s}
+                onCopy={() => logCampaignEvent({ type: "sequence_copied" })}
+              />
             ))}
           </div>
         </div>
       ) : campaignSequence ? (
         <div className="mt-4">
-          <div className="mb-2 flex items-center justify-between">
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
             <Eyebrow>Approved two-step sequence</Eyebrow>
-            <SourceBadge source={campaignSequence.source} />
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => logCampaignEvent({ type: "approval" })}
+                className="inline-flex items-center gap-1 rounded-md border border-line px-2 py-1 font-mono text-[10px] text-ink-dim transition-colors hover:bg-surface-2 hover:text-ink"
+              >
+                <Check size={11} className="text-accent" /> approve
+              </button>
+              <button
+                onClick={() => logCampaignEvent({ type: "human_edit" })}
+                className="inline-flex items-center gap-1 rounded-md border border-line px-2 py-1 font-mono text-[10px] text-ink-dim transition-colors hover:bg-surface-2 hover:text-ink"
+              >
+                <Pencil size={11} /> log edit
+              </button>
+              <SourceBadge source={campaignSequence.source} />
+            </div>
           </div>
           <div className="grid gap-3 md:grid-cols-2">
             {campaignSequence.steps.map((s) => (
-              <CampaignStepCard key={s.stepNumber} step={s} />
+              <CampaignStepCard
+                key={s.stepNumber}
+                step={s}
+                onCopy={() => logCampaignEvent({ type: "sequence_copied" })}
+              />
             ))}
           </div>
         </div>

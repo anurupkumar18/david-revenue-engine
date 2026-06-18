@@ -1,7 +1,7 @@
 import type { ICPContact, ICPFields } from "@/lib/types/icp";
 import { getSeedAccounts } from "@/lib/seed";
 import type { FittingStrategyInput, RevenueAccount } from "@/lib/types";
-import type { CampaignIntelligence } from "@/lib/campaign";
+import type { CampaignEvent, CampaignIntelligence } from "@/lib/campaign";
 
 export function icpFieldsToStrategyInput(fields: ICPFields): FittingStrategyInput {
   const parts = [
@@ -59,6 +59,8 @@ export type RevenuePersistedState = {
   loadedScenario: string | null;
   strategy: unknown | null;
   campaign?: CampaignIntelligence | null;
+  campaignEvents?: CampaignEvent[];
+  agencyName?: string;
   outreachByAccount: Record<string, unknown>;
   lastRouted: unknown | null;
 };

@@ -47,9 +47,9 @@ export function DashboardView({ profileId }: { profileId?: number }) {
     <IcpShell maxWidth="max-w-5xl">
       <div className="mb-8 flex items-start justify-between gap-4">
         <IcpPageHeader
-          eyebrow="Campaigns"
-          title="Campaign workspace"
-          subtitle="Saved campaign profiles, client contact queues, and local campaign handoff."
+          eyebrow="Agency · Clients"
+          title="Client campaigns"
+          subtitle="Every client's campaign in one workspace — strategy, contact queues, and white-label briefs."
         />
         <Link href="/">
           <Button variant="solid">New campaign</Button>
@@ -58,9 +58,9 @@ export function DashboardView({ profileId }: { profileId?: number }) {
 
       <div className="grid gap-8 lg:grid-cols-[260px_1fr]">
         <div>
-          <div className="eyebrow mb-3">Campaign profiles</div>
+          <div className="eyebrow mb-3">Client campaigns</div>
           {profiles.length === 0 && (
-            <div className="panel p-4 text-sm text-ink-dim">No campaigns yet.</div>
+            <div className="panel p-4 text-sm text-ink-dim">No client campaigns yet.</div>
           )}
           <div className="space-y-2">
             {profiles.map((p) => (
@@ -102,6 +102,11 @@ export function DashboardView({ profileId }: { profileId?: number }) {
                 {selected.status === "accepted" && (
                   <Link href={`/business/${selected.id}`}>
                     <Button variant="solid">Open campaign workspace</Button>
+                  </Link>
+                )}
+                {selected.status === "accepted" && (
+                  <Link href={`/report/${selected.id}`}>
+                    <Button variant="outline">View client report</Button>
                   </Link>
                 )}
                 {(!selected.contacts || selected.contacts.length === 0) && (

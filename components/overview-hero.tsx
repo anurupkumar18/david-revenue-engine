@@ -1,7 +1,10 @@
 "use client";
 
 import { useEngine } from "@/lib/store";
+import { computeRoi } from "@/lib/roi";
+import { fmtMoneyCompact } from "@/lib/format";
 import { DemoConsole } from "@/components/demo-console";
+import { ProvenanceLabel } from "@/components/provenance-label";
 
 function Kpi({ value, label, tone }: { value: string; label: string; tone: string }) {
   return (
@@ -20,11 +23,13 @@ export function OverviewHero() {
   const businessName = useEngine((s) => s.businessName);
   const profileId = useEngine((s) => s.profileId);
   const campaign = useEngine((s) => s.campaign);
+  const accounts = useEngine((s) => s.accounts);
 
   const campaignsCreated = campaign?.metrics.campaignsCreated ?? (profileId ? 1 : 0);
   const repliesRouted = campaign?.metrics.repliesRouted ?? 0;
   const meetingRate = campaign?.metrics.meetingRate ?? 0;
   const approvalRate = campaign?.metrics.approvalRate ?? 0;
+  const roi = computeRoi(accounts, campaign?.metrics);
 
   return (
     <section id="top" className="mx-auto max-w-[1400px] px-5 pt-10 pb-2 sm:px-8">
@@ -68,6 +73,55 @@ export function OverviewHero() {
         <Kpi value={`${meetingRate}%`} label="Meeting rate" tone="text-lime" />
         <Kpi value={`${approvalRate}%`} label="Approval rate" tone="text-ink" />
       </div>
+
+      {profileId && accounts.length > 0 && (
+        <div className="panel bracket-frame reveal mt-3 p-5" style={{ animationDelay: "160ms" }}>
+          <div className="flex flex-wrap items-end justify-between gap-5">
+            <div>
+              <div className="eyebrow mb-1.5">Projected impact</div>
+              <div className="font-display text-4xl font-semibold leading-none text-ink">
+                {fmtMoneyCompact(roi.qualifiedPipelineAnnual)}
+                <span className="ml-1 text-lg text-ink-faint">/yr</span>
+              </div>
+              <p className="mt-1.5 text-[13px] text-ink-dim">
+                qualified pipeline across {roi.targetedAccounts} targeted accounts
+              </p>
+            </div>
+            <div className="flex gap-6">
+              <div>
+                <div className="font-display text-2xl font-semibold text-accent">
+                  {roi.liftVsBaseline}×
+                </div>
+                <div className="mt-1 font-mono text-[10px] uppercase tracking-wider text-ink-faint">
+                  on-target vs unfiltered list
+                </div>
+              </div>
+              <div>
+                <div className="font-display text-2xl font-semibold text-ink">
+                  {roi.highFitAccounts}
+                </div>
+                <div className="mt-1 font-mono text-[10px] uppercase tracking-wider text-ink-faint">
+                  high-fit accounts
+                </div>
+              </div>
+              <div>
+                <div className="font-display text-2xl font-semibold text-ink">
+                  {roi.projectedMeetings}
+                </div>
+                <div className="mt-1 font-mono text-[10px] uppercase tracking-wider text-ink-faint">
+                  projected meetings
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="mt-3.5 flex flex-wrap items-center gap-2 border-t border-line pt-3">
+            <ProvenanceLabel provenance="inferred" />
+            <span className="font-mono text-[10px] text-ink-faint">
+              modeled from account revenue ranges × 12 and fit grades · baseline = 15% on-target cold list
+            </span>
+          </div>
+        </div>
+      )}
 
       <div className="reveal mt-6" style={{ animationDelay: "200ms" }}>
         {!profileId && <DemoConsole />}

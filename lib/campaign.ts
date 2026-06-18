@@ -418,6 +418,65 @@ export function buildCampaignMetrics(events: CampaignEvent[]): CampaignMetrics {
   };
 }
 
+/** Metrics-derived learning + next-campaign copy. Shared by build and recompute so the
+ * self-improving loop stays consistent whether it's seeded or driven by real events. */
+function deriveLearning(
+  metrics: CampaignMetrics,
+  audience: string,
+  firstFilterValue: string,
+): { learningInsights: LearningInsights; nextCampaign: ImprovedNextCampaign } {
+  return {
+    learningInsights: {
+      winningSignal: metrics.winningSignal,
+      commonObjection: metrics.commonObjection,
+      recommendedIcpAdjustment: `Prioritize accounts showing ${metrics.winningSignal}; suppress accounts that cite "${metrics.commonObjection}".`,
+      nextCampaignRecommendation: `Lead with ${metrics.winningSignal}, tighten the ICP filter around ${audience} (${firstFilterValue}), and keep response routing before any sending workflow.`,
+    },
+    nextCampaign: {
+      title: "Improved next campaign",
+      improvements: [
+        `Move ${metrics.winningSignal} into the first-line hook.`,
+        `Add a bad-fit filter for "${metrics.commonObjection}".`,
+        "Require approval on edited sequence copy before export.",
+        "Reuse the best-performing reply route as the default next action.",
+      ],
+      revisedHypothesis: `The next campaign should trade volume for sharper ${metrics.winningSignal} targeting and faster objection handling.`,
+    },
+  };
+}
+
+function deriveReusableMemory(metrics: CampaignMetrics, firstFilterValue: string): string[] {
+  return [
+    `Winning signal: ${metrics.winningSignal}`,
+    `Common objection: ${metrics.commonObjection}`,
+    `Best ICP filter: ${firstFilterValue}`,
+  ];
+}
+
+/** Recompute the metrics-driven parts of a campaign from a fresh event list, preserving
+ * the strategy, sequence, positioning, and any edited agency/client identity. This is what
+ * makes the tracker and learning insights reflect *real* user actions, not a static seed. */
+export function recomputeCampaign(
+  campaign: CampaignIntelligence,
+  events: CampaignEvent[],
+): CampaignIntelligence {
+  const metrics = buildCampaignMetrics(events);
+  const firstFilterValue = campaign.strategy.icpFilters[0]?.value ?? "your core ICP";
+  const audience =
+    campaign.strategy.audienceSummary.split(/ that show a visible need/i)[0] || firstFilterValue;
+  const { learningInsights, nextCampaign } = deriveLearning(metrics, audience, firstFilterValue);
+  return {
+    ...campaign,
+    metrics,
+    learningInsights,
+    nextCampaign,
+    agencyWorkspace: {
+      ...campaign.agencyWorkspace,
+      reusableMemory: deriveReusableMemory(metrics, firstFilterValue),
+    },
+  };
+}
+
 export function buildCampaignIntelligence(args: {
   input: CampaignInput;
   fields: ICPFields;
@@ -461,30 +520,11 @@ export function buildCampaignIntelligence(args: {
       ],
     },
     metrics,
-    learningInsights: {
-      winningSignal: metrics.winningSignal,
-      commonObjection: metrics.commonObjection,
-      recommendedIcpAdjustment: `Prioritize accounts showing ${metrics.winningSignal}; suppress accounts that cite "${metrics.commonObjection}".`,
-      nextCampaignRecommendation: `Lead with ${metrics.winningSignal}, tighten the ICP filter around ${audience}, and keep response routing before any sending workflow.`,
-    },
-    nextCampaign: {
-      title: "Improved next campaign",
-      improvements: [
-        `Move ${metrics.winningSignal} into the first-line hook.`,
-        `Add a bad-fit filter for "${metrics.commonObjection}".`,
-        "Require approval on edited sequence copy before export.",
-        "Reuse the best-performing reply route as the default next action.",
-      ],
-      revisedHypothesis: `The next campaign should trade volume for sharper ${metrics.winningSignal} targeting and faster objection handling.`,
-    },
+    ...deriveLearning(metrics, audience, buildFilters(args.fields)[0].value),
     agencyWorkspace: {
       clientName: args.input.productName,
       exportLabel: "Client-ready campaign brief",
-      reusableMemory: [
-        `Winning signal: ${metrics.winningSignal}`,
-        `Common objection: ${metrics.commonObjection}`,
-        `Best ICP filter: ${buildFilters(args.fields)[0].value}`,
-      ],
+      reusableMemory: deriveReusableMemory(metrics, buildFilters(args.fields)[0].value),
     },
     pricing: CAMPAIGN_PRICING_TIERS,
   };

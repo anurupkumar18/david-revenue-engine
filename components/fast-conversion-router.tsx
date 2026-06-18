@@ -19,6 +19,7 @@ export function FastConversionRouter() {
   const setLastRouted = useEngine((s) => s.setLastRouted);
   const applyRoutedStage = useEngine((s) => s.applyRoutedStage);
   const selectAccount = useEngine((s) => s.selectAccount);
+  const logCampaignEvent = useEngine((s) => s.logCampaignEvent);
 
   const [replyText, setReplyText] = useState("");
   const [loading, setLoading] = useState(false);
@@ -37,8 +38,26 @@ export function FastConversionRouter() {
       });
       const routed = await res.json();
       setLastRouted({ accountId, replyText, routed, applied: false });
+
+      // Feed the self-improving loop with the real outcome. The signal is the account's
+      // primary leak — so the winning signal reflects which signals actually convert.
+      const acct = accounts.find((a) => a.id === accountId);
+      const signal = acct?.leaks[0]?.label ?? "routed reply";
+      logCampaignEvent({ type: "reply_routed", signal });
+      if (routed.intent === "positive_call") logCampaignEvent({ type: "positive_reply", signal });
+      if (routed.intent === "not_interested")
+        logCampaignEvent({ type: "bad_fit", objection: replyText.trim() });
     } finally {
       setLoading(false);
+    }
+  }
+
+  function applyStage() {
+    const stage = lastRouted?.routed.updatePipelineStage;
+    applyRoutedStage();
+    if (stage === "meeting_ready") {
+      const acct = accounts.find((a) => a.id === (lastRouted?.accountId ?? accountId));
+      logCampaignEvent({ type: "meeting_booked", signal: acct?.leaks[0]?.label ?? "routed reply" });
     }
   }
 
@@ -177,7 +196,7 @@ export function FastConversionRouter() {
                   {account && <StageChip stage={account.stage} />}
                 </span>
               ) : (
-                <Button variant="outline" size="sm" onClick={applyRoutedStage}>
+                <Button variant="outline" size="sm" onClick={applyStage}>
                   Apply stage
                   <ArrowRight size={14} />
                 </Button>

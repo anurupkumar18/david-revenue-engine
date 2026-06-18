@@ -198,3 +198,24 @@
     }
   }
 }
+
+/* Client-ready report print / PDF export — keep the editorial dark look, drop chrome. */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: var(--color-base) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  body::before {
+    display: none !important;
+  }
+  .report-section {
+    break-inside: avoid;
+  }
+  @page {
+    margin: 14mm;
+  }
+}
