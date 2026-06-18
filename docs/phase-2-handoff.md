@@ -35,25 +35,20 @@ deterministic; `SCHEDULER_ENABLED` unset → no jobs.
 - [x] Backend pytest suite begun (`backend/tests/`, 13 tests); `npm run test:backend`.
 - [x] Boundary docs updated (`AGENTS.md`, `README.md`) + this handoff.
 
-### Phase 2b — Sending ⬜ (next)
-Build next, in order:
-1. `routers/sending.py`: `POST /api/sequences/{profile_id}/start` — for each working
-   account, create a `messages` step-1 draft + a `send_jobs` row (scheduled now), and a
-   step-2 job at `scheduleStepTwo(now)`. Compute `auto` via the same policy as
-   `lib/sending.ts shouldAutoSend` (port the rule or call Next; keep it conservative).
-   Add `GET /api/send-jobs/{profile_id}` + cap status.
-2. Cap helper in a new `services/sends.py`: `cap_remaining(db, profile_id, date)` reading
-   `daily_send_counts` vs `DAILY_SEND_CAP`; `record_send(db, profile_id, date)`.
-3. `services/scheduler.py send_queue_tick`: select due `pending|approved` jobs, check
-   `compliance.is_suppressed` + cap, send via `esp_adapter.send_email` (append
-   `compliance.compliance_footer` + `List-Unsubscribe` header), update message/job status,
-   increment cap. `needs_review` jobs are skipped (wait for human approve).
-4. `routers/email.py`: `GET /api/unsubscribe?token=` → `verify_unsubscribe_token` →
-   `add_suppression` → friendly HTML page.
-5. UI: "Start sequence" in `components/conversion-outreach-panel.tsx`; review inbox panel
-   in `components/workspace.tsx` + `app/inbox/[profileId]/`.
-6. Tests: cap enforced, suppression blocks a send, scheduler tick selects due jobs,
-   unsubscribe token → suppression.
+### Phase 2b — Sending ✅ (branch `feature/phase2b-sending`)
+- [x] `services/sends.py`: `cap_remaining`/`record_send` vs `DAILY_SEND_CAP`,
+      `decide_outbound` (mirrors `lib/sending.ts`), `drain_send_queue` (suppression + cap
+      checks, CAN-SPAM footer, `List-Unsubscribe` header, simulated/real send).
+- [x] `routers/sending.py`: `POST /api/sequences/{profile_id}/start` (step 1 now, step 2
+      +3d), `GET /api/send-jobs/{profile_id}`, `/approve`, `/skip`, and `/run` (manual
+      drain for keyless demo).
+- [x] `routers/email.py`: `GET /api/unsubscribe?token=` → suppression + HTML page.
+- [x] `services/scheduler.py send_queue_tick` → `drain_send_queue`.
+- [x] UI: `lib/icp-api.ts` clients + `components/sending-panel.tsx` (enroll, queue,
+      approve/skip, process-now, cap) wired as workspace section "06 · Send & Schedule".
+- [x] 7 pytest cases; verified end-to-end in browser via the proxy.
+- Note: standalone `app/inbox/[profileId]` deferred to 2c (lives with the reply review
+  inbox). Verification left synthetic send/suppression rows on demo profile #4 (`Pattern`).
 
 ### Phase 2c — AI reply conversations ⬜
 - `lib/reply-conversation.ts` (`buildReplyDraft`) + `lib/reply-validators.ts`

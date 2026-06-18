@@ -81,3 +81,69 @@ export async function saveRevenueState(
     body: JSON.stringify(state),
   });
 }
+
+// --- Phase 2: real/scheduled sending -------------------------------------
+
+export type SequenceSend = {
+  account_id: string;
+  contact_email: string;
+  grade?: string;
+  step1: { subject: string; body: string; validated?: boolean };
+  step2?: { subject: string; body: string; validated?: boolean };
+};
+
+export type StartSequenceSummary = {
+  threads: number;
+  jobs_created: number;
+  auto: number;
+  needs_review: number;
+};
+
+export type SendJobView = {
+  id: number;
+  thread_id: string;
+  account_id: string;
+  contact_email: string;
+  step: string;
+  status: string;
+  auto: boolean;
+  scheduled_at: string | null;
+  last_error: string | null;
+  subject: string;
+  sent_at: string | null;
+};
+
+export type SendJobsResponse = { jobs: SendJobView[]; cap: number; cap_remaining: number };
+export type DrainSummary = { sent: number; skipped: number; failed: number; held: number };
+
+export async function startSequence(
+  profileId: number,
+  sends: SequenceSend[],
+): Promise<StartSequenceSummary> {
+  const res = await fetch(`${API}/sequences/${profileId}/start`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ sends }),
+  });
+  return res.json();
+}
+
+export async function getSendJobs(profileId: number): Promise<SendJobsResponse> {
+  const res = await fetch(`${API}/send-jobs/${profileId}`);
+  return res.json();
+}
+
+export async function approveSendJob(jobId: number): Promise<{ ok: boolean; status: string }> {
+  const res = await fetch(`${API}/send-jobs/${jobId}/approve`, { method: "POST" });
+  return res.json();
+}
+
+export async function skipSendJob(jobId: number): Promise<{ ok: boolean; status: string }> {
+  const res = await fetch(`${API}/send-jobs/${jobId}/skip`, { method: "POST" });
+  return res.json();
+}
+
+export async function runSendQueue(profileId: number): Promise<DrainSummary> {
+  const res = await fetch(`${API}/send-jobs/${profileId}/run`, { method: "POST" });
+  return res.json();
+}

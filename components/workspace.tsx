@@ -5,6 +5,7 @@ import { OverviewHero } from "@/components/overview-hero";
 import { FittingStrategyPanel } from "@/components/fitting-strategy-panel";
 import { AccountTable } from "@/components/account-table";
 import { ConversionOutreachPanel } from "@/components/conversion-outreach-panel";
+import { SendingPanel } from "@/components/sending-panel";
 import { FastConversionRouter } from "@/components/fast-conversion-router";
 import { RevenuePipelineBoard } from "@/components/revenue-pipeline-board";
 import { RevenueOpportunityDrawer } from "@/components/revenue-opportunity-drawer";
@@ -102,9 +103,18 @@ export function Workspace() {
           <ConversionOutreachPanel />
         </Section>
 
+        <Section id="sending">
+          <SectionHeading
+            eyebrow="06 · Send & Schedule"
+            title="Send the sequence, with guardrails"
+            description="Enroll accounts into the two-step sequence on a schedule. Clean, high-confidence sends go automatically; opt-outs, low-fit, and edge cases wait for review. Simulated in the keyless demo, real when an ESP key is set."
+          />
+          <SendingPanel />
+        </Section>
+
         <Section id="router">
           <SectionHeading
-            eyebrow="06 · Dynamic Response Router"
+            eyebrow="07 · Dynamic Response Router"
             title="Every reply into the next best action"
             description="Paste or simulate a reply. The router classifies intent, suggests the right response, logs the outcome, and suppresses opt-outs."
           />
@@ -113,7 +123,7 @@ export function Workspace() {
 
         <Section id="pipeline">
           <SectionHeading
-            eyebrow="07 · Campaign Performance Tracker"
+            eyebrow="08 · Campaign Performance Tracker"
             title="Track what works before scaling volume"
             description="Campaign value compounds through copied filters, copied sequences, routed replies, approvals, meetings, bad-fit signals, and human edits."
           />
@@ -122,7 +132,7 @@ export function Workspace() {
 
         <Section id="learning">
           <SectionHeading
-            eyebrow="08 · Learning Insights"
+            eyebrow="09 · Learning Insights"
             title="Turn replies into better future campaigns"
             description="The campaign memory records winning signals, common objections, ICP adjustments, and the improved next campaign."
           />
@@ -131,7 +141,7 @@ export function Workspace() {
 
         <Section id="tracker-board">
           <SectionHeading
-            eyebrow="09 · Campaign Tracker Board"
+            eyebrow="10 · Campaign Tracker Board"
             title="Where active opportunities sit"
             description="The board shows campaign outcomes by stage. Routing replies updates local state and keeps the demo loop repeatable."
           />
@@ -140,7 +150,7 @@ export function Workspace() {
 
         <Section id="agency">
           <SectionHeading
-            eyebrow="10 · Agency Workspace / Client Export"
+            eyebrow="11 · Agency Workspace / Client Export"
             title="Recurring value for teams, agencies, and white-label buyers"
             description="Workspaces, client-ready exports, reusable memory, and governance explain the MRR/ARR path without building sending infrastructure."
           />
