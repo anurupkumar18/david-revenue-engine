@@ -73,9 +73,21 @@ export function Workspace() {
           title="Start with strategy, not sending."
           description="The campaign brain turns the input into a strategy, ICP framing, and practical guardrails before any sequence or reply logic appears."
         >
-          <div className="grid gap-5 xl:grid-cols-[0.95fr_1.05fr]">
-            <FittingStrategyPanel />
+          <div className="space-y-10">
             <CampaignStrategyPanel />
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                <div className="w-full border-t border-line" />
+              </div>
+              <div className="relative flex justify-start">
+                <span className="bg-base pr-3 font-mono text-[10px] uppercase tracking-[0.22em] text-ink-faint">
+                  Strategy Playground
+                </span>
+              </div>
+            </div>
+
+            <FittingStrategyPanel />
           </div>
         </Section>
 
