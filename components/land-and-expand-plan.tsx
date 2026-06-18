@@ -37,8 +37,8 @@ export function LandAndExpandPlanView({
       : plan.revenueLogic;
 
   return (
-    <div className="panel-2 p-4">
-      <div className="flex items-stretch gap-1.5">
+    <div className="panel-2 p-5">
+      <div className="flex items-stretch gap-2">
         <Node label="Land" path={plan.landOffer} campaign={campaign} />
         <ArrowRight size={15} className="mt-5 shrink-0 text-ink-faint" />
         <Node label="Expand" path={plan.expansionOffer} campaign={campaign} />
@@ -50,9 +50,9 @@ export function LandAndExpandPlanView({
         )}
       </div>
 
-      <div className="mt-4 flex items-start gap-2 border-t border-line pt-3">
+      <div className="mt-4 flex items-start gap-2 border-t border-line pt-4">
         <Sparkles size={13} className="mt-0.5 shrink-0 text-accent" />
-        <p className="text-[12.5px] leading-snug text-ink-dim">{revenueLogic}</p>
+        <p className="text-[13px] leading-[1.75] text-ink-dim">{revenueLogic}</p>
       </div>
     </div>
   );

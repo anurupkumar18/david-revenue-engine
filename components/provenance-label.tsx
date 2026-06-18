@@ -17,7 +17,7 @@ export function ProvenanceLabel({
 }) {
   const { label, cls, Icon } = MAP[provenance];
   return (
-    <span className={cn("inline-flex items-center gap-1 font-mono text-[10px]", cls, className)}>
+    <span className={cn("inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.12em]", cls, className)}>
       <Icon size={11} />
       {label}
     </span>

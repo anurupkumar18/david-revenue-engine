@@ -17,7 +17,7 @@ import {
   LearningInsightsPanel,
 } from "@/components/campaign-intelligence-panel";
 
-export function SectionHeading({
+function SectionHeading({
   eyebrow,
   title,
   description,
@@ -27,26 +27,35 @@ export function SectionHeading({
   description?: string;
 }) {
   return (
-    <div className="mb-5 max-w-2xl">
-      <div className="eyebrow mb-2">{eyebrow}</div>
-      <h2 className="font-display text-2xl font-bold tracking-tight text-ink">{title}</h2>
-      {description && <p className="mt-2 text-[14px] leading-relaxed text-ink-dim">{description}</p>}
+    <div className="section-heading">
+      <div className="mb-3 eyebrow">{eyebrow}</div>
+      <h2 className="section-title">{title}</h2>
+      {description && <p className="section-copy mt-4">{description}</p>}
     </div>
   );
 }
 
 function Section({
   id,
+  eyebrow,
+  title,
+  description,
   children,
   className,
 }: {
   id: string;
+  eyebrow: string;
+  title: string;
+  description?: string;
   children: React.ReactNode;
   className?: string;
 }) {
   return (
-    <section id={id} className={`mx-auto max-w-[1400px] scroll-mt-20 px-5 pt-14 sm:px-8 ${className ?? ""}`}>
-      {children}
+    <section id={id} className={`section-band mx-auto max-w-[1400px] scroll-mt-24 px-5 py-20 sm:px-8 sm:py-24 ${className ?? ""}`}>
+      <div className="section-grid gap-10 xl:section-grid-wide xl:gap-12">
+        <SectionHeading eyebrow={eyebrow} title={title} description={description} />
+        <div className="min-w-0">{children}</div>
+      </div>
     </section>
   );
 }
@@ -58,102 +67,78 @@ export function Workspace() {
       <main className="relative z-10 pb-28">
         <OverviewHero />
 
-        <Section id="strategy">
-          <SectionHeading
-            eyebrow="01 · Product Input"
-            title="Turn any website into a GTM campaign strategy"
-            description="Start from a website or product description. The system builds campaign strategy, target audience, ICP filters, buying signals, and approved copy without depending on live APIs."
-          />
-          <FittingStrategyPanel />
+        <Section
+          id="strategy"
+          eyebrow="01 · Campaign Strategy"
+          title="Start with strategy, not sending."
+          description="The campaign brain turns the input into a strategy, ICP framing, and practical guardrails before any sequence or reply logic appears."
+        >
+          <div className="grid gap-5 xl:grid-cols-[0.95fr_1.05fr]">
+            <FittingStrategyPanel />
+            <CampaignStrategyPanel />
+          </div>
         </Section>
 
-        <Section id="campaign-strategy">
-          <SectionHeading
-            eyebrow="02 · Generated Campaign Strategy"
-            title="Target audience, campaign angle, and assumptions"
-            description="The strategist explains who to target, why now, and what campaign angle should drive the first outbound motion."
-          />
-          <CampaignStrategyPanel />
-        </Section>
-
-        <Section id="filters">
-          <SectionHeading
-            eyebrow="03 · ICP Filters + Buying Signals"
-            title="The targeting logic behind the campaign"
-            description="Copyable filters and signal hypotheses make the campaign reusable across teams, clients, and future iterations."
-          />
+        <Section
+          id="filters"
+          eyebrow="02 · ICP Filters"
+          title="Signals that make the campaign feel timely."
+          description="These modules keep the targeting logic copyable and explainable so the page can breathe while still showing the reasoning."
+        >
           <CampaignFiltersSignalsPanel />
         </Section>
 
-        <Section id="accounts">
-          <SectionHeading
-            eyebrow="04 · Target Account Fit"
-            title="Who to prioritize first"
-            description="Demo accounts stay deterministic. Each row shows the leak, fit, campaign angle, and recurring opportunity behind the targeting recommendation."
-          />
+        <Section
+          id="accounts"
+          eyebrow="03 · Account Fit"
+          title="Who to prioritize first."
+          description="The account table stays readable at a distance: fit, opportunity, recurring value, and the next action all remain visible."
+        >
           <AccountTable />
         </Section>
 
-        <Section id="outreach">
-          <SectionHeading
-            eyebrow="05 · 2-Step Sequence"
-            title="Signal-based outreach, on the rails"
-            description="A two-step sequence built from the detected signal and recommended campaign angle, with approval/edit status and copy validation."
-          />
-          <ConversionOutreachPanel />
+        <Section
+          id="outreach"
+          eyebrow="04 · Sequence + Router"
+          title="Two-step outreach on one side, reply logic on the other."
+          description="The sequence and router should feel like a single chapter in the story, not two separate micro-panels fighting for attention."
+        >
+          <div className="grid gap-5 xl:grid-cols-2">
+            <ConversionOutreachPanel />
+            <FastConversionRouter />
+          </div>
         </Section>
 
-        <Section id="sending">
-          <SectionHeading
-            eyebrow="06 · Send & Schedule"
-            title="Send the sequence, with guardrails"
-            description="Enroll accounts into the two-step sequence on a schedule. Clean, high-confidence sends go automatically; opt-outs, low-fit, and edge cases wait for review. Simulated in the keyless demo, real when an ESP key is set."
-          />
+        <Section
+          id="sending"
+          eyebrow="05 · Send Guardrails"
+          title="When sending exists, it stays behind the glass."
+          description="The keyless demo keeps sending simulated, but the interface still makes the guardrails and approval path readable."
+        >
           <SendingPanel />
         </Section>
 
-        <Section id="router">
-          <SectionHeading
-            eyebrow="07 · Dynamic Response Router"
-            title="Every reply into the next best action"
-            description="Paste or simulate a reply. The router classifies intent, suggests the right response, logs the outcome, and suppresses opt-outs."
-          />
-          <FastConversionRouter />
+        <Section
+          id="tracker"
+          eyebrow="06 · Tracker + Learning"
+          title="Track the motion, then improve the next campaign."
+          description="Progress, outcomes, and learning are grouped into a wider band so the page continues to scroll like a designed publication."
+        >
+          <div className="grid gap-5 xl:grid-cols-2">
+            <CampaignPerformanceTracker />
+            <LearningInsightsPanel />
+          </div>
+          <div className="mt-5">
+            <RevenuePipelineBoard />
+          </div>
         </Section>
 
-        <Section id="pipeline">
-          <SectionHeading
-            eyebrow="08 · Campaign Performance Tracker"
-            title="Track what works before scaling volume"
-            description="Campaign value compounds through copied filters, copied sequences, routed replies, approvals, meetings, bad-fit signals, and human edits."
-          />
-          <CampaignPerformanceTracker />
-        </Section>
-
-        <Section id="learning">
-          <SectionHeading
-            eyebrow="09 · Learning Insights"
-            title="Turn replies into better future campaigns"
-            description="The campaign memory records winning signals, common objections, ICP adjustments, and the improved next campaign."
-          />
-          <LearningInsightsPanel />
-        </Section>
-
-        <Section id="tracker-board">
-          <SectionHeading
-            eyebrow="10 · Campaign Tracker Board"
-            title="Where active opportunities sit"
-            description="The board shows campaign outcomes by stage. Routing replies updates local state and keeps the demo loop repeatable."
-          />
-          <RevenuePipelineBoard />
-        </Section>
-
-        <Section id="agency">
-          <SectionHeading
-            eyebrow="11 · Agency Workspace / Client Export"
-            title="Recurring value for teams, agencies, and white-label buyers"
-            description="Workspaces, client-ready exports, reusable memory, and governance explain the MRR/ARR path without building sending infrastructure."
-          />
+        <Section
+          id="agency"
+          eyebrow="07 · Agency Export"
+          title="Make the recurring value obvious."
+          description="Agency workspace, client exports, reusable memory, and pricing live in one final section instead of getting squeezed into the footer."
+        >
           <AgencyWorkspacePanel />
         </Section>
       </main>

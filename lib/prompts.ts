@@ -190,3 +190,94 @@ export const REPLY_SCHEMA: Record<string, unknown> = {
     "shouldSuppress",
   ],
 };
+
+// ---------------------------------------------------------------------------
+// Reply Conversations
+// ---------------------------------------------------------------------------
+
+export const REPLY_CONVERSATION_SYSTEM = `You draft concise reply emails for an AI GTM Campaign Builder. Rules: subject must be lowercase and 2-4 words; body under 100 words; CTA must be a short, low-friction question. If the thread is an opt-out, return a simple non-persistent acknowledgement and do not generate persuasion. Return only valid JSON.`;
+
+export function buildReplyConversationUser(
+  replyText: string,
+  ctx: {
+    companyName: string;
+    primaryLeakLabel: string;
+    offerPathLabel: string;
+    firstConversionAction: string;
+    intent: string;
+    recommendedAction: string;
+    shouldSuppress: boolean;
+  },
+): string {
+  return `Draft a reply email for this prospect response.
+
+Reply:
+"""${replyText}"""
+
+Context:
+Company: ${ctx.companyName}
+Primary leak: ${ctx.primaryLeakLabel}
+Recommended campaign angle: ${ctx.offerPathLabel}
+First conversion action: ${campaignCopy(ctx.firstConversionAction, null)}
+Classified intent: ${ctx.intent}
+Recommended action: ${ctx.recommendedAction}
+Should suppress: ${ctx.shouldSuppress ? "yes" : "no"}
+
+Return JSON: { "subject": string, "body": string, "cta": string }.
+Keep the reply concise, specific, and compliant.`;
+}
+
+export const REPLY_CONVERSATION_SCHEMA: Record<string, unknown> = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    subject: { type: "string" },
+    body: { type: "string" },
+    cta: { type: "string" },
+  },
+  required: ["subject", "body", "cta"],
+};
+
+// ---------------------------------------------------------------------------
+// Briefs
+// ---------------------------------------------------------------------------
+
+export const BRIEF_SYSTEM = `You write a concise daily or weekly stats-and-insights brief for an AI GTM Campaign Builder. Use the provided counts and campaign learning. Do not invent metrics. Return only valid JSON.`;
+
+export function buildBriefUser(input: {
+  period: "daily" | "weekly";
+  periodStart: string;
+  periodEnd: string;
+  clientName: string;
+  counts: Record<string, number>;
+  winningSignal: string;
+  commonObjection: string;
+  nextCampaignRecommendation: string;
+}): string {
+  return `Write a ${input.period} campaign brief.
+
+Client: ${input.clientName}
+Window: ${input.periodStart} to ${input.periodEnd}
+Counts:
+${Object.entries(input.counts)
+  .map(([key, value]) => `- ${key}: ${value}`)
+  .join("\n")}
+
+Campaign learning:
+- Winning signal: ${input.winningSignal}
+- Common objection: ${input.commonObjection}
+- Next campaign recommendation: ${input.nextCampaignRecommendation}
+
+Return JSON: { "narrative": string, "recommendations": string[] }.
+Keep the narrative short, concrete, and specific to the provided counts.`;
+}
+
+export const BRIEF_SCHEMA: Record<string, unknown> = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    narrative: { type: "string" },
+    recommendations: { type: "array", items: { type: "string" } },
+  },
+  required: ["narrative", "recommendations"],
+};

@@ -6,7 +6,7 @@ function Badge({ ok, label }: { ok: boolean; label: string }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 font-mono text-[10px]",
+        "inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em]",
         ok
           ? "border-accent/35 bg-accent/10 text-accent"
           : "border-amber/40 bg-amber/10 text-amber",

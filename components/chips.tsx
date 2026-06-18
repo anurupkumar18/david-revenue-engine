@@ -14,10 +14,10 @@ export function SourceBadge({ source }: { source: "deterministic" | "llm" }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-mono text-[10px]",
+        "inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em]",
         isLlm
           ? "border-cyan/35 bg-cyan/10 text-cyan"
-          : "border-line bg-surface-2 text-ink-faint",
+          : "border-line bg-surface-2/80 text-ink-faint",
       )}
       title={isLlm ? "Authored by Claude" : "Deterministic engine — works with no API key"}
     >
@@ -64,7 +64,7 @@ export function LeakChip({ type, className }: { type: DavidLeakType; className?:
 
 export function SegmentChip({ segment }: { segment: Segment }) {
   return (
-    <span className="inline-flex items-center rounded-md border border-line bg-surface-2 px-2 py-0.5 font-mono text-[10.5px] text-ink-dim whitespace-nowrap">
+    <span className="inline-flex items-center rounded-md border border-line bg-surface-2/80 px-2 py-0.5 font-mono text-[10.5px] text-ink-dim whitespace-nowrap">
       {SEGMENT_LABELS[segment]}
     </span>
   );
@@ -74,7 +74,7 @@ export function StageChip({ stage }: { stage: PipelineStage }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-md border bg-surface-2/60 px-2 py-0.5 font-mono text-[10.5px] whitespace-nowrap",
+        "inline-flex items-center gap-1.5 rounded-md border bg-surface-2/70 px-2 py-0.5 font-mono text-[10.5px] whitespace-nowrap",
         STAGE_CLASSES[stage],
       )}
     >

@@ -23,7 +23,7 @@ export function DiscoveryView({ profileId }: { profileId: number }) {
 
   return (
     <IcpShell maxWidth="max-w-xl">
-      <div className="panel grid min-h-[40vh] place-items-center p-8 text-center">
+      <div className="panel grid min-h-[45vh] place-items-center p-10 text-center">
         {status === "loading" && (
           <>
             <Loader2 size={32} className="mb-4 animate-spin text-accent" />

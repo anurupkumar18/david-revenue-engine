@@ -27,11 +27,11 @@ export function FieldLabel({
 }) {
   return (
     <>
-      <label className="mb-1.5 flex items-center font-mono text-[11px] uppercase tracking-wider text-ink-dim">
+      <label className="mb-1.5 flex items-center font-mono text-[11px] uppercase tracking-[0.16em] text-ink-dim">
         <ConfidenceBadge level={confidence} />
         {label}
       </label>
-      {microcopy && <p className="mb-2 text-[12px] leading-relaxed text-ink-faint">{microcopy}</p>}
+      {microcopy && <p className="mb-2 text-[12px] leading-[1.7] text-ink-faint">{microcopy}</p>}
     </>
   );
 }

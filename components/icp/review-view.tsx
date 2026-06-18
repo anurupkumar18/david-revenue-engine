@@ -60,7 +60,7 @@ export function ReviewView() {
   if (!fields) return null;
 
   return (
-    <IcpShell maxWidth="max-w-2xl">
+    <IcpShell maxWidth="max-w-3xl">
       <IcpPageHeader
         eyebrow="Review"
         title="Review your campaign profile"
@@ -69,7 +69,7 @@ export function ReviewView() {
 
       <ProfileReviewCard fields={fields} confidence={confidence} />
 
-      <div className="mt-8 flex gap-2">
+      <div className="mt-10 flex gap-2">
         <Button variant="outline" onClick={handleReject} className="border-danger/40 text-danger hover:bg-danger/10">
           Reject & edit
         </Button>
@@ -80,10 +80,10 @@ export function ReviewView() {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-base/80 p-5 backdrop-blur-sm">
-          <div className="panel glow-accent max-w-md p-6">
-            <h2 className="font-display text-xl font-bold text-ink">Campaign profile saved</h2>
-            <p className="mt-2 text-[14px] leading-relaxed text-ink-dim">
+        <div className="fixed inset-0 z-50 grid place-items-center bg-base/85 p-5">
+          <div className="panel glow-accent max-w-md p-7">
+            <h2 className="font-display text-[26px] font-semibold text-ink">Campaign profile saved</h2>
+            <p className="mt-3 text-[14px] leading-[1.8] text-ink-dim">
               Your campaign profile is stored locally. Find matching contacts from deterministic sources, or go straight to the campaign workspace.
             </p>
             <div className="mt-5 flex flex-wrap gap-2">

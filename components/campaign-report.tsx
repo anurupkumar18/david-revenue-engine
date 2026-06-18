@@ -26,9 +26,9 @@ type ReportData = {
 
 function Section({ title, eyebrow, children }: { title: string; eyebrow: string; children: React.ReactNode }) {
   return (
-    <section className="report-section border-t border-line pt-6">
-      <div className="eyebrow mb-1.5">{eyebrow}</div>
-      <h2 className="mb-4 font-display text-2xl font-semibold text-ink">{title}</h2>
+    <section className="report-section border-t border-line pt-8">
+      <div className="eyebrow mb-2">{eyebrow}</div>
+      <h2 className="mb-5 font-display text-[28px] font-semibold text-ink">{title}</h2>
       {children}
     </section>
   );
@@ -104,7 +104,7 @@ export function CampaignReport({ profileId }: { profileId: number }) {
   const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 
   return (
-    <div className="relative z-10 mx-auto max-w-3xl px-6 py-10 print:py-0">
+    <div className="relative z-10 mx-auto max-w-4xl px-6 py-10 print:py-0">
       {/* toolbar — hidden in print/PDF */}
       <div className="no-print mb-8 flex items-center justify-between">
         <Link
@@ -122,7 +122,7 @@ export function CampaignReport({ profileId }: { profileId: number }) {
       </div>
 
       {/* white-label header */}
-      <header className="bracket-frame mb-8 rounded-[14px] border border-line p-6">
+      <header className="bracket-frame mb-10 rounded-[16px] border border-line p-7">
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="font-display text-xl font-bold tracking-tight text-ink">
@@ -136,34 +136,34 @@ export function CampaignReport({ profileId }: { profileId: number }) {
             {today}
           </div>
         </div>
-        <h1 className="mt-5 font-display text-4xl font-medium leading-[1.05] text-ink">
+        <h1 className="mt-5 font-display text-[clamp(2.8rem,3vw+1rem,4.4rem)] font-medium leading-[1.02] text-ink">
           Campaign brief for <em className="italic text-accent">{clientName}</em>
         </h1>
-        <p className="mt-3 text-[14px] leading-relaxed text-ink-dim">
+        <p className="mt-4 text-[15px] leading-[1.8] text-ink-dim">
           {campaign.strategy.audienceSummary}
         </p>
       </header>
 
-      <div className="space-y-7">
+      <div className="space-y-10">
         <Section eyebrow="01 · Strategy" title="Recommended campaign angle">
-          <p className="text-[14px] leading-relaxed text-ink">{campaign.strategy.positioningAngle}</p>
+          <p className="text-[15px] leading-[1.8] text-ink">{campaign.strategy.positioningAngle}</p>
         </Section>
 
         <Section eyebrow="02 · Targeting" title="ICP filters">
-          <div className="grid gap-2.5 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2">
             {campaign.strategy.icpFilters.map((f) => (
-              <div key={f.id} className="rounded-[10px] border border-line bg-surface-2/50 p-3">
-                <div className="font-display text-sm font-semibold text-ink">{f.label}</div>
-                <div className="mt-0.5 text-[13px] text-ink">{f.value}</div>
+              <div key={f.id} className="rounded-[14px] border border-line bg-surface-2/70 p-4">
+                <div className="font-display text-[15px] font-semibold text-ink">{f.label}</div>
+                <div className="mt-1 text-[13.5px] leading-[1.75] text-ink">{f.value}</div>
               </div>
             ))}
           </div>
         </Section>
 
         <Section eyebrow="03 · Why now" title="Buying signals">
-          <ul className="space-y-2">
+          <ul className="space-y-2.5">
             {campaign.strategy.buyingSignals.map((s) => (
-              <li key={s.id} className="flex gap-2 text-[13.5px] leading-relaxed text-ink">
+              <li key={s.id} className="flex gap-2 text-[13.5px] leading-[1.75] text-ink">
                 <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
                 <span>
                   <span className="font-semibold">{s.label}</span> — {s.description}
@@ -174,13 +174,13 @@ export function CampaignReport({ profileId }: { profileId: number }) {
         </Section>
 
         <Section eyebrow="04 · Outreach" title="Signal-based two-step sequence">
-          <div className="space-y-3">
+          <div className="space-y-3.5">
             {campaign.sequence.steps.map((step) => (
-              <div key={step.id} className="rounded-[10px] border border-line bg-surface-2/50 p-4">
+              <div key={step.id} className="rounded-[14px] border border-line bg-surface-2/70 p-5">
                 <div className="font-mono text-[11px] text-ink-faint">
                   Step {step.stepNumber} · subject: <span className="text-ink">{step.subject}</span>
                 </div>
-                <p className="mt-2 whitespace-pre-line text-[13.5px] leading-relaxed text-ink">
+                <p className="mt-2.5 whitespace-pre-line text-[13.5px] leading-[1.75] text-ink">
                   {step.body}
                 </p>
               </div>
@@ -196,7 +196,7 @@ export function CampaignReport({ profileId }: { profileId: number }) {
               [String(roi.highFitAccounts), "High-fit accounts"],
               [String(roi.projectedMeetings), "Projected meetings"],
             ].map(([value, label]) => (
-              <div key={label} className="rounded-[10px] border border-line bg-surface-2/50 p-3">
+              <div key={label} className="rounded-[14px] border border-line bg-surface-2/70 p-4">
                 <div className="font-display text-xl font-bold text-ink">{value}</div>
                 <div className="mt-1 font-mono text-[9.5px] uppercase tracking-wider text-ink-faint">
                   {label}
@@ -204,13 +204,13 @@ export function CampaignReport({ profileId }: { profileId: number }) {
               </div>
             ))}
           </div>
-          <p className="mt-2.5 font-mono text-[10px] text-ink-faint">
+          <p className="mt-3 font-mono text-[10px] text-ink-faint">
             Modeled from account revenue ranges × 12 and fit grades · baseline = 15% on-target cold list.
           </p>
         </Section>
 
         <Section eyebrow="06 · Learning" title="What we improve next">
-          <div className="space-y-2 text-[13.5px] leading-relaxed text-ink">
+          <div className="space-y-2.5 text-[13.5px] leading-[1.75] text-ink">
             <p>
               <span className="font-semibold">Winning signal:</span>{" "}
               {campaign.learningInsights.winningSignal}

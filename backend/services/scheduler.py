@@ -9,6 +9,10 @@ key is configured.
 
 import os
 
+from database import SessionLocal
+from models import Brief, ICPProfile
+from services.briefs import generate_brief
+
 _scheduler = None  # module-level singleton
 
 
@@ -24,13 +28,46 @@ def send_queue_tick() -> None:
 
 
 def daily_brief_tick() -> None:
-    """Generate daily briefs per customer. Filled in Phase 2d."""
-    return None
+    """Generate daily briefs per customer."""
+    _run_brief_tick("daily")
 
 
 def weekly_brief_tick() -> None:
-    """Generate weekly briefs per customer. Filled in Phase 2d."""
-    return None
+    """Generate weekly briefs per customer."""
+    _run_brief_tick("weekly")
+
+
+def _run_brief_tick(period: str) -> None:
+    db = SessionLocal()
+    try:
+        profiles = db.query(ICPProfile).all()
+        for profile in profiles:
+            brief_data = generate_brief(db=db, profile=profile, period=period)
+            existing = (
+                db.query(Brief)
+                .filter(
+                    Brief.profile_id == profile.id,
+                    Brief.period == brief_data["period"],
+                    Brief.period_start == brief_data["periodStart"],
+                    Brief.period_end == brief_data["periodEnd"],
+                )
+                .first()
+            )
+            if existing:
+                continue
+            row = Brief(
+                profile_id=profile.id,
+                period=brief_data["period"],
+                period_start=brief_data["periodStart"],
+                period_end=brief_data["periodEnd"],
+                metrics=brief_data["metrics"],
+                recommendations=brief_data["recommendations"],
+                narrative=brief_data["narrative"],
+            )
+            db.add(row)
+            db.commit()
+    finally:
+        db.close()
 
 
 def start_scheduler():

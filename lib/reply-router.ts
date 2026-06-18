@@ -104,7 +104,7 @@ I'll frame it around ${ctx.offerPathLabel} and the main leak we flagged: ${ctx.p
 function fill(ctx: ReplyContext): Required<ReplyContext> {
   return {
     companyName: ctx.companyName ?? "your team",
-    primaryLeakLabel: ctx.primaryLeakLabel ?? "the leak we flagged",
+    primaryLeakLabel: ctx.primaryLeakLabel ?? "primary leak",
     offerPathLabel: ctx.offerPathLabel ?? "the right campaign angle",
     firstConversionAction: ctx.firstConversionAction ?? "a short teardown.",
   };

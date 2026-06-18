@@ -43,17 +43,17 @@ export function ProfileReviewCard({
   confidence: Record<string, ConfidenceLevel>;
 }) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {SECTIONS.map((section) => (
-        <div key={section.title} className="panel p-5">
-          <h3 className="mb-4 font-display text-base font-semibold text-ink">{section.title}</h3>
-          <div className="space-y-3">
+        <div key={section.title} className="panel p-6">
+          <h3 className="mb-5 font-display text-[26px] font-semibold text-ink">{section.title}</h3>
+          <div className="space-y-4">
             {section.fields.map(({ key, label }) => (
               <div key={key}>
-                <div className="mb-1 flex items-center font-mono text-[10px] uppercase tracking-wider text-ink-faint">
+                <div className="mb-1.5 flex items-center font-mono text-[10px] uppercase tracking-[0.16em] text-ink-faint">
                   <ConfidenceBadge level={confidence[key]} /> {label}
                 </div>
-                <div className="text-[13.5px] leading-relaxed text-ink-dim">
+                <div className="text-[14px] leading-[1.75] text-ink-dim">
                   {formatValue(key, fields[key as keyof ICPFields])}
                 </div>
               </div>

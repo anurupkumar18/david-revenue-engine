@@ -123,20 +123,30 @@ export function BusinessProfileWorkspace({ profileId }: { profileId: number }) {
 
   return (
     <>
-      <div className="sticky top-0 z-50 border-b border-line bg-base/90 backdrop-blur-md">
-        <div className="mx-auto flex max-w-[1400px] items-center justify-between px-5 py-2.5 sm:px-8">
+      <div className="sticky top-0 z-50 border-b border-line bg-base/92">
+        <div className="mx-auto flex max-w-[1400px] items-center justify-between px-5 py-4 sm:px-8">
           <div>
             <div className="eyebrow">Campaign profile</div>
-            <div className="font-display text-sm font-bold text-ink">{companyName}</div>
+            <div className="mt-1 font-display text-[16px] font-semibold text-ink">{companyName}</div>
           </div>
           <div className="flex items-center gap-2">
             <Link href={`/dashboard/${profileId}`}>
-              <span className="rounded-[10px] px-3 py-1.5 font-mono text-[11px] text-ink-dim transition-colors hover:bg-surface-2 hover:text-ink">
+              <span className="rounded-[12px] px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-ink-dim transition-colors hover:bg-white/5 hover:text-ink">
                 Contacts
               </span>
             </Link>
+            <Link href={`/inbox/${profileId}`}>
+              <span className="rounded-[12px] px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-ink-dim transition-colors hover:bg-white/5 hover:text-ink">
+                Inbox
+              </span>
+            </Link>
+            <Link href={`/briefs/${profileId}`}>
+              <span className="rounded-[12px] px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-ink-dim transition-colors hover:bg-white/5 hover:text-ink">
+                Briefs
+              </span>
+            </Link>
             <Link href="/">
-              <span className="rounded-[10px] border border-line px-3 py-1.5 font-mono text-[11px] text-ink-dim transition-colors hover:bg-surface-2 hover:text-ink">
+              <span className="rounded-[12px] border border-line px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-ink-dim transition-colors hover:bg-white/5 hover:text-ink">
                 New campaign
               </span>
             </Link>
