@@ -1,6 +1,6 @@
 // Deterministic Conversion Outreach generator.
 // Produces a compliant 2-step sequence that references the account's primary leak
-// and uses the recommended David offer path's CTA. Always passes validators.
+// and uses a low-friction campaign CTA. Always passes validators.
 
 import { LEAKS, OFFER_PATHS } from "./constants";
 import { validateEmail } from "./validators";
@@ -74,7 +74,7 @@ function buildStep(
     cta = path.primaryCta;
     body = `${OPENERS[tone]} ${account.name}${where} looks like ${phrase.observation} could be quietly costing you ${phrase.cost}.
 
-David helps ${segPhrase} fix exactly that — ${lever} — without adding headcount.
+This campaign angle helps ${segPhrase} fix exactly that - ${lever} - before adding headcount.
 
 ${cta}`;
   } else {
@@ -82,7 +82,7 @@ ${cta}`;
     cta = "Want me to send those 2 specifics over?";
     body = `Following up, {{first_name}} — most ${segPhrase} don't need more tools, they need ${phrase.observation} handled automatically.
 
-If useful, I can share 2 specifics on how David would fix it for ${account.name}.
+If useful, I can share 2 specifics on how the campaign would address it for ${account.name}.
 
 ${cta}`;
   }

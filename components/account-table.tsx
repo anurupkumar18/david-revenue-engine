@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronRight } from "lucide-react";
+import { campaignAngleLabel, campaignCopy } from "@/lib/campaign";
 import { useEngine } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { GRADE_CLASSES } from "@/lib/theme";
@@ -22,9 +23,9 @@ const COLS = [
   "Company",
   "Segment",
   "Top leak",
-  "Fitting",
+  "Fit",
   "Rev Opp",
-  "Recommended path",
+  "Campaign angle",
   "Recurring",
   "Stage",
 ];
@@ -33,14 +34,15 @@ export function AccountTable() {
   const accounts = useEngine((s) => s.accounts);
   const selectAccount = useEngine((s) => s.selectAccount);
   const selectedId = useEngine((s) => s.selectedAccountId);
+  const campaign = useEngine((s) => s.campaign);
 
   if (accounts.length === 0) {
     return (
       <div className="panel grid place-items-center px-6 py-16 text-center">
         <p className="font-display text-lg text-ink">No accounts on the board.</p>
         <p className="mt-1 max-w-sm text-sm text-ink-dim">
-          Load a book of prospects above to see leaks, Fitting Scores, and the David offer path
-          each account should be routed into.
+          Load a campaign profile above to see signals, fit scores, campaign angles, and recurring
+          opportunity.
         </p>
       </div>
     );
@@ -112,7 +114,10 @@ export function AccountTable() {
                     <ScoreCell score={a.revenueOpportunityScore} grade={a.revenueOpportunity.grade} />
                   </td>
                   <td className="px-4 py-3">
-                    <OfferPathChip path={a.recommendedDavidOfferPath} />
+                    <OfferPathChip
+                      path={a.recommendedDavidOfferPath}
+                      label={campaignAngleLabel(a.recommendedDavidOfferPath, campaign)}
+                    />
                   </td>
                   <td className="px-4 py-3">
                     <RecurringDots level={a.recurringRevenuePotential} showLabel={false} />
@@ -149,12 +154,15 @@ export function AccountTable() {
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-1.5">
               <LeakChip type={a.primaryLeak} />
-              <OfferPathChip path={a.recommendedDavidOfferPath} />
+              <OfferPathChip
+                path={a.recommendedDavidOfferPath}
+                label={campaignAngleLabel(a.recommendedDavidOfferPath, campaign)}
+              />
               <RecurringDots level={a.recurringRevenuePotential} />
             </div>
             <p className="mt-2.5 text-[12.5px] text-ink-dim">
               <span className="text-ink-faint">Next — </span>
-              {a.nextBestConversionAction}
+              {campaignCopy(a.nextBestConversionAction, campaign)}
             </p>
           </button>
         ))}

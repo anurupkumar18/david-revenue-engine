@@ -1,5 +1,5 @@
-// David Revenue Engine — deterministic reference data.
-// Encodes the addendum's revenue motion map, leak-to-offer routing,
+// AI GTM Campaign Builder deterministic reference data.
+// Encodes the revenue motion map, leak-to-angle routing,
 // CTA-by-path table, and display labels. Single source of truth.
 
 import type {
@@ -14,18 +14,18 @@ import type {
 } from "./types";
 
 // ---------------------------------------------------------------------------
-// Offer paths (revenue motion map + CTAs + $ ranges)
+// Internal campaign angle keys (revenue motion map + CTAs + $ ranges)
 // ---------------------------------------------------------------------------
 
 export const OFFER_PATHS: Record<DavidOfferPath, OfferPathMeta> = {
   david_marketing: {
     path: "david_marketing",
-    label: "David Marketing",
+    label: "Local demand capture",
     revenueType: "Monthly recurring retainer",
     model: "monthly_retainer",
     bestFitProspect: "Local businesses needing better local presence",
     primaryCta: "Want me to send over the 3 places I'd tighten up first?",
-    shortCta: "Get Growth Plan",
+    shortCta: "Copy demand plan",
     speedToClose: 78,
     baseRecurringPotential: "high",
     estimatedFirstDealUsd: [1500, 3000],
@@ -33,12 +33,12 @@ export const OFFER_PATHS: Record<DavidOfferPath, OfferPathMeta> = {
   },
   growth_plan: {
     path: "growth_plan",
-    label: "Growth Plan",
+    label: "Fast test campaign",
     revenueType: "Entry diagnostic / conversion wedge",
     model: "diagnostic",
     bestFitProspect: "Local businesses with visible marketing gaps",
     primaryCta: "Want a quick growth plan for your market?",
-    shortCta: "Get Your Growth Plan",
+    shortCta: "Copy test campaign",
     speedToClose: 90,
     baseRecurringPotential: "medium",
     estimatedFirstDealUsd: [0, 500],
@@ -46,12 +46,12 @@ export const OFFER_PATHS: Record<DavidOfferPath, OfferPathMeta> = {
   },
   the_fitting: {
     path: "the_fitting",
-    label: "The Fitting",
+    label: "Workflow diagnostic",
     revenueType: "Paid diagnostic",
     model: "diagnostic",
     bestFitProspect: "Businesses with complex workflow or AI opportunity",
-    primaryCta: "Open to a 30-minute AI Fitting?",
-    shortCta: "Book a Fitting",
+    primaryCta: "Open to a 20-minute workflow diagnostic?",
+    shortCta: "Book diagnostic",
     speedToClose: 70,
     baseRecurringPotential: "medium",
     estimatedFirstDealUsd: [2500, 7500],
@@ -59,7 +59,7 @@ export const OFFER_PATHS: Record<DavidOfferPath, OfferPathMeta> = {
   },
   custom_agent: {
     path: "custom_agent",
-    label: "Custom Agent",
+    label: "Workflow automation",
     revenueType: "Project + support/maintenance",
     model: "one_time_project",
     bestFitProspect: "Teams with one leaking workflow",
@@ -72,12 +72,12 @@ export const OFFER_PATHS: Record<DavidOfferPath, OfferPathMeta> = {
   },
   custom_ai_os: {
     path: "custom_ai_os",
-    label: "Custom AI OS",
+    label: "Campaign operating system",
     revenueType: "High-ticket build",
     model: "one_time_project",
     bestFitProspect: "Businesses ready for end-to-end AI-native operations",
     primaryCta: "Worth mapping what an AI-native operating layer could look like?",
-    shortCta: "Scoped AI Fitting",
+    shortCta: "Scope operating layer",
     speedToClose: 45,
     baseRecurringPotential: "high",
     estimatedFirstDealUsd: [25000, 75000],
@@ -85,12 +85,12 @@ export const OFFER_PATHS: Record<DavidOfferPath, OfferPathMeta> = {
   },
   embedded_ai_team: {
     path: "embedded_ai_team",
-    label: "Embedded AI Team",
+    label: "Managed AI workflow",
     revenueType: "High-ticket recurring retainer",
     model: "monthly_retainer",
     bestFitProspect: "Companies that need ongoing AI execution",
-    primaryCta: "Worth a conversation on where an embedded AI team would pay back fastest?",
-    shortCta: "AI Team Conversation",
+    primaryCta: "Worth a conversation on where a managed AI workflow would pay back fastest?",
+    shortCta: "Workflow conversation",
     speedToClose: 45,
     baseRecurringPotential: "very_high",
     estimatedFirstDealUsd: [0, 0],
@@ -98,12 +98,12 @@ export const OFFER_PATHS: Record<DavidOfferPath, OfferPathMeta> = {
   },
   white_label_deployment: {
     path: "white_label_deployment",
-    label: "White-label Deployment",
+    label: "White-label campaign workspace",
     revenueType: "Scalable recurring platform revenue",
     model: "platform_recurring",
     bestFitProspect: "Platforms/agencies with distribution but no AI capability",
     primaryCta:
-      "Would it be useful to see how this could become a branded AI product for your clients?",
+      "Would it be useful to see how this could become a branded campaign workspace for your clients?",
     shortCta: "Partner Conversation",
     speedToClose: 55,
     baseRecurringPotential: "very_high",
@@ -112,7 +112,7 @@ export const OFFER_PATHS: Record<DavidOfferPath, OfferPathMeta> = {
   },
   partner_program: {
     path: "partner_program",
-    label: "Partner Program",
+    label: "Partner campaign motion",
     revenueType: "Channel revenue",
     model: "channel",
     bestFitProspect: "Agencies, consultants, local media, vertical platforms",
@@ -126,7 +126,7 @@ export const OFFER_PATHS: Record<DavidOfferPath, OfferPathMeta> = {
 };
 
 // ---------------------------------------------------------------------------
-// Leaks & Levers (meaning + why it matters + David lever + base routing)
+// Leaks & Levers (meaning + why it matters + campaign lever + base routing)
 // ---------------------------------------------------------------------------
 
 export const LEAKS: Record<DavidLeakType, LeakMeta> = {
@@ -197,7 +197,7 @@ export const LEAKS: Record<DavidLeakType, LeakMeta> = {
   platform_distribution: {
     type: "platform_distribution",
     label: "Platform distribution",
-    meaning: "Company can resell David to many clients.",
+    meaning: "Company can resell campaign intelligence to many clients.",
     whyItMatters: "They already own the distribution — they just lack the AI product.",
     leverAngle: "A branded, white-label AI capability deployed across their client base.",
     recommendedPath: "white_label_deployment",
@@ -207,7 +207,7 @@ export const LEAKS: Record<DavidLeakType, LeakMeta> = {
     label: "Ops bottleneck",
     meaning: "Business has repeatable workflow pain.",
     whyItMatters: "A repeatable bottleneck compounds: it caps throughput and morale.",
-    leverAngle: "A paid Fitting to map the bottleneck and scope the highest-ROI automation.",
+    leverAngle: "A paid workflow diagnostic to map the bottleneck and scope the highest-ROI automation.",
     recommendedPath: "the_fitting",
   },
   high_ticket_service: {
@@ -288,7 +288,7 @@ export const STAGE_LABELS: Record<PipelineStage, string> = {
   suppressed: "Suppressed",
 };
 
-/** Columns shown on the Revenue Pipeline board (subset, in order). */
+/** Columns shown on the Campaign Tracker board (subset, in order). */
 export const PIPELINE_COLUMNS: PipelineStage[] = [
   "new",
   "researched",

@@ -1,6 +1,7 @@
-// Deterministic routing: leak -> David offer path, land-and-expand plan,
+// Deterministic routing: leak -> campaign angle, land-and-expand plan,
 // revenue model framing, and human-readable rationale.
 
+import { campaignAngleLabel, campaignCopy } from "./campaign";
 import { LEAKS, OFFER_PATHS, RECURRING_POTENTIAL_LABELS } from "./constants";
 import type {
   DavidLeakType,
@@ -31,7 +32,7 @@ function leakToOffer(type: DavidLeakType, segment: Segment): DavidOfferPath {
 }
 
 /**
- * Resolve the recommended David offer path for an account.
+ * Resolve the recommended internal campaign angle for an account.
  * Channel/platform segments route by distribution first; everyone else routes by
  * a severity-weighted vote across detected leaks.
  */
@@ -73,7 +74,7 @@ const PLAN_TEMPLATES: Record<DavidOfferPath, PlanTemplate> = {
     expansionOffer: "david_marketing",
     longTermOffer: "custom_agent",
     revenueLogic:
-      "Start with a low-friction growth plan, convert into a monthly David Marketing retainer, then expand into AI follow-up or a voice agent once lead flow increases.",
+      "Start with a low-friction test campaign, convert into a monthly campaign tracking workflow, then expand into AI follow-up or a voice agent once lead flow increases.",
   },
   growth_plan: {
     landOffer: "growth_plan",
@@ -85,11 +86,11 @@ const PLAN_TEMPLATES: Record<DavidOfferPath, PlanTemplate> = {
   },
   the_fitting: {
     landOffer: "the_fitting",
-    firstConversionAction: "Offer a 30-minute AI Fitting on the biggest bottleneck.",
+    firstConversionAction: "Offer a 20-minute workflow diagnostic on the biggest bottleneck.",
     expansionOffer: "custom_agent",
     longTermOffer: "custom_ai_os",
     revenueLogic:
-      "A paid Fitting diagnoses the bottleneck and scopes the first automation, which expands into a broader AI operating layer.",
+      "A paid workflow diagnostic scopes the first automation, which expands into a broader AI operating layer.",
   },
   custom_agent: {
     landOffer: "custom_agent",
@@ -101,27 +102,27 @@ const PLAN_TEMPLATES: Record<DavidOfferPath, PlanTemplate> = {
   },
   custom_ai_os: {
     landOffer: "the_fitting",
-    firstConversionAction: "Scope an AI Fitting across locations and reporting.",
+    firstConversionAction: "Scope a workflow diagnostic across locations and reporting.",
     expansionOffer: "custom_ai_os",
     longTermOffer: "embedded_ai_team",
     revenueLogic:
-      "A Fitting frames the multi-location problem; the build becomes a custom AI OS, sustained by an embedded AI team.",
+      "A workflow diagnostic frames the multi-location problem; the build becomes an AI operating layer, sustained by managed execution.",
   },
   embedded_ai_team: {
     landOffer: "the_fitting",
-    firstConversionAction: "Open a conversation on where an embedded AI team pays back fastest.",
+    firstConversionAction: "Open a conversation on where a managed AI workflow pays back fastest.",
     expansionOffer: "embedded_ai_team",
     longTermOffer: "custom_ai_os",
     revenueLogic:
-      "Start with a Fitting to prove value, then place an ongoing embedded AI team retainer, expanding into a custom AI OS.",
+      "Start with a workflow diagnostic to prove value, then place an ongoing managed AI workflow, expanding into an operating layer.",
   },
   white_label_deployment: {
     landOffer: "partner_program",
-    firstConversionAction: "Start a partner conversation around white-label AI deployment.",
+    firstConversionAction: "Start a partner conversation around a white-label campaign workspace.",
     expansionOffer: "white_label_deployment",
     longTermOffer: "embedded_ai_team",
     revenueLogic:
-      "The platform already has distribution. David earns recurring revenue by deploying branded AI across the platform's client base, then embedding a team to run it.",
+      "The platform already has distribution. Recurring value compounds by deploying branded campaign intelligence across the client base, then adding managed execution.",
   },
   partner_program: {
     landOffer: "partner_program",
@@ -196,11 +197,11 @@ export function buildRationale(args: {
   firstConversionAction: string;
 }): string[] {
   const leak = LEAKS[args.primaryLeak];
-  const path = OFFER_PATHS[args.recommendedPath];
+  const pathLabel = campaignAngleLabel(args.recommendedPath, null);
   return [
     `Primary leak — ${leak.label}: ${leak.whyItMatters}`,
-    `Strong David fit (${args.fitScore}/100) → ${args.fittingGrade}-grade Fitting Score of ${args.fittingTotal}.`,
-    `Revenue Opportunity ${args.revenueGrade} (${args.revenueTotal}/100): ${RECURRING_POTENTIAL_LABELS[args.recurringPotential]} recurring potential via ${path.label}.`,
-    `Fastest path in: ${args.firstConversionAction}`,
+    `Strong campaign fit (${args.fitScore}/100) -> ${args.fittingGrade}-grade Fit Score of ${args.fittingTotal}.`,
+    `Revenue Opportunity ${args.revenueGrade} (${args.revenueTotal}/100): ${RECURRING_POTENTIAL_LABELS[args.recurringPotential]} recurring potential via ${pathLabel}.`,
+    `Fastest path in: ${campaignCopy(args.firstConversionAction, null)}`,
   ];
 }

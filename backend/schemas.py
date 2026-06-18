@@ -46,6 +46,7 @@ class RevenueStateUpdate(BaseModel):
     accounts: list[Any] = []
     loadedScenario: str | None = None
     strategy: Any | None = None
+    campaign: Any | None = None
     outreachByAccount: dict[str, Any] = {}
     lastRouted: Any | None = None
 

@@ -1,0 +1,28 @@
+{
+  "fields": {
+    "company_name": "David AI",
+    "website_url": "https://getdavid.ai/",
+    "core_offering": "David AI builds custom AI systems, voice agents, sales automation, and operational workflows that help service businesses convert more demand into recurring revenue.",
+    "best_fit_industries": ["Dental", "Real Estate", "Healthcare", "Home Improvement"],
+    "company_size": "25-200",
+    "geography": "United States / North America",
+    "decision_makers": "Buyers: CEO, COO, CRO, VP Sales, Managing Partner, Practice Owner\nEnd-Users: front desk staff, office managers, field sales reps, patient coordinators, transaction coordinators",
+    "pain_points": "• Leads dying on voicemail and after-hours calls\n• Manual copy-paste between disconnected tools\n• Failed AI experiments that never ship to production",
+    "value_proposition": "• Measurable operational savings within weeks\n• Custom systems wired into existing tools\n• Flat-fee engagement with production deployment",
+    "buying_signals": "• Hiring front desk, coordinators, or ops admins at scale\n• Multi-location expansion without proportional back-office headcount\n• Paying for generic AI tools with low team adoption",
+    "disqualifiers": "• Pre-revenue or sub-10-person teams with no repeatable workflow\n• Buyers wanting only a cheap chatbot widget\n• No inbound phone, scheduling, or ops complexity"
+  },
+  "confidence": {
+    "company_name": "high",
+    "website_url": "high",
+    "core_offering": "high",
+    "best_fit_industries": "medium",
+    "company_size": "low",
+    "geography": "low",
+    "decision_makers": "medium",
+    "pain_points": "medium",
+    "value_proposition": "medium",
+    "buying_signals": "medium",
+    "disqualifiers": "medium"
+  }
+}

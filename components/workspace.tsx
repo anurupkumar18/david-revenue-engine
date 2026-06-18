@@ -8,6 +8,13 @@ import { ConversionOutreachPanel } from "@/components/conversion-outreach-panel"
 import { FastConversionRouter } from "@/components/fast-conversion-router";
 import { RevenuePipelineBoard } from "@/components/revenue-pipeline-board";
 import { RevenueOpportunityDrawer } from "@/components/revenue-opportunity-drawer";
+import {
+  AgencyWorkspacePanel,
+  CampaignFiltersSignalsPanel,
+  CampaignPerformanceTracker,
+  CampaignStrategyPanel,
+  LearningInsightsPanel,
+} from "@/components/campaign-intelligence-panel";
 
 export function SectionHeading({
   eyebrow,
@@ -52,47 +59,92 @@ export function Workspace() {
 
         <Section id="strategy">
           <SectionHeading
-            eyebrow="01 · Fitting Strategy"
-            title="What David should sell, and to whom"
-            description="Turn a product or business into a David-native GTM strategy: the segments to target, the leaks to look for, and the offer paths that become recurring revenue."
+            eyebrow="01 · Product Input"
+            title="Turn any website into a GTM campaign strategy"
+            description="Start from a website or product description. The system builds campaign strategy, target audience, ICP filters, buying signals, and approved copy without depending on live APIs."
           />
           <FittingStrategyPanel />
         </Section>
 
+        <Section id="campaign-strategy">
+          <SectionHeading
+            eyebrow="02 · Generated Campaign Strategy"
+            title="Target audience, campaign angle, and assumptions"
+            description="The strategist explains who to target, why now, and what campaign angle should drive the first outbound motion."
+          />
+          <CampaignStrategyPanel />
+        </Section>
+
+        <Section id="filters">
+          <SectionHeading
+            eyebrow="03 · ICP Filters + Buying Signals"
+            title="The targeting logic behind the campaign"
+            description="Copyable filters and signal hypotheses make the campaign reusable across teams, clients, and future iterations."
+          />
+          <CampaignFiltersSignalsPanel />
+        </Section>
+
         <Section id="accounts">
           <SectionHeading
-            eyebrow="02 · Account workspace"
-            title="Who David should land first"
-            description="Sorted by Revenue Opportunity. Every account shows its leak, the David offer path it should be routed into, and how it becomes recurring revenue. Click any row to open the full Revenue Opportunity."
+            eyebrow="04 · Target Account Fit"
+            title="Who to prioritize first"
+            description="Demo accounts stay deterministic. Each row shows the leak, fit, campaign angle, and recurring opportunity behind the targeting recommendation."
           />
           <AccountTable />
         </Section>
 
         <Section id="outreach">
           <SectionHeading
-            eyebrow="03 · Conversion Outreach"
+            eyebrow="05 · 2-Step Sequence"
             title="Signal-based outreach, on the rails"
-            description="A two-step sequence built from the detected leak and the recommended David path — auto-validated against the outbound rules. Works with or without an API key."
+            description="A two-step sequence built from the detected signal and recommended campaign angle, with approval/edit status and copy validation."
           />
           <ConversionOutreachPanel />
         </Section>
 
         <Section id="router">
           <SectionHeading
-            eyebrow="04 · Fast Conversion Router"
-            title="Every reply into the fastest next action"
-            description="Paste or simulate a reply. David classifies it, drafts the offer-path-aware response, and moves the account to the right pipeline stage. Unsubscribes are suppressed instantly."
+            eyebrow="06 · Dynamic Response Router"
+            title="Every reply into the next best action"
+            description="Paste or simulate a reply. The router classifies intent, suggests the right response, logs the outcome, and suppresses opt-outs."
           />
           <FastConversionRouter />
         </Section>
 
         <Section id="pipeline">
           <SectionHeading
-            eyebrow="05 · Revenue Pipeline"
-            title="Where the recurring revenue is"
-            description="The whole book, by stage. Routing a reply moves accounts here. Each column totals the recurring monthly revenue in play."
+            eyebrow="07 · Campaign Performance Tracker"
+            title="Track what works before scaling volume"
+            description="Campaign value compounds through copied filters, copied sequences, routed replies, approvals, meetings, bad-fit signals, and human edits."
+          />
+          <CampaignPerformanceTracker />
+        </Section>
+
+        <Section id="learning">
+          <SectionHeading
+            eyebrow="08 · Learning Insights"
+            title="Turn replies into better future campaigns"
+            description="The campaign memory records winning signals, common objections, ICP adjustments, and the improved next campaign."
+          />
+          <LearningInsightsPanel />
+        </Section>
+
+        <Section id="tracker-board">
+          <SectionHeading
+            eyebrow="09 · Campaign Tracker Board"
+            title="Where active opportunities sit"
+            description="The board shows campaign outcomes by stage. Routing replies updates local state and keeps the demo loop repeatable."
           />
           <RevenuePipelineBoard />
+        </Section>
+
+        <Section id="agency">
+          <SectionHeading
+            eyebrow="10 · Agency Workspace / Client Export"
+            title="Recurring value for teams, agencies, and white-label buyers"
+            description="Workspaces, client-ready exports, reusable memory, and governance explain the MRR/ARR path without building sending infrastructure."
+          />
+          <AgencyWorkspacePanel />
         </Section>
       </main>
 

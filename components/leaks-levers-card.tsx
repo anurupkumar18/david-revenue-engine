@@ -2,9 +2,16 @@ import { Wrench } from "lucide-react";
 import { LeakChip } from "@/components/chips";
 import { ProvenanceLabel } from "@/components/provenance-label";
 import { ScoreMeter } from "@/components/ui";
+import { campaignCopy, type CampaignIntelligence } from "@/lib/campaign";
 import type { Leak } from "@/lib/types";
 
-export function LeaksLeversCard({ leak }: { leak: Leak }) {
+export function LeaksLeversCard({
+  leak,
+  campaign,
+}: {
+  leak: Leak;
+  campaign?: CampaignIntelligence | null;
+}) {
   return (
     <div className="panel-2 p-3.5">
       <div className="mb-2 flex flex-wrap items-center gap-2">
@@ -26,7 +33,9 @@ export function LeaksLeversCard({ leak }: { leak: Leak }) {
 
       <div className="mt-2.5 flex items-start gap-1.5 rounded-lg border border-accent/20 bg-accent/[0.06] px-2.5 py-2">
         <Wrench size={13} className="mt-0.5 shrink-0 text-accent" />
-        <p className="text-[12.5px] leading-snug text-ink">{leak.leverAngle}</p>
+        <p className="text-[12.5px] leading-snug text-ink">
+          {campaignCopy(leak.leverAngle, campaign)}
+        </p>
       </div>
 
       <div className="mt-2.5 flex items-center gap-2">

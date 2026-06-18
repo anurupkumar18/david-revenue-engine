@@ -5,11 +5,13 @@ import { pipelineRecurringMonthly, useEngine } from "@/lib/store";
 import { fmtMoneyCompact } from "@/lib/format";
 
 const NAV = [
-  { href: "#strategy", label: "Strategy" },
-  { href: "#accounts", label: "Accounts" },
-  { href: "#outreach", label: "Outreach" },
+  { href: "#strategy", label: "Input" },
+  { href: "#filters", label: "Filters" },
+  { href: "#outreach", label: "Sequence" },
   { href: "#router", label: "Router" },
-  { href: "#pipeline", label: "Pipeline" },
+  { href: "#pipeline", label: "Tracker" },
+  { href: "#learning", label: "Learning" },
+  { href: "#agency", label: "Agency" },
 ];
 
 export function AppHeader() {
@@ -22,14 +24,14 @@ export function AppHeader() {
         {/* mark + wordmark */}
         <a href="#top" className="group flex items-center gap-3">
           <span className="grid h-9 w-9 place-items-center rounded-[10px] border border-accent/40 bg-accent/10 text-accent">
-            <span className="font-display text-lg font-extrabold leading-none">D</span>
+            <span className="font-display text-lg font-extrabold leading-none">G</span>
           </span>
           <span className="leading-none">
             <span className="block font-display text-[15px] font-bold tracking-tight text-ink">
-              David Revenue Engine
+              AI GTM Campaign Builder
             </span>
             <span className="mt-0.5 block font-mono text-[10px] tracking-wide text-ink-faint">
-              GTM FITTING ENGINE
+              CAMPAIGN INTELLIGENCE
             </span>
           </span>
         </a>
@@ -51,7 +53,7 @@ export function AppHeader() {
           {/* pipeline ticker */}
           <div className="hidden items-center gap-2 rounded-[10px] border border-line bg-surface-2/60 px-3 py-1.5 sm:flex">
             <Activity size={14} className="text-accent" />
-            <span className="font-mono text-[11px] text-ink-dim">in play</span>
+            <span className="font-mono text-[11px] text-ink-dim">pipeline value</span>
             <span className="font-mono text-sm font-semibold text-accent tabular-nums">
               {fmtMoneyCompact(monthly)}
               <span className="text-ink-faint">/mo</span>
@@ -60,7 +62,7 @@ export function AppHeader() {
           {/* demo pill */}
           <span className="inline-flex items-center gap-1.5 rounded-full border border-amber/40 bg-amber/10 px-2.5 py-1">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber" />
-            <span className="font-mono text-[10px] uppercase tracking-wider text-amber">Demo</span>
+            <span className="font-mono text-[10px] uppercase tracking-wider text-amber">No sending</span>
           </span>
         </div>
       </div>

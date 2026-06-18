@@ -29,9 +29,11 @@ export function SourceBadge({ source }: { source: "deterministic" | "llm" }) {
 
 export function OfferPathChip({
   path,
+  label,
   className,
 }: {
   path: DavidOfferPath;
+  label?: string;
   className?: string;
 }) {
   return (
@@ -42,7 +44,7 @@ export function OfferPathChip({
         className,
       )}
     >
-      {OFFER_PATHS[path].label}
+      {label ?? OFFER_PATHS[path].label}
     </span>
   );
 }

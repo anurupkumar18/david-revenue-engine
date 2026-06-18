@@ -1,4 +1,4 @@
-// Deterministic scoring: Fitting Score + Revenue Opportunity Score.
+// Deterministic scoring: Fit Score + Revenue Opportunity Score.
 // Pure functions — same inputs always produce the same scores (demo-safe).
 
 import { RECURRING_POTENTIAL_VALUE } from "./constants";
@@ -48,7 +48,7 @@ export function computeSignalScore(leaks: Leak[]): number {
   return clamp(round(dominant + Math.min(18, support * 0.18)));
 }
 
-/** Fitting Score = fit*0.45 + signal*0.40 + channel*0.15 (rules.md). */
+/** Fit Score = fit*0.45 + signal*0.40 + channel*0.15 (rules.md). */
 export function computeFittingScore(
   fitScore: number,
   signalScore: number,

@@ -1,10 +1,30 @@
 import type { Metadata } from "next";
+import { Bricolage_Grotesque, Hanken_Grotesk, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
+const displayFont = Bricolage_Grotesque({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const bodyFont = Hanken_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-body",
+  display: "swap",
+});
+
+const monoFont = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-mono",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "David Revenue Engine",
+  title: "AI GTM Campaign Builder",
   description:
-    "Build your ICP, store a business profile, then run the full GTM fitting engine — strategy, outreach, reply routing, and recurring revenue pipeline.",
+    "Campaign intelligence, not campaign sending. Turn a website or product description into strategy, ICP filters, sequences, reply routing, tracking, and learning insights.",
 };
 
 export default function RootLayout({
@@ -13,16 +33,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* Fonts load gracefully; system fallbacks render if offline. */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html
+      lang="en"
+      className={`h-full antialiased ${displayFont.variable} ${bodyFont.variable} ${monoFont.variable}`}
+      data-scroll-behavior="smooth"
+    >
       <body className="min-h-full">{children}</body>
     </html>
   );

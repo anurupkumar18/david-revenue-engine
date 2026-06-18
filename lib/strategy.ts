@@ -1,5 +1,5 @@
-// Deterministic Fitting Strategy generator (fallback for the LLM route).
-// Turns a product description + focus + goal into a David-native GTM strategy.
+// Deterministic campaign strategy generator (fallback for the LLM route).
+// Turns a product description + focus + goal into a campaign intelligence plan.
 
 import { LEAKS, OFFER_PATHS, SEGMENT_LABELS } from "./constants";
 import type {
@@ -20,14 +20,14 @@ type GoalProfile = {
 const GOAL_PROFILES: Record<FittingStrategyInput["fittingGoal"], GoalProfile> = {
   land_recurring_retainers: {
     oneLiner:
-      "Find local and service businesses leaking leads, then land them on a monthly David Marketing retainer.",
+      "Find local and service businesses leaking leads, then turn the signal into a recurring campaign workflow.",
     segments: ["local_business", "service_business"],
     leaks: ["weak_map_pack", "missed_calls", "manual_follow_up", "review_gap"],
     paths: ["growth_plan", "david_marketing", "custom_agent"],
   },
   book_fittings: {
     oneLiner:
-      "Find operationally complex businesses with workflow bottlenecks and route them into a paid Fitting.",
+      "Find operationally complex businesses with workflow bottlenecks and route them into a focused diagnostic campaign.",
     segments: ["enterprise", "multi_location", "service_business"],
     leaks: ["ops_bottleneck", "reporting_gap", "multi_location_complexity", "crm_copy_paste"],
     paths: ["the_fitting", "custom_agent", "custom_ai_os"],
@@ -41,7 +41,7 @@ const GOAL_PROFILES: Record<FittingStrategyInput["fittingGoal"], GoalProfile> = 
   },
   fast_growth_plans: {
     oneLiner:
-      "Find local businesses with visible conversion gaps and convert them fast with a Growth Plan wedge.",
+      "Find local businesses with visible conversion gaps and convert them with a fast signal-tested campaign.",
     segments: ["local_business", "service_business"],
     leaks: ["basic_website", "lead_quality_gap", "slow_speed_to_lead", "appointment_driven"],
     paths: ["growth_plan", "david_marketing", "custom_agent"],
@@ -68,8 +68,8 @@ export function buildFittingStrategy(input: FittingStrategyInput): FittingStrate
 
   const assumptions = [
     "Leak severity is inferred from public signals, not verified internal data.",
-    "Dollar ranges are illustrative David engagement sizes, not quotes.",
-    "Account list is demo seed data; swap in live enrichment after the hackathon.",
+    "Dollar ranges are illustrative campaign workflow sizes, not quotes.",
+    "Account list is deterministic demo seed data; swap in live enrichment only after the local loop works.",
   ];
 
   return {

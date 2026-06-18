@@ -1,4 +1,5 @@
 import re
+from pathlib import Path
 from urllib.parse import quote, urljoin, urlparse
 
 import httpx
@@ -32,6 +33,8 @@ INDUSTRY_KEYWORDS = {
 DEFAULT_DECISION_MAKERS = """Buyers: CEO, COO, VP Operations, CRO, VP Sales, Managing Partner, Practice Owner
 End-Users: front desk staff, office managers, field sales reps, patient coordinators, transaction coordinators"""
 
+FIXTURE_DIR = Path(__file__).resolve().parents[1] / "fixtures"
+
 
 def _clean(text: str) -> str:
     return re.sub(r"\s+", " ", text or "").strip()
@@ -40,12 +43,42 @@ def _clean(text: str) -> str:
 def _fetch(url: str, timeout: float = 15.0) -> str | None:
     try:
         with httpx.Client(follow_redirects=True, timeout=timeout) as client:
-            resp = client.get(url, headers={"User-Agent": "ICP-Studio/1.0"})
+            resp = client.get(url, headers={"User-Agent": "Campaign-Builder/1.0"})
             if resp.status_code == 200:
                 return resp.text
     except Exception:
         return None
     return None
+
+
+def _normalize_url(url: str) -> str:
+    if not url.startswith("http"):
+        return f"https://{url}"
+    return url
+
+
+def _host(url: str) -> str:
+    return urlparse(url).netloc.lower().split("@")[-1].split(":")[0].replace("www.", "")
+
+
+def _fixture_for_url(url: str) -> tuple[str, str] | None:
+    host = _host(url)
+    if not host:
+        return None
+
+    fixture_path = FIXTURE_DIR / f"{host}.html"
+    if not fixture_path.exists():
+        return None
+
+    return fixture_path.read_text(encoding="utf-8"), f"fixture:{fixture_path.name}"
+
+
+def _domain_company_name(url: str) -> str:
+    host = _host(url)
+    if not host:
+        return "Demo Company"
+    label = host.split(".")[0]
+    return label.replace("-", " ").replace("_", " ").title()
 
 
 def _extract_text_blocks(soup: BeautifulSoup, limit: int = 8) -> list[str]:
@@ -78,6 +111,63 @@ def _find_industries(text: str) -> list[str]:
     return found[:12]
 
 
+def _fallback_analysis(url: str) -> dict:
+    company_name = _domain_company_name(url)
+    fields = {
+        "company_name": company_name,
+        "website_url": url,
+        "core_offering": (
+            f"{company_name} appears to be a service business that can use campaign intelligence "
+            "to capture missed demand, automate follow-up, and turn operational leaks into recurring value."
+        ),
+        "best_fit_industries": ["Healthcare", "Real Estate", "Dental", "Home Improvement"],
+        "company_size": "25-200",
+        "geography": "United States / North America",
+        "decision_makers": DEFAULT_DECISION_MAKERS,
+        "pain_points": (
+            "• Leads dying on voicemail and after-hours calls\n"
+            "• Manual copy-paste between disconnected tools\n"
+            "• Failed AI experiments that never ship to production"
+        ),
+        "value_proposition": (
+            "• Measurable operational savings within weeks\n"
+            "• Custom systems wired into existing tools\n"
+            "• Flat-fee engagement with production deployment"
+        ),
+        "buying_signals": (
+            "• Hiring front desk, coordinators, or ops admins at scale\n"
+            "• Multi-location expansion without proportional back-office headcount\n"
+            "• Paying for generic AI tools with low team adoption"
+        ),
+        "disqualifiers": (
+            "• Pre-revenue or sub-10-person teams with no repeatable workflow\n"
+            "• Buyers wanting only a cheap chatbot widget\n"
+            "• No inbound phone, scheduling, or ops complexity"
+        ),
+    }
+
+    confidence = {
+        "company_name": "medium",
+        "website_url": "high",
+        "core_offering": "low",
+        "best_fit_industries": "low",
+        "company_size": "low",
+        "geography": "low",
+        "decision_makers": "medium",
+        "pain_points": "medium",
+        "value_proposition": "medium",
+        "buying_signals": "medium",
+        "disqualifiers": "medium",
+    }
+
+    return {
+        "fields": fields,
+        "confidence": confidence,
+        "sources": [f"fallback:{_host(url) or 'unknown'}"],
+        "error": None,
+    }
+
+
 def _find_subpages(base_url: str, soup: BeautifulSoup) -> list[str]:
     paths = ["/about", "/about-us", "/industries", "/services", "/pricing", "/contact"]
     urls = [base_url]
@@ -92,27 +182,23 @@ def _find_subpages(base_url: str, soup: BeautifulSoup) -> list[str]:
 
 
 def analyze_website(url: str) -> dict:
-    if not url.startswith("http"):
-        url = f"https://{url}"
+    url = _normalize_url(url)
 
-    html = _fetch(url)
+    fixture = _fixture_for_url(url)
+    html = fixture[0] if fixture else _fetch(url)
     if not html:
-        return {
-            "fields": {"website_url": url},
-            "confidence": {},
-            "sources": [],
-            "error": "Could not fetch website",
-        }
+        return _fallback_analysis(url)
 
     soup = BeautifulSoup(html, "html.parser")
     all_text = ""
-    sources = [url]
+    sources = [fixture[1] if fixture else url]
 
-    for sub_url in _find_subpages(url, soup)[1:]:
-        sub_html = _fetch(sub_url)
-        if sub_html:
-            sources.append(sub_url)
-            all_text += " " + BeautifulSoup(sub_html, "html.parser").get_text(" ")
+    if not fixture:
+        for sub_url in _find_subpages(url, soup)[1:]:
+            sub_html = _fetch(sub_url)
+            if sub_html:
+                sources.append(sub_url)
+                all_text += " " + BeautifulSoup(sub_html, "html.parser").get_text(" ")
 
     blocks = _extract_text_blocks(soup)
     all_text += " " + soup.get_text(" ")

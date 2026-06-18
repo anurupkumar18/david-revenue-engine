@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { exportOutreach, getOutreachQueue, getProfile, listProfiles } from "@/lib/icp-api";
+import { exportOutreach, getOutreachQueue, listProfiles } from "@/lib/icp-api";
 import type { ICPProfile } from "@/lib/types/icp";
 import { Button } from "@/components/ui";
 import { ContactTable } from "@/components/icp/contact-table";
@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 export function DashboardView({ profileId }: { profileId?: number }) {
   const router = useRouter();
   const [profiles, setProfiles] = useState<ICPProfile[]>([]);
-  const [selected, setSelected] = useState<ICPProfile | null>(null);
+  const [manualSelectedId, setManualSelectedId] = useState<number | null>(null);
   const [exporting, setExporting] = useState(false);
   const [exportResult, setExportResult] = useState<string | null>(null);
   const [queueCount, setQueueCount] = useState(0);
@@ -23,13 +23,8 @@ export function DashboardView({ profileId }: { profileId?: number }) {
     listProfiles().then(setProfiles);
   }, []);
 
-  useEffect(() => {
-    if (profileId) {
-      getProfile(profileId).then(setSelected);
-    } else if (profiles.length) {
-      setSelected(profiles[0]);
-    }
-  }, [profileId, profiles]);
+  const selectedId = profileId ?? manualSelectedId ?? profiles[0]?.id ?? null;
+  const selected = selectedId ? profiles.find((p) => p.id === selectedId) ?? null : null;
 
   useEffect(() => {
     if (selected) getOutreachQueue(selected.id).then((q) => setQueueCount(q.length));
@@ -52,20 +47,20 @@ export function DashboardView({ profileId }: { profileId?: number }) {
     <IcpShell maxWidth="max-w-5xl">
       <div className="mb-8 flex items-start justify-between gap-4">
         <IcpPageHeader
-          eyebrow="Profiles"
-          title="Dashboard"
-          subtitle="Saved business profiles and discovered contacts."
+          eyebrow="Campaigns"
+          title="Campaign workspace"
+          subtitle="Saved campaign profiles, client contact queues, and local campaign handoff."
         />
         <Link href="/">
-          <Button variant="solid">New profile</Button>
+          <Button variant="solid">New campaign</Button>
         </Link>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[260px_1fr]">
         <div>
-          <div className="eyebrow mb-3">Business profiles</div>
+          <div className="eyebrow mb-3">Campaign profiles</div>
           {profiles.length === 0 && (
-            <div className="panel p-4 text-sm text-ink-dim">No profiles yet.</div>
+            <div className="panel p-4 text-sm text-ink-dim">No campaigns yet.</div>
           )}
           <div className="space-y-2">
             {profiles.map((p) => (
@@ -73,7 +68,7 @@ export function DashboardView({ profileId }: { profileId?: number }) {
                 key={p.id}
                 type="button"
                 onClick={() => {
-                  setSelected(p);
+                  setManualSelectedId(p.id);
                   router.push(`/dashboard/${p.id}`);
                 }}
                 className={cn(
@@ -106,7 +101,7 @@ export function DashboardView({ profileId }: { profileId?: number }) {
               <div className="mt-6 flex flex-wrap gap-2">
                 {selected.status === "accepted" && (
                   <Link href={`/business/${selected.id}`}>
-                    <Button variant="solid">Open revenue engine</Button>
+                    <Button variant="solid">Open campaign workspace</Button>
                   </Link>
                 )}
                 {(!selected.contacts || selected.contacts.length === 0) && (
@@ -117,7 +112,7 @@ export function DashboardView({ profileId }: { profileId?: number }) {
                 {selected.contacts && selected.contacts.length > 0 && (
                   <Button variant="solid" onClick={handleExport} disabled={exporting}>
                     {exporting ? <Loader2 size={15} className="animate-spin" /> : null}
-                    Export to LinkedIn outreach
+                    Export client queue
                   </Button>
                 )}
               </div>
@@ -134,7 +129,7 @@ export function DashboardView({ profileId }: { profileId?: number }) {
             </>
           ) : (
             <div className="panel grid place-items-center py-16 text-sm text-ink-dim">
-              Select a profile or create a new one.
+              Select a campaign or create a new one.
             </div>
           )}
         </div>

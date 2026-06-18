@@ -1,19 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Sparkles } from "lucide-react";
 import { SEGMENT_LABELS } from "@/lib/constants";
 import { Button, Eyebrow } from "@/components/ui";
 import type { FittingGoal, FittingStrategyInput, Segment, SegmentFocus } from "@/lib/types";
 
 const DEFAULT_DESCRIPTION =
-  "David helps local businesses compete online through AI-powered marketing — content, lead follow-up, reviews, and conversion workflows — and builds custom AI agents and operating systems for teams with workflow leaks.";
+  "Paste a product description or website summary. The campaign builder will infer target audiences, ICP filters, buying signals, sequence copy, reply routing, and learning insights.";
 
 const GOALS: { value: FittingGoal; label: string }[] = [
-  { value: "land_recurring_retainers", label: "Land recurring retainers" },
-  { value: "fast_growth_plans", label: "Fast Growth Plans" },
-  { value: "book_fittings", label: "Book Fittings" },
-  { value: "expand_partners", label: "Expand partners / white-label" },
+  { value: "land_recurring_retainers", label: "Build recurring workflow" },
+  { value: "fast_growth_plans", label: "Fast test campaign" },
+  { value: "book_fittings", label: "Diagnose workflow demand" },
+  { value: "expand_partners", label: "Expand agencies / white-label" },
 ];
 
 const SEGMENTS: Segment[] = [
@@ -37,22 +37,20 @@ export function CampaignInput({
   defaultDescription?: string;
   onSubmit: (input: FittingStrategyInput) => void;
 }) {
-  const [productDescription, setProductDescription] = useState(defaultDescription || DEFAULT_DESCRIPTION);
+  const [editedDescription, setEditedDescription] = useState<string | null>(null);
   const [segmentFocus, setSegmentFocus] = useState<SegmentFocus>("auto");
   const [fittingGoal, setFittingGoal] = useState<FittingGoal>("book_fittings");
 
-  useEffect(() => {
-    if (defaultDescription) setProductDescription(defaultDescription);
-  }, [defaultDescription]);
+  const productDescription = editedDescription ?? defaultDescription ?? DEFAULT_DESCRIPTION;
 
   return (
     <div className="panel p-5">
       <Eyebrow>Product input</Eyebrow>
       <textarea
         value={productDescription}
-        onChange={(e) => setProductDescription(e.target.value)}
+        onChange={(e) => setEditedDescription(e.target.value)}
         rows={4}
-        placeholder="Describe the product or business David is selling…"
+        placeholder="Describe the product, website, or service you want to build an outbound campaign for..."
         className="mt-2.5 w-full resize-none rounded-[10px] border border-line bg-surface-2 px-3 py-2.5 text-[13.5px] leading-relaxed text-ink outline-none placeholder:text-ink-faint focus:border-accent/50"
       />
 
@@ -64,7 +62,7 @@ export function CampaignInput({
             onChange={(e) => setSegmentFocus(e.target.value as SegmentFocus)}
             className={`mt-1.5 ${selectCls}`}
           >
-            <option value="auto">Auto (let David choose)</option>
+            <option value="auto">Auto (let the strategist choose)</option>
             {SEGMENTS.map((s) => (
               <option key={s} value={s}>
                 {SEGMENT_LABELS[s]}
@@ -73,7 +71,7 @@ export function CampaignInput({
           </select>
         </label>
         <label className="block">
-          <span className="eyebrow">Fitting goal</span>
+          <span className="eyebrow">Campaign goal</span>
           <select
             value={fittingGoal}
             onChange={(e) => setFittingGoal(e.target.value as FittingGoal)}
@@ -95,7 +93,7 @@ export function CampaignInput({
         onClick={() => onSubmit({ productDescription, segmentFocus, fittingGoal })}
       >
         <Sparkles size={15} />
-        {loading ? "Building Fitting Strategy…" : "Build Fitting Strategy"}
+        {loading ? "Building campaign strategy..." : "Build campaign strategy"}
       </Button>
     </div>
   );

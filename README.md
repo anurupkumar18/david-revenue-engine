@@ -1,137 +1,150 @@
-# David Revenue Engine + ICP Studio
+# AI GTM Campaign Builder
 
-> **One unified app.** Build your ICP targeting profile, store it as a business profile, then run the full GTM fitting engine — strategy, outreach, reply routing, and recurring revenue pipeline.
+> Campaign intelligence, not campaign sending.
 
-This branch (`feature/icp-studio-integration`) merges ICP Studio into David Revenue Engine with a **single Next.js UI** — same dark terminal aesthetic, panels, typography, and components throughout.
+This demo turns a website URL or product description into a full outbound campaign motion:
+Product Input -> Generated Campaign Strategy -> ICP Filters -> Buying Signals -> 2-Step Sequence -> Dynamic Response Router -> Campaign Performance Tracker -> Learning Insights -> Improved Next Campaign -> Agency Workspace / Client Export.
 
-## Unified flow
+It is deterministic-first. The full loop runs locally with no API keys, no live scraping dependency, no sending infrastructure, no CRM sync, no auth, no billing, and no lead database.
 
+## Product Strategy
+
+Sales teams do not need another tool that only sends more emails. They need a strategist that figures out who to target, why now, what to say, how to respond, and how to improve the next campaign.
+
+The product creates recurring value through:
+
+- Campaign tracking
+- Outcome logging
+- Performance dashboards
+- Human approval and edit feedback
+- Self-improving campaign recommendations
+- Agency and client workspaces
+- Reusable campaign memory
+
+The app should not be positioned as an Apollo or Clay clone. The MVP is campaign intelligence before campaign sending.
+
+## Demo Loop
+
+```text
+Product input
+  -> campaign strategy
+  -> ICP filters
+  -> buying signals
+  -> 2-step sequence
+  -> reply router
+  -> campaign tracker
+  -> learning insights
+  -> improved next campaign
+  -> agency workspace / client export
 ```
-Landing (ICP) → Wizard → Review & accept → Business profile saved
-    → optional contact discovery → Revenue Engine workspace
-```
+
+## Routes
 
 | Route | Purpose |
-|-------|---------|
-| `/` | ICP landing — scrape URL or build manually |
-| `/wizard` | 3-step ICP questionnaire |
-| `/review` | Accept/reject profile |
-| `/discover/:id` | Public contact discovery |
-| `/business/:id` | **Revenue engine** (original workspace) |
-| `/dashboard` | Recover saved business profiles |
+| --- | --- |
+| `/` | Campaign landing - fixture-backed URL input or manual campaign start |
+| `/wizard` | 3-step campaign profile builder |
+| `/review` | Accept/reject campaign profile |
+| `/discover/:id` | Deterministic contact discovery handoff |
+| `/business/:id` | Campaign workspace |
+| `/dashboard` | Recover saved campaign profiles |
+| `/dashboard/:id` | Campaign profile contacts and export queue |
 
-## Quickstart (full stack)
+## Quickstart
+
+```bash
+npm install
+npm run smoke
+npm run verify:campaign
+npm run dev
+```
+
+For the full stack:
 
 ```bash
 chmod +x start.sh
 ./start.sh
 ```
 
-Open **http://localhost:3000** (Next.js) — API proxied to FastAPI on port 8000.
+Open `http://localhost:3000`. The Next.js app proxies API calls to FastAPI on port 8000.
 
 Or run separately:
 
 ```bash
-# Terminal 1 — ICP API (profiles, contacts, revenue state)
+# Terminal 1 - campaign profile API
 cd backend && python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 uvicorn main:app --reload --port 8000
 
-# Terminal 2 — Next.js UI
-npm install && npm run dev
-```
-
-Data: `~/.icp-studio/data.db` (profiles, contacts, outreach queue, revenue state)
-
----
-
-> **The sales brain for David AI.** It finds businesses leaking time, leads, or margin, diagnoses the right David offer path, writes the outreach, and routes every reply into the fastest path to recurring revenue.
-
-This is a 24-hour hackathon MVP. It is **not** a generic Apollo/Clay clone — it's a GTM Fitting Engine positioned entirely around how David makes recurring revenue (David Marketing retainers, Growth Plans, The Fitting, Custom Agents, Custom AI OS builds, Embedded AI Teams, White-label Deployments, and the Partner Program).
-
-## The demo loop
-
-```
-Product input → Fitting Strategy → target accounts → Leaks & Levers →
-Fitting Score → Revenue Opportunity Score → Recommended David Offer Path →
-land-and-expand plan → Conversion Outreach → Fast Conversion Router →
-Revenue Pipeline update
-```
-
-Every account visibly answers: *who to sell to, what leak makes them buy, which David offer to route them into, how much recurring revenue they're worth, and the fastest next conversion action.*
-
-## Quickstart
-
-```bash
+# Terminal 2 - Next.js UI
 npm install
-npm run smoke    # proves the deterministic engine works with NO API key
-npm run dev      # http://localhost:3000
+npm run dev
 ```
 
-The entire demo runs **with zero API keys**. Everything is deterministic seed data + a deterministic scoring/routing/outreach/reply engine.
+Local data lives at `~/.icp-studio/data.db`. The internal table names still use the original ICP profile schema, but the product surface treats those rows as campaign profiles.
 
-## Optional: enable the Claude layer
+## Required Verification
 
-Copy `.env.local.example` → `.env.local` and add a key:
-
-```env
-ANTHROPIC_API_KEY=sk-ant-...
-# ANTHROPIC_MODEL=claude-opus-4-8   # optional override
-```
-
-When a key is present, the three API routes (Fitting Strategy, Conversion Outreach, Fast Conversion Router) use Claude (`claude-opus-4-8`, structured outputs) to author copy. **Every route falls back to the deterministic engine** when the key is absent or any call fails — the demo never depends on it. LLM-authored outreach is only used if it passes the same compliance validators as the deterministic copy.
-
-## Scripts
-
-| Command | What it does |
-|---|---|
-| `npm run dev` | Run the app locally |
-| `npm run smoke` | Run the deterministic engine end-to-end and assert invariants (no network) |
-| `npm run typecheck` | `tsc --noEmit` |
-| `npm run build` | Production build |
+| Command | What it proves |
+| --- | --- |
+| `npm run smoke` | Deterministic account engine plus campaign strategy, filters, signals, sequence, metrics, learning, and pricing invariants |
+| `npm run verify:campaign` | Fixture/manual product input -> campaign profile creation -> accepted-profile handoff -> sequence copy/approval events -> reply routing/outcome logging -> persisted metrics and learning insights |
+| `npm run typecheck` | TypeScript compile check |
 | `npm run lint` | ESLint |
+| `npm run build` | Production build |
 
 ## Architecture
 
-- **`backend/`** — FastAPI + SQLite for ICP profiles, contact discovery, outreach queue, revenue state persistence
-- **`components/icp/`** — ICP wizard, review, dashboard (styled with the same revenue engine theme)
-- **`components/business-profile-workspace.tsx`** — Loads business profile → hydrates Zustand store → renders `<Workspace />`
-- **`lib/icp-bridge.ts`** — Maps accepted ICP fields to revenue accounts + fitting strategy
-- **`linkedin-outreach/`** — Semi-auto LinkedIn CLI (reads same SQLite DB)
+- `lib/` is the deterministic brain and source of truth.
+- `lib/campaign.ts` defines campaign-level state: input, strategy, filters, signals, two-step sequence, events, metrics, learning insights, next campaign, agency workspace, and pricing tiers.
+- `lib/icp-bridge.ts` maps accepted campaign profiles into deterministic accounts, strategy, and persisted revenue/campaign state.
+- `backend/` is FastAPI + SQLite for local profile, contact, outreach queue, and revenue-state persistence.
+- `backend/fixtures/` contains fixture-backed website scrape inputs so `getdavid.ai` tests do not depend on network luck.
+- `data/campaign-fixtures/` contains deterministic campaign verification inputs.
+- `components/icp/` is the campaign profile builder shell.
+- `components/` renders the campaign workspace: input, strategy, ICP filters, buying signals, two-step sequence, dynamic response router, tracker, learning insights, pipeline board, and agency export.
+- `app/api/{fitting/analyze,outreach/generate,replies/route}` are optional Claude proxies. Each route falls back to deterministic logic and the demo must work without `ANTHROPIC_API_KEY`.
 
-### Revenue engine (unchanged UI)
-  - `types.ts` — domain types (`RevenueAccount`, `DavidLeakType`, `DavidOfferPath`, `LandAndExpandPlan`, scores…)
-  - `constants.ts` — offer-path metadata, leak metadata, leak→offer routing, CTAs, $ ranges
-  - `scoring.ts` — Fitting Score + Revenue Opportunity Score (weighted formulas, grades)
-  - `routing.ts` — leak → David offer path, land-and-expand plan, revenue model, rationale
-  - `outreach.ts` — deterministic 2-step sequence generator (always passes validators)
-  - `reply-router.ts` — keyword reply classifier → intent/stage/suppression + offer-aware templates
-  - `validators.ts` — outbound copy rules (lowercase 2–4 word subjects, <100-word bodies, leak reference, low-friction CTA, no invented claims)
-  - `strategy.ts` — deterministic Fitting Strategy generator
-  - `seed.ts` — turns `data/seed-accounts.json` into fully scored + routed `RevenueAccount[]`
-  - `store.ts` — Zustand client store (accounts, pipeline, drawer, strategy, outreach, routing)
-  - `llm.ts` / `prompts.ts` — optional Claude layer + prompts/JSON schemas
-- **`app/api/` — optional LLM proxies**, each with a deterministic fallback:
-  - `fitting/analyze` · `outreach/generate` · `replies/route`
-- **`components/` — the UI** (single-page, anchored sections): hero + KPIs, Fitting Strategy, Account Workspace + Revenue Opportunity drawer, Conversion Outreach, Fast Conversion Router, Revenue Pipeline board.
-- **`data/`** — `seed-accounts.json` (15 prospects across local / applied-AI / partner buckets), `seed-replies.json`.
-- **`scripts/smoke.ts`** — the keyless smoke test.
+## Campaign Metrics
 
-## Stack
+The deterministic campaign state tracks:
 
-Next.js 16 (App Router) · React 19 · TypeScript · Tailwind v4 · Zustand · lucide-react · `@anthropic-ai/sdk`. Hand-rolled UI primitives (no component-library dependency). Dark "revenue-intelligence terminal" theme; fonts via Google Fonts `<link>` with system fallbacks.
+- Campaigns created
+- Filters copied
+- Sequences copied
+- Replies routed
+- Positive reply rate
+- Meeting rate
+- Bad-fit rate
+- Winning signal
+- Common objection
+- Human edit rate
+- Approval rate
 
-## Non-negotiables (from the planning docs)
+## Pricing Mock
 
-- Seed data + deterministic flow first; the demo must work with **no API keys**.
-- **Do not** build real email sending, auth, CRM integration, scraping, or billing.
-- Every account must show how it becomes recurring revenue for David.
-- Outbound copy must follow the rules in `validators.ts`; unsubscribe replies are suppressed with no persuasion.
+- Free
+- Starter
+- Pro
+- Team
+- Agency
+- Enterprise
+- White-label
 
-## Status
+## Boundaries
 
-Built: deterministic engine, app shell + demo console, account workspace + Revenue Opportunity drawer, Fitting Strategy, Conversion Outreach, Fast Conversion Router → Revenue Pipeline, optional Claude layer.
+Do not build these in this MVP:
 
-Remaining polish ideas: richer loading/empty states, mobile pass, deploy to Vercel, pitch script. None are required for the core demo loop.
+- Real email sending
+- Auth
+- CRM integration
+- Billing
+- Multi-tenant permissions
+- Massive lead database
+- Live scraping dependency for tests
 
-🤖 Built with [Claude Code](https://claude.com/claude-code)
+LLM and live APIs are optional enhancements after the deterministic demo loop is green.
+
+## David-Specific Language
+
+David-specific offer language is only appropriate when David is the input campaign. Generic product inputs should show neutral campaign angles such as local demand capture, workflow diagnostic, workflow automation, channel expansion, or partner campaign.

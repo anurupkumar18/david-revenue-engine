@@ -12,8 +12,8 @@ export function ProgressRail({ steps, current }: { steps: Step[]; current: numbe
   return (
     <aside className="hidden w-56 shrink-0 lg:block">
       <div className="sticky top-24">
-        <div className="eyebrow mb-1">ICP Builder</div>
-        <div className="mb-6 font-display text-lg font-bold text-ink">Target profile</div>
+        <div className="eyebrow mb-1">Campaign Builder</div>
+        <div className="mb-6 font-display text-lg font-bold text-ink">Campaign profile</div>
         <div className="space-y-1">
           {steps.map((step, i) => (
             <div

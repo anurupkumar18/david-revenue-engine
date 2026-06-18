@@ -1,7 +1,6 @@
 "use client";
 
 import { INDUSTRY_PRESETS } from "@/lib/types/icp";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui";
 
 export function TagInput({

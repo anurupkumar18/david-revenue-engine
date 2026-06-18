@@ -11,7 +11,7 @@ export function DemoConsole() {
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="eyebrow mr-1">Load book</span>
+      <span className="eyebrow mr-1">Load campaign set</span>
       {DEMO_SCENARIOS.map((s) => (
         <Button
           key={s.key}

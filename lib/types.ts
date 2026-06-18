@@ -1,8 +1,8 @@
-// David Revenue Engine — core domain types.
+// AI GTM Campaign Builder core domain types.
 // Source of truth for the deterministic revenue brain. No UI, no LLM here.
 
 // ---------------------------------------------------------------------------
-// David offer paths (how David makes money)
+// Internal campaign angle keys. The legacy type name is kept for compatibility.
 // ---------------------------------------------------------------------------
 
 export type DavidOfferPath =
@@ -83,7 +83,7 @@ export type Grade = "A" | "B" | "C" | "D";
 // Scores
 // ---------------------------------------------------------------------------
 
-/** Fitting Score = how well the account fits a David engagement. */
+/** Fit Score = how well the account fits a campaign hypothesis. */
 export type FittingScore = {
   fitScore: number; // ICP fit, 0-100
   signalScore: number; // leak strength/freshness, 0-100

@@ -5,7 +5,7 @@ export function RevenueOpportunityBadge({ score }: { score: RevenueOpportunitySc
   return (
     <ScoreCard
       eyebrow="Revenue Opportunity"
-      subtitle="How much recurring revenue this account can become for David."
+      subtitle="How much recurring campaign value this account can create."
       total={score.total}
       grade={score.grade}
       accentBar="bg-cyan"
