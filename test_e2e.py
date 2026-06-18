@@ -146,5 +146,64 @@ if sample_state.get("lastRouted"):
     assert saved["lastRouted"]["applied"] is True
 print("   OK")
 
+print("11. Simulate inbound reply and review inbox flow...")
+r = client.post(
+    "/api/email/simulate-inbound",
+    json={
+        "profile_id": profile_id,
+        "account_id": "test-1",
+        "contact_email": "prospect@example.com",
+        "subject": "need more info",
+        "body": "Can you send more info about the missed calls angle?",
+        "grade": "D",
+    },
+)
+assert r.status_code == 200, r.text
+thread_result = r.json()
+thread = thread_result["thread"]
+thread_id = thread["thread_id"]
+assert thread["draft"]["subject"]
+assert thread["draft"]["body"]
+assert thread["routed"]["intent"] == "asks_for_info"
+assert thread_result["decision"]["auto_send"] is False
+assert thread["draft"]["validation"]["passed"] is True
+
+r = client.get(f"/api/threads/{profile_id}")
+assert r.status_code == 200, r.text
+threads = r.json()["threads"]
+assert any(item["thread_id"] == thread_id for item in threads)
+
+r = client.patch(f"/api/threads/{thread_id}", json={"action": "send"})
+assert r.status_code == 200, r.text
+patched = r.json()
+assert patched["status"] == "sent"
+
+r = client.get(f"/api/threads/detail/{thread_id}")
+assert r.status_code == 200, r.text
+detail = r.json()
+assert detail["thread_id"] == thread_id
+assert any(msg["direction"] == "inbound" for msg in detail["messages"])
+
+print("   OK")
+
+print("12. Generate and store a brief...")
+r = client.post(f"/api/briefs/{profile_id}/run", json={"period": "daily"})
+assert r.status_code == 200, r.text
+brief = r.json()
+assert brief["period"] == "daily"
+assert brief["narrative"]
+assert len(brief["recommendations"]) >= 2
+
+r = client.get(f"/api/briefs/{profile_id}")
+assert r.status_code == 200, r.text
+briefs = r.json()["briefs"]
+assert any(item["period"] == "daily" for item in briefs)
+
+r = client.get("/api/briefs")
+assert r.status_code == 200, r.text
+assert any(item["profile_id"] == profile_id for item in r.json()["briefs"])
+
+print("   OK")
+
 print("\nAll campaign E2E tests passed!")
 print(f"Test DB: {test_dir / 'data.db'}")

@@ -176,6 +176,8 @@ Verify APIs: `npm run verify:email` (backend must be running on port 8000).
 
 Manual E2E: connect mailbox as `sanjay.bhatia@quantiedge.com`, test send to that address, enroll a sequence using real `ICPContact.email` values from discovered contacts. `cd backend && python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt`, then `npm run test:backend`.
 
+To exercise the automated back-and-forth email loop locally, run `npm run verify:email-loop` after the stack is up. It creates a demo profile, sends a sequence, drains the queue, and simulates two inbound replies through the same thread.
+
 ## David-Specific Language
 
 David-specific offer language is only appropriate when David is the input campaign. Generic product inputs should show neutral campaign angles such as local demand capture, workflow diagnostic, workflow automation, channel expansion, or partner campaign.

@@ -14,8 +14,10 @@ import {
   recomputeCampaign,
 } from "../lib/campaign";
 import type { CampaignEvent } from "../lib/campaign";
+import { buildBrief } from "../lib/brief";
 import { INTENT_LABELS, OFFER_PATHS, RECURRING_POTENTIAL_LABELS } from "../lib/constants";
 import { buildAccountsForProfile, icpFieldsToStrategyInput } from "../lib/icp-bridge";
+import { buildReplyDraft } from "../lib/reply-conversation";
 import { buildOutreachSequence } from "../lib/outreach";
 import { routeReply } from "../lib/reply-router";
 import { scheduleStepTwo, shouldAutoSend } from "../lib/sending";
@@ -96,6 +98,33 @@ for (const r of replies) {
 const unsub = routeReply("please remove me from your list");
 check(unsub.shouldSuppress && unsub.updatePipelineStage === "suppressed", "Unsubscribe must suppress");
 
+// ---- Reply conversations -------------------------------------------------
+console.log(`\n${line}\nReply conversations:\n`);
+const positiveDraft = buildReplyDraft("sure, happy to chat next week", {
+  companyName: hero.name,
+  primaryLeakLabel: hero.leaks[0].label,
+  offerPathLabel: campaignAngleLabel(hero.recommendedDavidOfferPath, null),
+  firstConversionAction: campaignCopy(hero.nextBestConversionAction, null),
+});
+console.log(
+  `  ${positiveDraft.validation.passed ? "✓" : "✗"} positive draft intent=${positiveDraft.routed.intent} subject="${positiveDraft.subject}"`,
+);
+check(positiveDraft.routed.intent === "positive_call", "reply draft must reuse reply router intent");
+check(positiveDraft.validation.passed, "positive reply draft must pass validation");
+check(positiveDraft.body.includes(hero.leaks[0].label), "positive reply draft must reference the leak");
+
+const suppressDraft = buildReplyDraft("please remove me from your list", {
+  companyName: hero.name,
+  primaryLeakLabel: hero.leaks[0].label,
+  offerPathLabel: campaignAngleLabel(hero.recommendedDavidOfferPath, null),
+  firstConversionAction: campaignCopy(hero.nextBestConversionAction, null),
+});
+console.log(
+  `  ${suppressDraft.validation.passed ? "✓" : "✗"} unsubscribe draft intent=${suppressDraft.routed.intent}`,
+);
+check(suppressDraft.routed.shouldSuppress, "unsubscribe draft must suppress");
+check(suppressDraft.validation.passed, "unsubscribe draft must still be compliant");
+
 // ---- Outreach validation --------------------------------------------------
 console.log(`\n${line}\nOutreach validation:\n`);
 for (const a of accounts.slice(0, 3)) {
@@ -149,6 +178,32 @@ check(campaign.metrics.commonObjection.length > 0, "Campaign metrics must includ
 check(campaign.learningInsights.nextCampaignRecommendation.length > 0, "Learning insights must include next-campaign recommendation");
 check(campaign.nextCampaign.improvements.length >= 3, "Improved next campaign needs recommendations");
 check(CAMPAIGN_PRICING_TIERS.length === 7, "Pricing mock must include seven tiers");
+
+// ---- Briefs ---------------------------------------------------------------
+console.log(`\n${line}\nBriefs:\n`);
+const brief = buildBrief({
+  period: "daily",
+  periodStart: "2026-06-17",
+  periodEnd: "2026-06-18",
+  campaign,
+  counts: {
+    sent: 12,
+    inbound: 4,
+    routed: 4,
+    positive: 2,
+    meetings: 1,
+    badFits: 1,
+    approvals: 3,
+    edits: 1,
+    suppressed: 1,
+  },
+});
+console.log(`  period              : ${brief.period} (${brief.periodStart} → ${brief.periodEnd})`);
+console.log(`  narrative           : ${brief.narrative.slice(0, 96)}...`);
+check(brief.counts.sent === 12, "brief should preserve send counts");
+check(brief.metrics.winningSignal === campaign.metrics.winningSignal, "brief should reuse campaign learning");
+check(brief.narrative.length > 20, "brief narrative must be non-empty");
+check(brief.recommendations.length >= 2, "brief should surface recommendations");
 
 // ---- Self-improving loop: recompute from real events ----------------------
 // The tracker/learning must reflect *actual* logged events, not a static seed.

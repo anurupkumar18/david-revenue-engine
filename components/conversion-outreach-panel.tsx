@@ -27,7 +27,7 @@ function CopyButton({ text, onCopy }: { text: string; onCopy?: () => void }) {
         onCopy?.();
         setTimeout(() => setCopied(false), 1200);
       }}
-      className="inline-flex items-center gap-1 rounded-md border border-line px-2 py-1 font-mono text-[10px] text-ink-dim transition-colors hover:bg-surface-2 hover:text-ink"
+      className="inline-flex items-center gap-1 rounded-md border border-line px-2 py-1 font-mono text-[10px] text-ink-dim transition-colors hover:bg-white/5 hover:text-ink"
     >
       {copied ? <Check size={11} className="text-accent" /> : <Copy size={11} />}
       {copied ? "copied" : "copy"}
@@ -37,7 +37,7 @@ function CopyButton({ text, onCopy }: { text: string; onCopy?: () => void }) {
 
 function StepCard({ step, onCopy }: { step: EmailStep; onCopy?: () => void }) {
   return (
-    <div className="panel-2 p-4">
+    <div className="panel-2 p-5">
       <div className="mb-2 flex items-center justify-between gap-2">
         <span className="font-mono text-[11px] text-ink-faint">
           Step {step.stepNumber} · {step.wordCount} words
@@ -57,7 +57,7 @@ function StepCard({ step, onCopy }: { step: EmailStep; onCopy?: () => void }) {
 
 function CampaignStepCard({ step, onCopy }: { step: CampaignSequenceStep; onCopy?: () => void }) {
   return (
-    <div className="panel-2 p-4">
+    <div className="panel-2 p-5">
       <div className="mb-2 flex items-center justify-between gap-2">
         <span className="font-mono text-[11px] text-ink-faint">
           Step {step.stepNumber} · {step.bodyWordCount} words · {step.approvalStatus}
@@ -110,14 +110,14 @@ export function ConversionOutreachPanel() {
   }
 
   return (
-    <div className="panel p-5">
-      <div className="flex flex-wrap items-end gap-3">
+    <div className="panel p-6">
+      <div className="flex flex-wrap items-end gap-4">
         <label className="flex-1">
           <span className="eyebrow">Account</span>
           <select
             value={accountId}
             onChange={(e) => selectAccount(e.target.value)}
-            className="mt-1.5 w-full rounded-[10px] border border-line bg-surface-2 px-3 py-2 text-sm text-ink outline-none focus:border-accent/50"
+            className="mt-1.5 w-full rounded-[12px] border border-line bg-surface-2/80 px-3 py-2.5 text-[13px] text-ink outline-none focus:border-accent/50"
           >
             {accounts.map((a) => (
               <option key={a.id} value={a.id}>
@@ -129,7 +129,7 @@ export function ConversionOutreachPanel() {
 
         <div>
           <span className="eyebrow">Tone</span>
-          <div className="mt-1.5 flex gap-1">
+          <div className="mt-1.5 flex gap-1.5">
             {TONES.map((t) => (
               <button
                 key={t}
@@ -138,7 +138,7 @@ export function ConversionOutreachPanel() {
                   "rounded-md border px-2.5 py-2 font-mono text-[11px] transition-colors",
                   tone === t
                     ? "border-accent/50 bg-accent/10 text-accent"
-                    : "border-line text-ink-dim hover:bg-surface-2",
+                    : "border-line text-ink-dim hover:bg-white/5",
                 )}
               >
                 {TONE_LABEL[t]}
@@ -154,7 +154,7 @@ export function ConversionOutreachPanel() {
       </div>
 
       {account && (
-        <div className="mt-3 flex flex-wrap items-center gap-2 text-[12px] text-ink-dim">
+        <div className="mt-4 flex flex-wrap items-center gap-2 text-[12.5px] text-ink-dim">
           <Mail size={13} className="text-ink-faint" />
           Campaign angle
           <OfferPathChip
@@ -166,7 +166,7 @@ export function ConversionOutreachPanel() {
       )}
 
       {sequence ? (
-        <div className="mt-4">
+        <div className="mt-5">
           <div className="mb-2 flex items-center justify-between">
             <Eyebrow>Two-step sequence</Eyebrow>
             <SourceBadge source={sequence.source} />
@@ -182,7 +182,7 @@ export function ConversionOutreachPanel() {
           </div>
         </div>
       ) : campaignSequence ? (
-        <div className="mt-4">
+        <div className="mt-5">
           <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
             <Eyebrow>Approved two-step sequence</Eyebrow>
             <div className="flex items-center gap-2">
@@ -212,8 +212,8 @@ export function ConversionOutreachPanel() {
           </div>
         </div>
       ) : (
-        <div className="mt-4 grid place-items-center rounded-[12px] border border-dashed border-line py-10 text-center">
-          <p className="text-sm text-ink-dim">
+        <div className="mt-5 grid place-items-center rounded-[14px] border border-dashed border-line py-14 text-center">
+          <p className="text-[14px] text-ink-dim">
             No sequence yet. Pick an account and generate signal-based outreach.
           </p>
         </div>

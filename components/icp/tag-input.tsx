@@ -27,7 +27,7 @@ export function TagInput({
 
   return (
     <div>
-      <div className="flex min-h-[44px] flex-wrap items-center gap-2 rounded-[10px] border border-line bg-surface-2 px-3 py-2">
+      <div className="flex min-h-[46px] flex-wrap items-center gap-2 rounded-[12px] border border-line bg-surface-2/80 px-3 py-2.5">
         {tags.map((tag) => (
           <span
             key={tag}
@@ -48,10 +48,10 @@ export function TagInput({
           type="text"
           placeholder="Type and press Enter…"
           onKeyDown={handleKeyDown}
-          className="min-w-[120px] flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-ink-faint"
+          className="min-w-[120px] flex-1 bg-transparent text-[13px] text-ink outline-none placeholder:text-ink-faint"
         />
       </div>
-      <div className="mt-2 flex flex-wrap gap-1.5">
+      <div className="mt-2.5 flex flex-wrap gap-1.5">
         {INDUSTRY_PRESETS.filter((p) => !tags.includes(p))
           .slice(0, 8)
           .map((preset) => (

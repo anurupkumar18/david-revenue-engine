@@ -61,9 +61,9 @@ function JobRow({
 }) {
   const when = job.scheduled_at ? new Date(job.scheduled_at).toLocaleString() : "—";
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line py-2.5 first:border-t-0">
+    <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line py-3 first:border-t-0">
       <div className="min-w-0">
-        <div className="truncate text-[13px] text-ink">
+        <div className="truncate text-[13.5px] text-ink">
           <span className="font-mono text-[11px] text-ink-faint">step {job.step}</span> · {job.subject}
         </div>
         <div className="truncate font-mono text-[11px] text-ink-faint">
@@ -245,6 +245,40 @@ export function SendingPanel() {
           <div className="mb-1 flex items-center gap-2">
             <CalendarClock size={13} className="text-ink-faint" />
             <Eyebrow>Send queue</Eyebrow>
+      <div className="panel p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-[13.5px] text-ink-dim">
+            <Mail size={14} className="text-ink-faint" />
+            Sends are <span className="text-ink">simulated</span> in the keyless demo · go live by setting <span className="font-mono text-[11px] text-cyan">RESEND_API_KEY</span>
+          </div>
+        {cap && (
+          <span className="font-mono text-[11px] text-ink-faint">
+            daily cap {cap.cap - cap.remaining}/{cap.cap}
+          </span>
+        )}
+      </div>
+
+      <div className="mt-5 flex flex-wrap gap-2">
+        <Button variant="solid" disabled={busy || !campaign || enrollable.length === 0} onClick={start}>
+          <Send size={15} />
+          {busy ? "Working…" : `Start sequence (${enrollable.length})`}
+        </Button>
+        <Button variant="ghost" disabled={busy || jobs.length === 0} onClick={processQueue}>
+          <Play size={15} />
+          Process queue now
+        </Button>
+      </div>
+
+      {note && <p className="mt-3 text-[13px] text-ink-dim">{note}</p>}
+
+      <div className="mt-4">
+        <div className="mb-1 flex items-center gap-2">
+          <CalendarClock size={13} className="text-ink-faint" />
+          <Eyebrow>Send queue</Eyebrow>
+        </div>
+        {jobs.length === 0 ? (
+          <div className="grid place-items-center rounded-[14px] border border-dashed border-line py-12 text-center">
+            <p className="text-[14px] text-ink-dim">No sends scheduled yet. Start the sequence to enroll accounts.</p>
           </div>
           {jobs.length === 0 ? (
             <div className="grid place-items-center rounded-[12px] border border-dashed border-line py-8 text-center">

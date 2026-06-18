@@ -47,41 +47,41 @@ export function CampaignStrategyPanel() {
   if (!campaign) return <EmptyCampaignState />;
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
-      <div className="panel p-5">
+    <div className="grid gap-5 lg:grid-cols-[1.12fr_0.88fr]">
+      <div className="panel p-6">
         <div className="flex items-start gap-3">
-          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-accent/30 bg-accent/10 text-accent">
+          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-[13px] border border-accent/30 bg-accent/10 text-accent">
             <SlidersHorizontal size={18} />
           </div>
           <div>
             <Eyebrow>Generated Campaign Strategy</Eyebrow>
-            <h3 className="mt-2 font-display text-2xl font-bold text-ink">
+            <h3 className="mt-2 font-display text-[clamp(1.9rem,1.3vw+1rem,3rem)] font-semibold leading-[1.02] text-ink">
               {campaign.strategy.positioningAngle}
             </h3>
-            <p className="mt-3 text-[14px] leading-relaxed text-ink-dim">
+            <p className="mt-4 max-w-2xl text-[15px] leading-[1.8] text-ink-dim">
               {campaign.strategy.audienceSummary}
             </p>
           </div>
         </div>
 
-        <div className="mt-5 rounded-[14px] border border-line bg-surface-2/60 p-4">
+        <div className="mt-6 rounded-[14px] border border-line bg-surface-2/70 p-5">
           <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-faint">
             Product input
           </div>
-          <div className="mt-2 font-display text-lg font-bold text-ink">
+          <div className="mt-2 font-display text-[22px] font-semibold text-ink">
             {campaign.input.productName}
           </div>
-          <p className="mt-1 text-[13px] leading-relaxed text-ink-dim">
+          <p className="mt-2 text-[14px] leading-[1.75] text-ink-dim">
             {campaign.input.productDescription}
           </p>
         </div>
       </div>
 
-      <div className="panel p-5">
+      <div className="panel p-6">
         <Eyebrow>Strategy assumptions</Eyebrow>
-        <ul className="mt-4 space-y-3">
+        <ul className="mt-5 space-y-4">
           {campaign.strategy.assumptions.map((assumption) => (
-            <li key={assumption} className="flex gap-2 text-[13px] leading-relaxed text-ink-dim">
+            <li key={assumption} className="flex gap-2 text-[13.5px] leading-[1.75] text-ink-dim">
               <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
               {assumption}
             </li>
@@ -108,7 +108,7 @@ export function CampaignFiltersSignalsPanel() {
 
   return (
     <div className="grid gap-5 lg:grid-cols-2">
-      <div className="panel p-5">
+      <div className="panel p-6">
         <div className="mb-4 flex items-center justify-between">
           <Eyebrow>ICP Filters</Eyebrow>
           <Button size="sm" variant="outline" onClick={copyFilters}>
@@ -116,31 +116,31 @@ export function CampaignFiltersSignalsPanel() {
             {copied ? "Copied" : "Copy filters"}
           </Button>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-3.5">
           {campaign.strategy.icpFilters.map((filter) => (
-            <div key={filter.id} className="rounded-[12px] border border-line bg-surface-2/60 p-3.5">
+            <div key={filter.id} className="rounded-[14px] border border-line bg-surface-2/70 p-4">
               <div className="flex items-center justify-between gap-3">
-                <div className="font-display text-sm font-semibold text-ink">{filter.label}</div>
+                <div className="font-display text-[15px] font-semibold text-ink">{filter.label}</div>
                 <span className="font-mono text-[10px] text-accent">filter</span>
               </div>
-              <div className="mt-1 text-[13px] text-ink">{filter.value}</div>
-              <p className="mt-1.5 text-[12px] leading-relaxed text-ink-faint">{filter.rationale}</p>
+              <div className="mt-1.5 text-[14px] text-ink">{filter.value}</div>
+              <p className="mt-2 text-[12.5px] leading-[1.75] text-ink-faint">{filter.rationale}</p>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="panel p-5">
+      <div className="panel p-6">
         <div className="mb-4 flex items-center gap-2">
           <Signal size={15} className="text-amber" />
           <Eyebrow>Buying Signals</Eyebrow>
         </div>
-        <div className="grid gap-3">
+        <div className="grid gap-3.5">
           {campaign.strategy.buyingSignals.map((signal) => (
-            <div key={signal.id} className="panel-2 p-3.5">
-              <div className="font-display text-sm font-semibold text-ink">{signal.label}</div>
-              <p className="mt-1 text-[12.5px] leading-relaxed text-ink-dim">{signal.description}</p>
-              <span className="mt-2 inline-flex rounded-md border border-line px-2 py-0.5 font-mono text-[10px] text-ink-faint">
+            <div key={signal.id} className="panel-2 p-4">
+              <div className="font-display text-[15px] font-semibold text-ink">{signal.label}</div>
+              <p className="mt-1.5 text-[13px] leading-[1.75] text-ink-dim">{signal.description}</p>
+              <span className="mt-3 inline-flex rounded-md border border-line px-2 py-0.5 font-mono text-[10px] text-ink-faint">
                 {signal.source.replace(/_/g, " ")}
               </span>
             </div>
@@ -160,7 +160,7 @@ export function CampaignPerformanceTracker() {
   const roi = computeRoi(accounts, m);
 
   return (
-    <div className="panel p-5">
+    <div className="panel p-6">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <LineChart size={16} className="text-accent" />
@@ -175,27 +175,27 @@ export function CampaignPerformanceTracker() {
         </Button>
       </div>
 
-      <div className="mb-4 grid gap-3 sm:grid-cols-3">
-        <div className="rounded-[12px] border border-accent/25 bg-accent/[0.06] p-3.5">
+      <div className="mb-5 grid gap-3 sm:grid-cols-3">
+        <div className="rounded-[14px] border border-accent/25 bg-accent/[0.06] p-4">
           <div className="font-mono text-[10px] uppercase tracking-wider text-ink-faint">
             Qualified pipeline
           </div>
-          <div className="mt-1 font-display text-2xl font-bold text-ink">
+          <div className="mt-1 font-display text-[28px] font-semibold text-ink">
             {fmtMoneyCompact(roi.qualifiedPipelineAnnual)}
-            <span className="ml-0.5 text-sm text-ink-faint">/yr</span>
+            <span className="ml-0.5 text-base text-ink-faint">/yr</span>
           </div>
         </div>
-        <div className="rounded-[12px] border border-line bg-surface-2/60 p-3.5">
+        <div className="rounded-[14px] border border-line bg-surface-2/70 p-4">
           <div className="font-mono text-[10px] uppercase tracking-wider text-ink-faint">
             On-target vs cold list
           </div>
-          <div className="mt-1 font-display text-2xl font-bold text-accent">{roi.liftVsBaseline}×</div>
+          <div className="mt-1 font-display text-[28px] font-semibold text-accent">{roi.liftVsBaseline}×</div>
         </div>
-        <div className="rounded-[12px] border border-line bg-surface-2/60 p-3.5">
+        <div className="rounded-[14px] border border-line bg-surface-2/70 p-4">
           <div className="font-mono text-[10px] uppercase tracking-wider text-ink-faint">
             Projected meetings
           </div>
-          <div className="mt-1 font-display text-2xl font-bold text-ink">{roi.projectedMeetings}</div>
+          <div className="mt-1 font-display text-[28px] font-semibold text-ink">{roi.projectedMeetings}</div>
         </div>
       </div>
       <div className="mb-4 flex items-center gap-2">
@@ -205,13 +205,13 @@ export function CampaignPerformanceTracker() {
         </span>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard label="Campaigns created" value={`${m.campaignsCreated}`} detail="Users come back to create more campaigns." />
         <MetricCard label="Filters copied" value={`${m.filtersCopied}`} detail="ICP strategy becomes reusable workflow." />
         <MetricCard label="Sequences copied" value={`${m.sequencesCopied}`} detail="Approved copy can leave the system, but sending is external." />
         <MetricCard label="Replies routed" value={`${m.repliesRouted}`} detail="The router feeds learning without owning the inbox." />
       </div>
-      <div className="mt-4 grid gap-4 lg:grid-cols-3">
+      <div className="mt-5 grid gap-4 lg:grid-cols-3">
         {[
           ["Positive reply rate", m.positiveReplyRate],
           ["Meeting rate", m.meetingRate],
@@ -227,13 +227,13 @@ export function CampaignPerformanceTracker() {
             <ScoreMeter value={Number(value)} />
           </div>
         ))}
-        <div className="rounded-[12px] border border-amber/25 bg-amber/[0.07] p-3">
+        <div className="rounded-[14px] border border-amber/25 bg-amber/[0.07] p-4">
           <div className="font-mono text-[11px] text-amber">winning signal</div>
-          <div className="mt-1 text-sm font-semibold text-ink">{m.winningSignal}</div>
+          <div className="mt-1 text-[14px] font-semibold text-ink">{m.winningSignal}</div>
         </div>
-        <div className="rounded-[12px] border border-danger/25 bg-danger/[0.07] p-3">
+        <div className="rounded-[14px] border border-danger/25 bg-danger/[0.07] p-4">
           <div className="font-mono text-[11px] text-danger">common objection</div>
-          <div className="mt-1 text-sm font-semibold text-ink">{m.commonObjection}</div>
+          <div className="mt-1 text-[14px] font-semibold text-ink">{m.commonObjection}</div>
         </div>
       </div>
     </div>
@@ -246,26 +246,26 @@ export function LearningInsightsPanel() {
 
   return (
     <div className="grid gap-5 lg:grid-cols-2">
-      <div className="panel p-5">
+      <div className="panel p-6">
         <Eyebrow>Learning Insights</Eyebrow>
-        <div className="mt-4 space-y-3">
+        <div className="mt-5 space-y-3.5">
           <Insight label="Winning signal" value={campaign.learningInsights.winningSignal} />
           <Insight label="Common objection" value={campaign.learningInsights.commonObjection} />
           <Insight label="Recommended ICP adjustment" value={campaign.learningInsights.recommendedIcpAdjustment} />
         </div>
       </div>
-      <div className="panel p-5">
+      <div className="panel p-6">
         <div className="mb-3 flex items-center gap-2">
           <RefreshCw size={15} className="text-accent" />
           <Eyebrow>Improved Next Campaign</Eyebrow>
         </div>
-        <h3 className="font-display text-xl font-bold text-ink">{campaign.nextCampaign.title}</h3>
-        <p className="mt-2 text-[13px] leading-relaxed text-ink-dim">
+        <h3 className="font-display text-[26px] font-semibold text-ink">{campaign.nextCampaign.title}</h3>
+        <p className="mt-3 text-[14px] leading-[1.8] text-ink-dim">
           {campaign.nextCampaign.revisedHypothesis}
         </p>
-        <ul className="mt-4 space-y-2">
+        <ul className="mt-5 space-y-2.5">
           {campaign.nextCampaign.improvements.map((item) => (
-            <li key={item} className="flex gap-2 text-[13px] leading-relaxed text-ink-dim">
+            <li key={item} className="flex gap-2 text-[13.5px] leading-[1.75] text-ink-dim">
               <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
               {item}
             </li>
@@ -278,9 +278,9 @@ export function LearningInsightsPanel() {
 
 function Insight({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[12px] border border-line bg-surface-2/60 p-3.5">
+    <div className="rounded-[14px] border border-line bg-surface-2/70 p-4">
       <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-faint">{label}</div>
-      <div className="mt-1 text-[13px] leading-relaxed text-ink">{value}</div>
+      <div className="mt-1.5 text-[13.5px] leading-[1.75] text-ink">{value}</div>
     </div>
   );
 }
@@ -293,14 +293,14 @@ export function AgencyWorkspacePanel() {
   if (!campaign) return <EmptyCampaignState />;
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
-      <div className="panel p-5">
+    <div className="grid gap-5 lg:grid-cols-[0.92fr_1.08fr]">
+      <div className="panel p-6">
         <div className="mb-3 flex items-center gap-2">
           <Layers size={15} className="text-accent" />
           <Eyebrow>Agency Workspace / Client Export</Eyebrow>
         </div>
-        <h3 className="font-display text-xl font-bold text-ink">{campaign.agencyWorkspace.clientName}</h3>
-        <p className="mt-2 text-[13px] leading-relaxed text-ink-dim">
+        <h3 className="font-display text-[26px] font-semibold text-ink">{campaign.agencyWorkspace.clientName}</h3>
+        <p className="mt-3 text-[14px] leading-[1.8] text-ink-dim">
           Brand the workspace, save a reusable campaign memory per client, and export a white-label
           strategy brief — then improve the next campaign from reply outcomes.
         </p>
@@ -310,14 +310,14 @@ export function AgencyWorkspacePanel() {
             value={agencyName}
             onChange={(e) => setAgencyName(e.target.value)}
             placeholder="Your agency / studio name"
-            className="mt-1.5 w-full rounded-[10px] border border-line bg-surface-2 px-3 py-2 text-sm text-ink outline-none placeholder:text-ink-faint focus:border-accent/50"
+            className="mt-1.5 w-full rounded-[12px] border border-line bg-surface-2/80 px-3 py-2.5 text-[13px] text-ink outline-none placeholder:text-ink-faint focus:border-accent/50"
           />
         </label>
-        <div className="mt-4 rounded-[12px] border border-line bg-surface-2/60 p-3.5">
+        <div className="mt-5 rounded-[14px] border border-line bg-surface-2/70 p-4">
           <div className="font-mono text-[11px] text-ink-faint">Reusable campaign memory</div>
-          <ul className="mt-2 space-y-2">
+          <ul className="mt-3 space-y-2.5">
             {campaign.agencyWorkspace.reusableMemory.map((memory) => (
-              <li key={memory} className="text-[12.5px] text-ink-dim">{memory}</li>
+              <li key={memory} className="text-[13.5px] leading-[1.75] text-ink-dim">{memory}</li>
             ))}
           </ul>
         </div>
@@ -336,23 +336,23 @@ export function AgencyWorkspacePanel() {
         )}
       </div>
 
-      <div className="panel p-5">
+      <div className="panel p-6">
         <Eyebrow>Pricing mock</Eyebrow>
-        <div className="mt-4 grid gap-2 sm:grid-cols-2">
+        <div className="mt-5 grid gap-2.5 sm:grid-cols-2">
           {CAMPAIGN_PRICING_TIERS.map((tier) => (
             <div
               key={tier.name}
               className={cn(
-                "rounded-[12px] border bg-surface-2/60 p-3",
+                "rounded-[14px] border bg-surface-2/70 p-4",
                 tier.name === "Agency" ? "border-accent/40 glow-accent" : "border-line",
               )}
             >
               <div className="flex items-center justify-between gap-2">
-                <span className="font-display text-sm font-bold text-ink">{tier.name}</span>
+                <span className="font-display text-[15px] font-semibold text-ink">{tier.name}</span>
                 <span className="font-mono text-[11px] text-accent">{tier.price}</span>
               </div>
-              <p className="mt-1 text-[12px] text-ink-dim">{tier.fit}</p>
-              <p className="mt-2 text-[11px] leading-relaxed text-ink-faint">{tier.recurringValue}</p>
+              <p className="mt-2 text-[13px] leading-[1.75] text-ink-dim">{tier.fit}</p>
+              <p className="mt-2.5 text-[11.5px] leading-[1.75] text-ink-faint">{tier.recurringValue}</p>
             </div>
           ))}
         </div>

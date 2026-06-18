@@ -38,6 +38,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`h-full antialiased ${displayFont.variable} ${bodyFont.variable} ${monoFont.variable}`}
       data-scroll-behavior="smooth"
       suppressHydrationWarning

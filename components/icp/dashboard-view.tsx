@@ -45,8 +45,8 @@ export function DashboardView({ profileId }: { profileId?: number }) {
   };
 
   return (
-    <IcpShell maxWidth="max-w-5xl">
-      <div className="mb-8 flex items-start justify-between gap-4">
+    <IcpShell maxWidth="max-w-6xl">
+      <div className="mb-10 flex items-start justify-between gap-4">
         <IcpPageHeader
           eyebrow="Agency · Clients"
           title="Client campaigns"
@@ -65,7 +65,7 @@ export function DashboardView({ profileId }: { profileId?: number }) {
         <div>
           <div className="eyebrow mb-3">Client campaigns</div>
           {profiles.length === 0 && (
-            <div className="panel p-4 text-sm text-ink-dim">No client campaigns yet.</div>
+        <div className="panel p-5 text-[14px] text-ink-dim">No client campaigns yet.</div>
           )}
           <div className="space-y-2">
             {profiles.map((p) => (
@@ -77,11 +77,11 @@ export function DashboardView({ profileId }: { profileId?: number }) {
                   router.push(`/dashboard/${p.id}`);
                 }}
                 className={cn(
-                  "panel w-full p-3 text-left transition-colors hover:border-line-strong",
+                  "panel w-full p-4 text-left transition-colors hover:border-line-strong",
                   selected?.id === p.id && "border-accent/40 glow-accent",
                 )}
               >
-                <div className="font-display text-sm font-semibold text-ink">{p.company_name}</div>
+                <div className="font-display text-[15px] font-semibold text-ink">{p.company_name}</div>
                 <div className="mt-1 font-mono text-[10px] text-ink-faint">
                   <span className={cn(p.status === "accepted" && "text-accent")}>{p.status}</span>
                   {" · "}{p.contacts?.length || 0} contacts
@@ -94,16 +94,16 @@ export function DashboardView({ profileId }: { profileId?: number }) {
         <div>
           {selected ? (
             <>
-              <h2 className="font-display text-2xl font-bold text-ink">{selected.company_name}</h2>
-              <p className="mt-1 text-[13px] text-ink-dim">
+              <h2 className="font-display text-[28px] font-semibold text-ink">{selected.company_name}</h2>
+              <p className="mt-2 text-[13.5px] leading-[1.75] text-ink-dim">
                 {(selected.fields.best_fit_industries || []).join(", ")} · {selected.fields.company_size} · {selected.fields.geography}
               </p>
 
-              <div className="mt-6">
+              <div className="mt-7">
                 <ContactTable contacts={selected.contacts || []} />
               </div>
 
-              <div className="mt-6 flex flex-wrap gap-2">
+              <div className="mt-7 flex flex-wrap gap-2">
                 {selected.status === "accepted" && (
                   <Link href={`/business/${selected.id}`}>
                     <Button variant="solid">Open campaign workspace</Button>

@@ -26,7 +26,7 @@ const SEGMENTS: Segment[] = [
 ];
 
 const selectCls =
-  "w-full rounded-[10px] border border-line bg-surface-2 px-3 py-2 text-sm text-ink outline-none focus:border-accent/50";
+  "w-full rounded-[12px] border border-line bg-surface-2/80 px-3 py-2.5 text-[13px] text-ink outline-none focus:border-accent/50";
 
 export function CampaignInput({
   loading,
@@ -44,17 +44,17 @@ export function CampaignInput({
   const productDescription = editedDescription ?? defaultDescription ?? DEFAULT_DESCRIPTION;
 
   return (
-    <div className="panel p-5">
+    <div className="panel p-6">
       <Eyebrow>Product input</Eyebrow>
       <textarea
         value={productDescription}
         onChange={(e) => setEditedDescription(e.target.value)}
         rows={4}
         placeholder="Describe the product, website, or service you want to build an outbound campaign for..."
-        className="mt-2.5 w-full resize-none rounded-[10px] border border-line bg-surface-2 px-3 py-2.5 text-[13.5px] leading-relaxed text-ink outline-none placeholder:text-ink-faint focus:border-accent/50"
+        className="mt-3 w-full resize-none rounded-[12px] border border-line bg-surface-2/80 px-3 py-3 text-[14px] leading-[1.75] text-ink outline-none placeholder:text-ink-faint focus:border-accent/50"
       />
 
-      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <label className="block">
           <span className="eyebrow">Segment focus</span>
           <select
@@ -88,7 +88,7 @@ export function CampaignInput({
 
       <Button
         variant="solid"
-        className="mt-4 w-full"
+        className="mt-5 w-full"
         disabled={loading}
         onClick={() => onSubmit({ productDescription, segmentFocus, fittingGoal })}
       >

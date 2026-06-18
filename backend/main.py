@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from database import Base, engine, ensure_migrations
 from routers import auth, email, email_connections, outreach, profiles, scrape, sending
+from routers import auth, briefs, email, outreach, profiles, scrape, sending, threads
 from services.scheduler import shutdown_scheduler, start_scheduler
 
 Base.metadata.create_all(bind=engine)
@@ -47,6 +48,8 @@ app.include_router(sending.router)
 app.include_router(email.router)
 app.include_router(email_connections.router)
 app.include_router(email.unsubscribe_router)
+app.include_router(threads.router)
+app.include_router(briefs.router)
 
 
 @app.get("/api/health")

@@ -205,7 +205,8 @@ export const DEFAULT_CAMPAIGN_EVENTS: CampaignEvent[] = [
   { type: "approval" },
 ];
 
-function bulletLines(value: string): string[] {
+function bulletLines(value?: string | null): string[] {
+  if (!value) return [];
   return value
     .split("\n")
     .map((line) => line.replace(/^[-*•]\s*/, "").trim())
@@ -283,7 +284,8 @@ export function campaignCopy(value: string, campaign?: CampaignIntelligence | nu
 }
 
 function targetMarket(fields: ICPFields): string {
-  if (fields.best_fit_industries.length) return fields.best_fit_industries.slice(0, 4).join(", ");
+  const industries = Array.isArray(fields.best_fit_industries) ? fields.best_fit_industries : [];
+  if (industries.length) return industries.slice(0, 4).join(", ");
   return "service businesses with repeatable sales or operations workflows";
 }
 
@@ -295,7 +297,9 @@ function primarySignal(fields: ICPFields, accounts: RevenueAccount[]): string {
 }
 
 function buildFilters(fields: ICPFields): CampaignFilter[] {
-  const industries = fields.best_fit_industries.length ? fields.best_fit_industries.join(", ") : "Service businesses";
+  const industries = Array.isArray(fields.best_fit_industries) && fields.best_fit_industries.length
+    ? fields.best_fit_industries.join(", ")
+    : "Service businesses";
   return [
     {
       id: "industry",

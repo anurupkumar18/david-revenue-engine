@@ -38,9 +38,9 @@ export function AccountTable() {
 
   if (accounts.length === 0) {
     return (
-      <div className="panel grid place-items-center px-6 py-16 text-center">
-        <p className="font-display text-lg text-ink">No accounts on the board.</p>
-        <p className="mt-1 max-w-sm text-sm text-ink-dim">
+      <div className="panel grid place-items-center px-6 py-20 text-center">
+        <p className="font-display text-[24px] text-ink">No accounts on the board.</p>
+        <p className="mt-2 max-w-sm text-[14px] leading-[1.75] text-ink-dim">
           Load a campaign profile above to see signals, fit scores, campaign angles, and recurring
           opportunity.
         </p>
@@ -53,13 +53,13 @@ export function AccountTable() {
       {/* desktop table */}
       <div className="panel hidden overflow-hidden md:block">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[920px] border-collapse text-left">
+          <table className="w-full min-w-[980px] border-collapse text-left">
             <thead>
               <tr className="border-b border-line">
                 {COLS.map((c) => (
                   <th
                     key={c}
-                    className="px-4 py-3 font-mono text-[10px] font-normal uppercase tracking-wider text-ink-faint"
+                    className="px-5 py-4 font-mono text-[10px] font-normal uppercase tracking-[0.18em] text-ink-faint"
                   >
                     {c}
                   </th>
@@ -78,26 +78,26 @@ export function AccountTable() {
                   )}
                   style={{ animationDelay: `${Math.min(i * 35, 400)}ms` }}
                 >
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-4">
                     <div className="flex items-center gap-2.5">
                       {a.fitting.grade === "A" && (
                         <span className="pulse-a h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
                       )}
                       <div className={cn(a.fitting.grade !== "A" && "pl-[16px]")}>
-                        <div className="font-display text-[14px] font-semibold leading-tight text-ink">
+                        <div className="font-display text-[15px] font-semibold leading-tight text-ink">
                           {a.name}
                         </div>
-                        <div className="mt-0.5 font-mono text-[10.5px] text-ink-faint">
+                        <div className="mt-1 font-mono text-[10.5px] text-ink-faint">
                           {a.industry}
                           {a.geography ? ` · ${a.geography}` : ""}
                         </div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-4">
                     <SegmentChip segment={a.segment} />
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-4">
                     <div className="flex items-center gap-1">
                       <LeakChip type={a.primaryLeak} />
                       {a.detectedLeakTypes.length > 1 && (
@@ -107,22 +107,22 @@ export function AccountTable() {
                       )}
                     </div>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-4">
                     <ScoreCell score={a.fittingScore} grade={a.fitting.grade} />
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-4">
                     <ScoreCell score={a.revenueOpportunityScore} grade={a.revenueOpportunity.grade} />
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-4">
                     <OfferPathChip
                       path={a.recommendedDavidOfferPath}
                       label={campaignAngleLabel(a.recommendedDavidOfferPath, campaign)}
                     />
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-4">
                     <RecurringDots level={a.recurringRevenuePotential} showLabel={false} />
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-4">
                     <StageChip stage={a.stage} />
                   </td>
                   <td className="pr-3">
@@ -136,7 +136,7 @@ export function AccountTable() {
       </div>
 
       {/* mobile cards */}
-      <div className="space-y-2.5 md:hidden">
+      <div className="space-y-3 md:hidden">
         {accounts.map((a) => (
           <button
             key={a.id}
@@ -146,7 +146,7 @@ export function AccountTable() {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="font-display text-[15px] font-semibold text-ink">{a.name}</div>
-                <div className="mt-0.5 font-mono text-[10.5px] text-ink-faint">{a.industry}</div>
+                <div className="mt-1 font-mono text-[10.5px] text-ink-faint">{a.industry}</div>
               </div>
               <div className="flex items-center gap-3 text-right">
                 <ScoreCell score={a.revenueOpportunityScore} grade={a.revenueOpportunity.grade} />

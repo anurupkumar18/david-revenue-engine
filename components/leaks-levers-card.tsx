@@ -13,7 +13,7 @@ export function LeaksLeversCard({
   campaign?: CampaignIntelligence | null;
 }) {
   return (
-    <div className="panel-2 p-3.5">
+    <div className="panel-2 p-4">
       <div className="mb-2 flex flex-wrap items-center gap-2">
         <LeakChip type={leak.type} />
         <span className="font-mono text-[10px] text-ink-faint">
@@ -22,18 +22,18 @@ export function LeaksLeversCard({
         <ProvenanceLabel provenance={leak.provenance} className="ml-auto" />
       </div>
 
-      <p className="text-[13px] leading-snug text-ink-dim">
+      <p className="text-[13px] leading-[1.75] text-ink-dim">
         <span className="text-ink-faint">Evidence — </span>
         {leak.evidence}
       </p>
-      <p className="mt-1.5 text-[13px] leading-snug text-ink-dim">
+      <p className="mt-1.5 text-[13px] leading-[1.75] text-ink-dim">
         <span className="text-ink-faint">Why it matters — </span>
         {leak.whyItMatters}
       </p>
 
       <div className="mt-2.5 flex items-start gap-1.5 rounded-lg border border-accent/20 bg-accent/[0.06] px-2.5 py-2">
         <Wrench size={13} className="mt-0.5 shrink-0 text-accent" />
-        <p className="text-[12.5px] leading-snug text-ink">
+        <p className="text-[12.5px] leading-[1.75] text-ink">
           {campaignCopy(leak.leverAngle, campaign)}
         </p>
       </div>

@@ -22,16 +22,16 @@ export function Button({
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-[10px] font-medium transition-all duration-150 disabled:opacity-40 disabled:pointer-events-none cursor-pointer",
-        size === "sm" ? "px-3 py-1.5 text-[13px]" : "px-4 py-2 text-sm",
+        "inline-flex items-center justify-center gap-2 rounded-[12px] font-medium transition-all duration-150 disabled:pointer-events-none disabled:opacity-45 cursor-pointer",
+        size === "sm" ? "px-3 py-1.5 text-[13px]" : "px-4 py-2.5 text-[13px]",
         variant === "solid" &&
-          "bg-accent text-[#04130c] hover:brightness-110 hover:-translate-y-px font-semibold",
+          "border border-accent/45 bg-accent text-[#fff7ef] shadow-[0_10px_28px_-18px_rgba(209,45,59,0.9)] hover:-translate-y-px hover:bg-[#df3645] hover:border-[#ef6670] font-semibold",
         variant === "outline" &&
           cn(
-            "border bg-surface-2/60 text-ink hover:bg-surface-3 hover:border-line-strong",
-            active && "border-accent/50 text-accent bg-accent/10",
+            "border bg-surface-2/70 text-ink hover:bg-surface-3 hover:border-line-strong",
+            active && "border-accent/50 text-accent bg-accent/12",
           ),
-        variant === "ghost" && "text-ink-dim hover:text-ink hover:bg-surface-2",
+        variant === "ghost" && "text-ink-dim hover:text-ink hover:bg-white/5",
         className,
       )}
       {...props}
@@ -60,7 +60,7 @@ export function GradePill({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 font-mono text-xs",
+        "inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 font-mono text-[10.5px] uppercase tracking-[0.14em]",
         c.pill,
         className,
       )}

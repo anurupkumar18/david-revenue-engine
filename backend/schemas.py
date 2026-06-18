@@ -51,6 +51,32 @@ class StartSequenceRequest(BaseModel):
     sends: list[SequenceSendPayload]
 
 
+class InboundEmailRequest(BaseModel):
+    profile_id: int | None = None
+    account_id: str | None = None
+    contact_email: str
+    subject: str = ""
+    body: str = ""
+    in_reply_to: str | None = None
+    message_id: str | None = None
+    company_name: str | None = None
+    primary_leak_label: str | None = None
+    offer_path_label: str | None = None
+    first_conversion_action: str | None = None
+    grade: str | None = None
+
+
+class ThreadActionRequest(BaseModel):
+    action: str
+    subject: str | None = None
+    body: str | None = None
+    cta: str | None = None
+
+
+class BriefRunRequest(BaseModel):
+    period: str = "daily"
+
+
 class ContactResponse(BaseModel):
     id: int
     profile_id: int
