@@ -155,6 +155,17 @@ RULES: list[dict[str, object]] = [
         "subject": "re: next step",
         "cta": "Would Tuesday or Wednesday work?",
     },
+    {
+        "intent": "ambiguous",
+        "test": re.compile(r"^$"),
+        "confidence": 0.5,
+        "stage": "replied",
+        "suppress": False,
+        "action": "Low confidence - route to human review before replying.",
+        "template": lambda ctx: f"Thanks for the reply. Just so I point you to the right thing - is {ctx['primary_leak_label']} something worth a quick look, or should I follow up another time?",
+        "subject": "re: quick follow-up",
+        "cta": "Worth a quick look?",
+    },
 ]
 
 
