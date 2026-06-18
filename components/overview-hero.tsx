@@ -32,8 +32,16 @@ export function OverviewHero() {
         <div className="eyebrow mb-3">
           {profileId ? `${businessName} · Campaign Workspace` : "AI GTM Campaign Builder"}
         </div>
-        <h1 className="text-balance font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-ink sm:text-5xl">
-          {profileId ? `Improve the next ${businessName} campaign.` : "Campaign intelligence, not campaign sending."}
+        <h1 className="text-balance font-display text-5xl font-medium leading-[1.04] tracking-tight text-ink sm:text-6xl">
+          {profileId ? (
+            <>
+              Improve the next <em className="font-display italic text-accent">{businessName}</em> campaign.
+            </>
+          ) : (
+            <>
+              Campaign <em className="font-display italic text-accent">intelligence</em>, not campaign sending.
+            </>
+          )}
         </h1>
         <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-ink-dim">
           {profileId ? (

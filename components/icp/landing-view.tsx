@@ -51,7 +51,7 @@ export function LandingView() {
         subtitle="Paste a website URL or product description. The local strategist drafts a campaign profile, ICP filters, buying signals, sequence copy, and routing logic."
       />
 
-      <div className="panel p-5 reveal" style={{ animationDelay: "80ms" }}>
+      <div className="panel bracket-frame p-6 reveal" style={{ animationDelay: "80ms" }}>
         <div className="eyebrow mb-2">Website URL</div>
         <div className="flex flex-col gap-3 sm:flex-row">
           <IcpInput

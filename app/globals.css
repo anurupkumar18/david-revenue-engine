@@ -1,32 +1,32 @@
 @import "tailwindcss";
 
 @theme {
-  /* Surfaces */
-  --color-base: #0a0c0d;
-  --color-surface: #101315;
-  --color-surface-2: #161a1d;
-  --color-surface-3: #1c2125;
-  --color-line: rgba(233, 231, 223, 0.1);
-  --color-line-strong: rgba(233, 231, 223, 0.2);
+  /* Surfaces — warm near-black, editorial */
+  --color-base: #0b0a09;
+  --color-surface: #141110;
+  --color-surface-2: #1a1615;
+  --color-surface-3: #221d1b;
+  --color-line: rgba(236, 231, 222, 0.12);
+  --color-line-strong: rgba(236, 231, 222, 0.22);
 
-  /* Ink (warm off-white, not pure white) */
-  --color-ink: #ece9e0;
-  --color-ink-dim: #9aa2a1;
-  --color-ink-faint: #646b6a;
+  /* Ink (warm cream, not pure white) */
+  --color-ink: #ece7dd;
+  --color-ink-dim: #a39d92;
+  --color-ink-faint: #6f6a62;
 
   /* Accents */
-  --color-accent: #34e39b; /* emerald — money / growth / grade A */
-  --color-accent-soft: rgba(52, 227, 155, 0.14);
-  --color-cyan: #4cd5e3; /* secondary — platform/partner / very-high tier */
-  --color-cyan-soft: rgba(76, 213, 227, 0.14);
-  --color-lime: #c2e34a; /* grade B */
-  --color-amber: #f5b544; /* leaks / warnings / grade C */
-  --color-amber-soft: rgba(245, 181, 68, 0.14);
-  --color-danger: #ef5f5f; /* suppression / grade D */
-  --color-danger-soft: rgba(239, 95, 95, 0.14);
+  --color-accent: #c21f33; /* crimson — primary / CTA / grade A */
+  --color-accent-soft: rgba(194, 31, 51, 0.16);
+  --color-cyan: #cf8a7e; /* warm clay — platform/partner / very-high tier */
+  --color-cyan-soft: rgba(207, 138, 126, 0.16);
+  --color-lime: #d9a441; /* gold — grade B */
+  --color-amber: #e08a3c; /* leaks / warnings / grade C */
+  --color-amber-soft: rgba(224, 138, 60, 0.16);
+  --color-danger: #e0564e; /* suppression / grade D */
+  --color-danger-soft: rgba(224, 86, 78, 0.16);
 
-  /* Type */
-  --font-display: "Bricolage Grotesque", "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+  /* Type — elegant serif display, clean grotesque body, tracked mono labels */
+  --font-display: "Cormorant Garamond", "Playfair Display", Georgia, "Times New Roman", serif;
   --font-body: "Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
@@ -45,8 +45,8 @@
     background-color: var(--color-base);
     color: var(--color-ink);
     background-image:
-      radial-gradient(920px 520px at 10% -10%, rgba(52, 227, 155, 0.1), transparent 60%),
-      radial-gradient(820px 520px at 100% -5%, rgba(76, 213, 227, 0.07), transparent 55%);
+      radial-gradient(900px 540px at 12% -12%, rgba(194, 31, 51, 0.12), transparent 60%),
+      radial-gradient(760px 480px at 100% -5%, rgba(194, 31, 51, 0.05), transparent 55%);
     background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
@@ -59,15 +59,15 @@
     z-index: 0;
     pointer-events: none;
     background-image:
-      linear-gradient(to right, rgba(233, 231, 223, 0.022) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(233, 231, 223, 0.022) 1px, transparent 1px);
+      linear-gradient(to right, rgba(236, 231, 222, 0.022) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(236, 231, 222, 0.022) 1px, transparent 1px);
     background-size: 58px 58px;
     -webkit-mask-image: radial-gradient(ellipse at 50% -10%, black, transparent 78%);
     mask-image: radial-gradient(ellipse at 50% -10%, black, transparent 78%);
   }
   ::selection {
     background: var(--color-accent);
-    color: #04130c;
+    color: #f7f1e7;
   }
   ::-webkit-scrollbar {
     width: 10px;
@@ -140,7 +140,26 @@
     text-wrap: balance;
   }
   .glow-accent {
-    box-shadow: 0 0 0 1px var(--color-accent-soft), 0 8px 40px -12px rgba(52, 227, 155, 0.35);
+    box-shadow: 0 0 0 1px var(--color-accent-soft), 0 8px 40px -12px rgba(194, 31, 51, 0.4);
+  }
+  /* editorial corner brackets — L-shaped marks at each corner */
+  .bracket-frame {
+    position: relative;
+  }
+  .bracket-frame::after {
+    content: "";
+    position: absolute;
+    inset: 9px;
+    pointer-events: none;
+    background:
+      linear-gradient(var(--color-accent), var(--color-accent)) 0 0 / 15px 1.5px no-repeat,
+      linear-gradient(var(--color-accent), var(--color-accent)) 0 0 / 1.5px 15px no-repeat,
+      linear-gradient(var(--color-accent), var(--color-accent)) 100% 0 / 15px 1.5px no-repeat,
+      linear-gradient(var(--color-accent), var(--color-accent)) 100% 0 / 1.5px 15px no-repeat,
+      linear-gradient(var(--color-accent), var(--color-accent)) 0 100% / 15px 1.5px no-repeat,
+      linear-gradient(var(--color-accent), var(--color-accent)) 0 100% / 1.5px 15px no-repeat,
+      linear-gradient(var(--color-accent), var(--color-accent)) 100% 100% / 15px 1.5px no-repeat,
+      linear-gradient(var(--color-accent), var(--color-accent)) 100% 100% / 1.5px 15px no-repeat;
   }
   /* staggered load reveal — add inline animation-delay per item */
   .reveal {
@@ -159,13 +178,13 @@
   }
   @keyframes pulse-ring {
     0% {
-      box-shadow: 0 0 0 0 rgba(52, 227, 155, 0.5);
+      box-shadow: 0 0 0 0 rgba(194, 31, 51, 0.5);
     }
     70% {
-      box-shadow: 0 0 0 6px rgba(52, 227, 155, 0);
+      box-shadow: 0 0 0 6px rgba(194, 31, 51, 0);
     }
     100% {
-      box-shadow: 0 0 0 0 rgba(52, 227, 155, 0);
+      box-shadow: 0 0 0 0 rgba(194, 31, 51, 0);
     }
   }
   .pulse-a {
